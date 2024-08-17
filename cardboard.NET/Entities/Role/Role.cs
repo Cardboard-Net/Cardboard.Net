@@ -15,7 +15,7 @@ namespace cardboard
         public string? Description { get; protected set; }
         public bool IsModerator { get; protected set; }
         public bool IsAdministrator { get; protected set; }
-        public UInt8 Hierarchy { get; protected set; }
+        public int Hierarchy { get; protected set; }
         public DateTime? CreatedAt { get; protected set; }
         public DateTime? UpdatedAt { get; protected set; }
     }
