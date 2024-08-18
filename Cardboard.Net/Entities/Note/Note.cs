@@ -80,6 +80,17 @@ namespace Cardboard
         [JsonProperty("text")]
         public string? Text { get; protected set; }
 
+        /*
+         * I genuinely wonder, should we recursively get the representation of
+         * each file from drive? Returning to the user IReadOnlyList<DriveFile>?
+         * 
+         * Pros: ease of use, I don't have to iterate through FileIds to
+         * fetch each one individually... 
+         * 
+         * Cons: Probably generates a lot of requests the user may not want to
+         * have.
+         */
+         
         /// <summary>
         /// List of file ids
         /// </summary>
