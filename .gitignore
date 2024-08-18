@@ -2,5 +2,11 @@
 .vscode
 
 # Build
-obj/
-bin/
+Cardboard.Net/obj/
+Cardboard.Net/bin/
+Cardboard.Net.Commands/obj/
+Cardboard.Net.Commands/bin/
+Cardboard.Net.Rest/obj/
+Cardboard.Net.Rest/bin/
+Cardboard.Net.Websocket/obj/
+Cardboard.Net.Websocket/bin/
