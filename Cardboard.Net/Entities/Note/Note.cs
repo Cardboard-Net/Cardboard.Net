@@ -1,4 +1,5 @@
 using System.Dynamic;
+using Cardboard.Net.Entities;
 using Newtonsoft.Json;
 
 namespace Cardboard
@@ -19,6 +20,16 @@ namespace Cardboard
         /// </summary>
         [JsonProperty("visibleUserIds")]
         public List<string> VisibleUserIds { get; protected set; }
+
+        /// <summary>
+        /// Fetches each user using the visible user id array
+        /// </summary>
+        /// <returns>IReadOnlyList<User>></returns>
+        /// <exception cref="NotImplementedException"></exception>
+#pragma warning disable CS1998
+        public async Task<IReadOnlyList<User>> GetVisibleUsersAsync()
+            => throw new NotImplementedException();
+#pragma warning restore CS1998
 
         /// <summary>
         /// Content warning for the given note
@@ -80,22 +91,21 @@ namespace Cardboard
         [JsonProperty("text")]
         public string? Text { get; protected set; }
 
-        /*
-         * I genuinely wonder, should we recursively get the representation of
-         * each file from drive? Returning to the user IReadOnlyList<DriveFile>?
-         * 
-         * Pros: ease of use, I don't have to iterate through FileIds to
-         * fetch each one individually... 
-         * 
-         * Cons: Probably generates a lot of requests the user may not want to
-         * have.
-         */
-         
         /// <summary>
         /// List of file ids
         /// </summary>
         [JsonProperty("fileIds")]
         public List<string>? FileIds { get; protected set; }
+
+        /// <summary>
+        /// Fetches each file using the fileId array
+        /// </summary>
+        /// <returns>IReadOnlyList<DriveFile>></returns>
+        /// <exception cref="NotImplementedException"></exception>
+#pragma warning disable CS1998
+        public async Task<IReadOnlyList<DriveFile>> GetFilesAsync()
+            => throw new NotImplementedException();
+#pragma warning restore CS1998
 
         /// <summary>
         /// List of mediaIds
