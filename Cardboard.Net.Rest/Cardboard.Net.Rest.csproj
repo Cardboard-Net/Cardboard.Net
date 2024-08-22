@@ -4,6 +4,14 @@
     <ProjectReference Include="..\Cardboard.Net\Cardboard.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interceptors/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RestSharp" Version="111.4.1" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
