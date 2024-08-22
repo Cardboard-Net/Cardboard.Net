@@ -9,7 +9,7 @@ public abstract class BaseMisskeyClient : IDisposable
     
     internal BaseMisskeyClient(string token, Uri host)
     {
-        this.ApiClient = new MisskeyApiClient(token, host);
+        this.ApiClient = new MisskeyApiClient(token, host, this);
     }
     
     /// <summary>

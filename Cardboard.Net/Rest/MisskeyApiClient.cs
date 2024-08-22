@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Cardboard.Net.Clients;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
@@ -13,8 +14,9 @@ public class MisskeyApiClient : IDisposable
 {
     readonly RestClient _client;
     readonly JsonSerializerOptions _jopts;
-
-    public MisskeyApiClient(string token, Uri host)
+    readonly BaseMisskeyClient _misskey;
+    
+    public MisskeyApiClient(string token, Uri host, BaseMisskeyClient client)
     {
         RestClientOptions options = new RestClientOptions(host);
         options.UserAgent = "cardboard.NET/v0.0.1a";
@@ -29,6 +31,8 @@ public class MisskeyApiClient : IDisposable
         );
 
         _client.AddDefaultHeader("Authorization", $"Bearer {token}");
+        
+        _misskey = client;
     }
     
     #region Users
@@ -39,6 +43,7 @@ public class MisskeyApiClient : IDisposable
         request.AddJsonBody(JsonSerializer.Serialize(new {userId = userId}));
         request.Resource = Endpoints.USERS_SHOW;
         User? response = await this._client.PostAsync<User>(request); 
+        response!.Misskey = _misskey;
         return response!;
     }
     
@@ -48,6 +53,7 @@ public class MisskeyApiClient : IDisposable
         request.AddJsonBody(JsonSerializer.Serialize(new {username = username, host = host}));
         request.Resource = Endpoints.USERS_SHOW;
         User? response = await _client.PostAsync<User>(request); 
+        response!.Misskey = _misskey;
         return response!;    
     }
 
@@ -86,7 +92,10 @@ public class MisskeyApiClient : IDisposable
 
         CreatedNote? response = await _client.PostAsync<CreatedNote>(request);
         
-        return response!.Note;
+        Note responseNote = response!.Note!;
+        responseNote.Misskey = this._misskey;
+        
+        return responseNote;
     }
     
     internal async ValueTask<Note> GetNoteAsync(string noteId)
@@ -98,6 +107,7 @@ public class MisskeyApiClient : IDisposable
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
         request.Resource = Endpoints.NOTE_SHOW;
         Note? response = await _client.PostAsync<Note>(request);
+        response!.Misskey = this._misskey;
         return response!;
     }
     
