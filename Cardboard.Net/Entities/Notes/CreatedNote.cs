@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Cardboard.Net.Entities;
 
-namespace Cardboard.Net.Rest.Entities;
+namespace Cardboard.Net.Entities.Notes;
 
 /// <summary>
 /// When using /api/notes/create it returns 

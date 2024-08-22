@@ -1,12 +1,15 @@
+using Cardboard.Net.Rest;
+
 namespace Cardboard.Net.Entities;
 
 /// <summary>
 /// Interface for all misskey objects to inherit from
 /// </summary>
-public interface IMkObject
+public abstract class MkObject
 {
     /// <summary>
     /// misskey:id corresponding to the object
     /// </summary>
     public string Id { get; }
+    internal MisskeyClient 
 }

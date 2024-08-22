@@ -6,14 +6,8 @@ namespace Cardboard.Net.Entities;
 /// <summary>
 /// Class representing a misskey user
 /// </summary>
-public class User : IMkObject
+public class User : MisskeyObject
 {
-    /// <summary>
-    /// The misskey:id of the current user
-    /// </summary>
-    [JsonPropertyName("id")]
-    public required string Id { get; init; }
-
     /// <summary>
     /// Optional display name of the current user
     /// </summary>
@@ -117,4 +111,7 @@ public class User : IMkObject
     /// </summary>
     [JsonPropertyName("followerVisibility")]
     public FollowVisibilityType FollowerVisibility { get; init; }
+
+    public async Task SendFollowRequestAsync()
+        => await this.Misskey.ApiClient.FollowUserAsync(this.Id);
 }

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Cardboard.Net.Rest.Entities;
+namespace Cardboard.Net.Entities.Users;
 
 /// <summary>
 /// This encapsulates usercount

@@ -2,19 +2,19 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Notes;
-using Cardboard.Net.Rest.Entities;
+using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
 using RestSharp;
 using RestSharp.Serializers.Json;
 
 namespace Cardboard.Net.Rest;
 
-public class MisskeyClient : IMisskeyClient, IDisposable
+public class MisskeyApiClient : IDisposable
 {
     readonly RestClient _client;
     readonly JsonSerializerOptions _jopts;
 
-    public MisskeyClient(string token, Uri host)
+    public MisskeyApiClient(string token, Uri host)
     {
         RestClientOptions options = new RestClientOptions(host);
         options.UserAgent = "cardboard.NET/v0.0.1a";
@@ -30,17 +30,19 @@ public class MisskeyClient : IMisskeyClient, IDisposable
 
         _client.AddDefaultHeader("Authorization", $"Bearer {token}");
     }
+    
+    #region Users
 
-    public async Task<User> GetUserAsync(string userId)
+    internal async ValueTask<User> GetUserAsync(string userId)
     {
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {userId = userId}));
         request.Resource = Endpoints.USERS_SHOW;
-        User? response = await _client.PostAsync<User>(request); 
+        User? response = await this._client.PostAsync<User>(request); 
         return response!;
     }
-
-    public async Task<User> GetUserAsync(string username, string? host = null)
+    
+    internal async ValueTask<User> GetUserAsync(string username, string? host = null)
     {
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {username = username, host = host}));
@@ -49,21 +51,18 @@ public class MisskeyClient : IMisskeyClient, IDisposable
         return response!;    
     }
 
-    public async Task<int> GetOnlineUserCountAsync()
-    {
-        UserCount? response = await _client.GetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
-        return response!.Count;
-    }
-
-    public async Task DeleteNoteAsync(string noteId)
+    internal async ValueTask FollowUserAsync(string userId, bool withReplies = false)
     {
         RestRequest request = new RestRequest();
-        request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
-        request.Resource = Endpoints.NOTE_DELETE;
-        await _client.PostAsync(request);
+        request.AddJsonBody(JsonSerializer.Serialize(new { userId = userId, withReplies = withReplies }));
+        request.Resource = Endpoints.FOLLOW_CREATE;
+        await this._client.PostAsync<User>(request);
     }
-
-    public async Task<Note> CreateNoteAsync
+    
+    #endregion
+    
+    #region Notes
+    internal async ValueTask<Note> CreateNoteAsync
     (
         string text,
         string? contentWarning = null,
@@ -89,8 +88,8 @@ public class MisskeyClient : IMisskeyClient, IDisposable
         
         return response!.Note;
     }
-
-    public async Task<Note> GetNoteAsync(string noteId)
+    
+    internal async ValueTask<Note> GetNoteAsync(string noteId)
     {
         RestRequest request = new RestRequest() 
         {
@@ -101,32 +100,25 @@ public class MisskeyClient : IMisskeyClient, IDisposable
         Note? response = await _client.PostAsync<Note>(request);
         return response!;
     }
-
-    public Task<User> FollowUserAsync(string userId, bool withReplies = false)
+    
+    internal async ValueTask DeleteNoteAsync(string noteId)
     {
-        throw new NotImplementedException();
+        RestRequest request = new RestRequest();
+        request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
+        request.Resource = Endpoints.NOTE_DELETE;
+        await _client.PostAsync(request);
     }
-
-    public Task<User> UnfollowUserAsync(string userId)
+    
+    #endregion
+    
+    #region CurrentInstance
+    internal async ValueTask<int> GetOnlineUserCountAsync()
     {
-        throw new NotImplementedException();
+        UserCount? response = await _client.GetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
+        return response!.Count;
     }
-
-    public void Dispose()
-    {
-        _client?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-
-    public Task ReportUserAsync(string userId, string comment)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task ReportUserAsync(User user, string comment) 
-        => await ReportUserAsync(user.Id, comment);
-
-    public async Task<Stats> GetStatsAsync()
+    
+    internal async ValueTask<Stats> GetStatsAsync()
     {
         RestRequest request = new RestRequest() 
         {
@@ -136,5 +128,13 @@ public class MisskeyClient : IMisskeyClient, IDisposable
 
         Stats? response = await _client.PostAsync<Stats>(request);
         return response!;
+    }
+    
+    #endregion
+
+    public void Dispose()
+    {
+        _client?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

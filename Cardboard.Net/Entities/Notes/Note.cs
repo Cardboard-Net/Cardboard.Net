@@ -6,14 +6,8 @@ namespace Cardboard.Net.Entities;
 /// <summary>
 /// Class representing a misskey note
 /// </summary>
-public class Note : IMkObject
+public class Note : MisskeyObject
 {
-    /// <summary>
-    /// The misskey:id of the current note
-    /// </summary>
-    [JsonPropertyName("id")]
-    public required string Id {get; init;}
-
     /// <summary>
     /// DateTime representing when the note was created
     /// </summary>
