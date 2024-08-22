@@ -5,10 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interceptors/" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="RestSharp" Version="111.4.1" />
   </ItemGroup>
 

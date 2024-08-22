@@ -15,6 +15,24 @@ public class Note : IMkObject
     public required string Id {get; init;}
 
     /// <summary>
+    /// DateTime representing when the note was created
+    /// </summary>
+    [JsonPropertyName("createdAt")]
+    public required DateTime CreatedAt { get; init; }
+
+    /// <summary>
+    /// The author of the note
+    /// </summary>
+    [JsonPropertyName("userId")]
+    public required string AuthorId { get; init; }
+
+    /// <summary>
+    /// The id of the channel the note was created in, if there is one.
+    /// </summary>
+    [JsonPropertyName("channelId")]
+    public string? ChannelId { get; init; }
+
+    /// <summary>
     /// The contents of the current note
     /// </summary>
     [JsonPropertyName("text")]
@@ -31,4 +49,10 @@ public class Note : IMkObject
     /// </summary>
     [JsonPropertyName("reactionAcceptance")]
     public Notes.AcceptanceType Acceptance { get; init; }
+
+    /// <summary>
+    /// Amount of times this note has been clipped
+    /// </summary>
+    [JsonPropertyName("clippedCount")]
+    public int ClippedCount { get; init; }
 }

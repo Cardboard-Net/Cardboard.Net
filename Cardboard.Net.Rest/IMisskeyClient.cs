@@ -21,6 +21,28 @@ public interface IMisskeyClient
     Task<User> GetUserAsync(string username, string? host = null);
 
     /// <summary>
+    /// Creates a report for the given userid
+    /// </summary>
+    /// <param name="userId">misskey:id of the user to report</param>
+    /// <param name="comment">Description</param> 
+    /// <returns></returns>
+    Task ReportUserAsync(string userId, string comment);
+
+    /// <summary>
+    /// Creates a report for the given user object
+    /// </summary>
+    /// <param name="user">User</param>
+    /// <param name="comment">Comment</param> 
+    /// <returns></returns>
+    Task ReportUserAsync(User user, string comment);
+
+    /// <summary>
+    /// Gets stats from the instance
+    /// </summary>
+    /// <returns></returns>
+    Task<Stats> GetStatsAsync();
+
+    /// <summary>
     /// Creates a note
     /// </summary>
     /// <param name="text">The contents of the note</param>
@@ -37,6 +59,8 @@ public interface IMisskeyClient
         bool isLocal = false, 
         AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly
     );
+
+    Task<Note> GetNoteAsync(string noteId);
 
     /// <summary>
     /// Follows a user given the userId

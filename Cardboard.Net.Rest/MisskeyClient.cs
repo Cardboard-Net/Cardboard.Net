@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Rest.Entities;
+using Cardboard.Net.Rest.Interceptors;
 using RestSharp;
 using RestSharp.Serializers.Json;
 
@@ -89,6 +90,18 @@ public class MisskeyClient : IMisskeyClient, IDisposable
         return response!.Note;
     }
 
+    public async Task<Note> GetNoteAsync(string noteId)
+    {
+        RestRequest request = new RestRequest() 
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
+        request.Resource = Endpoints.NOTE_SHOW;
+        Note? response = await _client.PostAsync<Note>(request);
+        return response!;
+    }
+
     public Task<User> FollowUserAsync(string userId, bool withReplies = false)
     {
         throw new NotImplementedException();
@@ -103,5 +116,25 @@ public class MisskeyClient : IMisskeyClient, IDisposable
     {
         _client?.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public Task ReportUserAsync(string userId, string comment)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task ReportUserAsync(User user, string comment) 
+        => await ReportUserAsync(user.Id, comment);
+
+    public async Task<Stats> GetStatsAsync()
+    {
+        RestRequest request = new RestRequest() 
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        request.Resource = Endpoints.INSTANCE_STATS;
+
+        Stats? response = await _client.PostAsync<Stats>(request);
+        return response!;
     }
 }
