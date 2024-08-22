@@ -109,6 +109,22 @@ public class MisskeyApiClient : IDisposable
         await _client.PostAsync(request);
     }
     
+    internal async ValueTask CreateReactAsync(string noteId, string reaction)
+    {
+        RestRequest request = new RestRequest();
+        request.AddBody(JsonSerializer.Serialize(new {noteId = noteId, reaction = reaction }));
+        request.Resource = Endpoints.NOTE_REACTS_CREATE;
+        await _client.PostAsync(request);
+    }
+
+    internal async ValueTask DeleteReactAsync(string noteId)
+    {
+        RestRequest request = new RestRequest();
+        request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
+        request.Resource = Endpoints.NOTE_REACTS_DELETE;
+        await _client.PostAsync(request);
+    }
+    
     #endregion
     
     #region CurrentInstance

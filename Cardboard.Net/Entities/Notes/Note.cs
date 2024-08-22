@@ -1,4 +1,3 @@
-using System.Dynamic;
 using System.Text.Json.Serialization;
 
 namespace Cardboard.Net.Entities;
@@ -49,4 +48,17 @@ public class Note : MisskeyObject
     /// </summary>
     [JsonPropertyName("clippedCount")]
     public int ClippedCount { get; init; }
+
+    /// <summary>
+    /// Creates a reaction from the currently logged in user
+    /// </summary>
+    /// <param name="reaction"></param>
+    public async Task CreateReactAsync(string reaction)
+        => await this.Misskey.ApiClient.CreateReactAsync(this.Id, reaction);
+
+    /// <summary>
+    /// Deletes the reaction from the currently logged in user
+    /// </summary>
+    public async Task DeleteReactAsync()
+        => await this.Misskey.ApiClient.DeleteReactAsync(this.Id);
 }
