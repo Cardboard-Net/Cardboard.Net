@@ -1,4 +1,5 @@
 using Cardboard.Net.Entities;
+using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 
 namespace Cardboard.Net.Clients;
@@ -70,6 +71,13 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task<Emoji> GetEmojiAsync(string name)
         => await this.ApiClient.GetEmojiAsync(name);
 
+    #endregion
+    
+    #region Drive
+    
+    public async Task<DriveUsage> GetDriveUsageAsync()
+        => throw new NotImplementedException();
+    
     #endregion
     
     #region CurrentInstance

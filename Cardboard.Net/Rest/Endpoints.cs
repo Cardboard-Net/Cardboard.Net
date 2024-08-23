@@ -27,6 +27,12 @@ internal static class Endpoints
     
     #endregion
     
+    #region Drive
+    
+    public const string DRIVE = "/api/drive";
+    
+    #endregion
+    
     public const string INSTANCE_USERS_ONLINE = "/api/get-online-users-count";
     public const string INSTANCE_PING = "/api/ping";
     public const string INSTANCE_META = "/api/meta";

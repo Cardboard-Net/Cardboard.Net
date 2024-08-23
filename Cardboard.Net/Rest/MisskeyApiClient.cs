@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cardboard.Net.Clients;
 using Cardboard.Net.Entities;
+using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
@@ -154,6 +155,21 @@ public class MisskeyApiClient : IDisposable
          */
         RestResponse<Emoji> response = await _client.ExecutePostAsync<Emoji>(request);
         response.Data!.Misskey = _misskey;
+        return response.Data!;
+    }
+    
+    #endregion
+    
+    #region Drive
+    
+    internal async ValueTask<DriveUsage> GetDriveUsageAsync()
+    {
+        RestRequest request = new RestRequest() 
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        request.Resource = Endpoints.DRIVE;
+        RestResponse<DriveUsage> response = await _client.ExecutePostAsync<DriveUsage>(request);
         return response.Data!;
     }
     
