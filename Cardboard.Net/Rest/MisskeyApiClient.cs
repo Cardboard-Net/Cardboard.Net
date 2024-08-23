@@ -202,6 +202,31 @@ public class MisskeyApiClient : IDisposable
         RestResponse<DriveFile> response = await _client.ExecutePostAsync<DriveFile>(request);
         return response.Data!;
     }
+
+    internal async ValueTask<DriveFolder> GetDriveFolderAsync(string folderId)
+    {
+        RestRequest request = new RestRequest()
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        
+        request.Resource = Endpoints.DRIVE_FOLDER_SHOW;
+        RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
+        return response.Data!; 
+    }
+
+    internal async ValueTask<DriveFolder> FindDriveFolderAsync(string name, string? parentId = null)
+    {
+        RestRequest request = new RestRequest()
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        
+        request.AddJsonBody(JsonSerializer.Serialize(new {name = name, parentId = parentId}));
+        request.Resource = Endpoints.DRIVE_FOLDER_FIND;
+        RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
+        return response.Data!; 
+    }
     
     #endregion
     

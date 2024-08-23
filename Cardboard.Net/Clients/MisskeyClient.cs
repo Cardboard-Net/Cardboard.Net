@@ -98,6 +98,23 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task<DriveFile> GetDriveFileAsync(Uri url)
         => await this.ApiClient.GetDriveFileAsync(url.ToString(), ShowType.FileUrl);
     
+    /// <summary>
+    /// Fetches a drive folder given the folderId
+    /// </summary>
+    /// <param name="folderId">Id of the folder to fetch</param>
+    /// <returns>DriveFolder</returns>
+    public async Task<DriveFolder> GetDriveFolderAsync(string folderId)
+        => await this.ApiClient.GetDriveFolderAsync(folderId);
+
+    /// <summary>
+    /// Finds a drive folder given a folder name
+    /// </summary>
+    /// <param name="name">Name of the folder</param>
+    /// <param name="parentId">Id of the parent</param>
+    /// <returns>DriveFolder</returns>
+    public async Task<DriveFolder> FindDriveFolderAsync(string name, string? parentId = null)
+        => await this.ApiClient.FindDriveFolderAsync(name, parentId);
+    
     #endregion
     
     #region CurrentInstance
