@@ -1,4 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Entities;
 
@@ -54,11 +56,20 @@ public class Note : MisskeyObject
     /// </summary>
     /// <param name="reaction"></param>
     public async Task CreateReactAsync(string reaction)
-        => await this.Misskey.ApiClient.CreateReactAsync(this.Id, reaction);
+        => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_CREATE,
+            JsonSerializer.Serialize(new { noteId = this.Id, reaction = reaction }));
 
     /// <summary>
     /// Deletes the reaction from the currently logged in user
     /// </summary>
     public async Task DeleteReactAsync()
-        => await this.Misskey.ApiClient.DeleteReactAsync(this.Id);
+        => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_DELETE,
+            JsonSerializer.Serialize(new { noteId = this.Id }));
+    
+    /// <summary>
+    /// Deletes the current note
+    /// </summary>
+    public async Task DeleteNoteAsync()
+        => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_DELETE,
+            JsonSerializer.Serialize(new { noteId = this.Id }));
 }

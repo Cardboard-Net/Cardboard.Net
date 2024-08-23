@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
+using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Clients;
 
@@ -33,7 +35,8 @@ public class MisskeyClient : BaseMisskeyClient
     /// <param name="userId">id of the user to follow</param>
     /// <param name="withReplies">whether to display replies in timeline</param>
     public async Task FollowUserAsync(string userId, bool withReplies = false)
-        => await this.ApiClient.FollowUserAsync(userId, withReplies);
+        => await this.ApiClient.SendRequestAsync<User>(Endpoints.FOLLOW_CREATE, 
+            JsonSerializer.Serialize(new { userId = userId, withReplies = withReplies }));
     
     #endregion
     
@@ -58,6 +61,31 @@ public class MisskeyClient : BaseMisskeyClient
     /// <returns>Note</returns>
     public async Task<Note> CreateNoteAsync(string text, string? contentWarning = null, VisibilityType visibility = VisibilityType.Public, bool isLocal = false, AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly) 
         => await this.ApiClient.CreateNoteAsync(text, contentWarning, visibility, isLocal, acceptance);
+    
+    /// <summary>
+    /// Deletes a note
+    /// </summary>
+    /// <param name="noteId">The id of the note to delete</param>
+    public async Task DeleteNoteAsync(string noteId)
+        => await this.ApiClient.SendRequestAsync(Endpoints.NOTE_DELETE,
+            JsonSerializer.Serialize(new {noteId = noteId }));
+    
+    /// <summary>
+    /// Creates a reaction on a note
+    /// </summary>
+    /// <param name="noteId">The id of the note to react to</param>
+    /// <param name="reaction">The emoji you want to react with</param>
+    public async Task CreateReactAsync(string noteId, string reaction)
+        => await this.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_CREATE,
+            JsonSerializer.Serialize(new { noteId = noteId, reaction = reaction }));
+    
+    /// <summary>
+    /// Deletes a reaction
+    /// </summary>
+    /// <param name="noteId">The note you want to remove the reaction from</param>
+    public async Task DeleteReactAsync(string noteId)
+        => await this.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_DELETE,
+            JsonSerializer.Serialize(new { noteId = noteId }));
     
     #endregion
 
@@ -123,13 +151,14 @@ public class MisskeyClient : BaseMisskeyClient
     /// <returns></returns>
     public async Task<DriveFolder> CreateDriveFolderAsync(string name, string? parentId = null)
         => await this.ApiClient.CreateDriveFolderAsync(name, parentId);
-    
+
     /// <summary>
     /// Deletes a drive folder
     /// </summary>
     /// <param name="folderId">id of the folder to delete</param>
     public async Task DeleteDriveFolderAsync(string folderId)
-        => await this.ApiClient.DeleteDriveFolderAsync(folderId);
+        => await this.ApiClient.SendRequestAsync(Endpoints.DRIVE_FOLDER_DELETE,
+            JsonSerializer.Serialize(new { folderId = folderId }));
     
     #endregion
     

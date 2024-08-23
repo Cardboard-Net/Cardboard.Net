@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cardboard.Net.Entities.Users;
+using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Entities;
 
@@ -112,6 +114,11 @@ public class User : MisskeyObject
     [JsonPropertyName("followerVisibility")]
     public FollowVisibilityType FollowerVisibility { get; init; }
 
-    public async Task SendFollowRequestAsync()
-        => await this.Misskey.ApiClient.FollowUserAsync(this.Id);
+    /// <summary>
+    /// Sends a follow request to the user stored
+    /// </summary>
+    /// <param name="withReplies">Whether to display replies on timeline</param>
+    public async Task SendFollowRequestAsync(bool withReplies = false)
+        => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.FOLLOW_CREATE, 
+            JsonSerializer.Serialize(new { userId = this.Id, withReplies = withReplies }));
 }

@@ -1,4 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Entities.Drives;
 
@@ -47,7 +49,8 @@ public class DriveFolder : MisskeyObject
     /// Deletes the folder
     /// </summary>
     public async Task DeleteAsync()
-        => await this.Misskey.ApiClient.DeleteDriveFolderAsync(this.Id);
+        => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.DRIVE_FOLDER_DELETE,
+            JsonSerializer.Serialize(new { folderId = this.Id }));
     
     /// <summary>
     /// Creates a folder within this folder
