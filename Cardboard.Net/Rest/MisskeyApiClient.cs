@@ -168,6 +168,13 @@ public class MisskeyApiClient : IDisposable
         {
             Interceptors = [new RawJsonInterceptor()]
         };
+        
+        /*
+         * For some reason misskey gets pissy if I do not provide a body
+         * contradicting api-docs. I have figured out sending an empty json
+         * payload makes the server happy again.
+         */
+        request.AddJsonBody(JsonSerializer.Serialize(new { }));
         request.Resource = Endpoints.DRIVE;
         RestResponse<DriveUsage> response = await _client.ExecutePostAsync<DriveUsage>(request);
         return response.Data!;

@@ -8,14 +8,14 @@ namespace Cardboard.Net.Entities.Drives;
 public class DriveUsage
 {
     /// <summary>
-    /// Capacity of drive (probably in bytes, i need to check)
+    /// Capacity of drive in bytes
     /// </summary>
     [JsonPropertyName("capacity")]
-    public int Capacity { get; init; }
+    public ulong Capacity { get; init; }
     
     /// <summary>
-    /// Amount of drive space used
+    /// Amount of drive space used in bytes
     /// </summary>
     [JsonPropertyName("usage")]
-    public int Usage { get; init; }
+    public ulong Usage { get; init; }
 }
