@@ -20,7 +20,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestClientOptions options = new RestClientOptions(host);
         options.UserAgent = "cardboard.NET/v0.0.1a";
-
+        options.Interceptors = [new StatusInterceptor()];
         _jopts = new JsonSerializerOptions();
         _jopts.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
@@ -143,7 +143,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestRequest request = new RestRequest() 
         {
-            Interceptors = [new RawJsonInterceptor()]
+            Interceptors = [new StatusInterceptor(), new RawJsonInterceptor()]
         };
         request.AddJsonBody(JsonSerializer.Serialize(new {name = name}));
         request.Resource = Endpoints.EMOJI;

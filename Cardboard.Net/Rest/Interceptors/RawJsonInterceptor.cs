@@ -1,4 +1,3 @@
-using System;
 using RestSharp;
 
 namespace Cardboard.Net.Rest.Interceptors;
