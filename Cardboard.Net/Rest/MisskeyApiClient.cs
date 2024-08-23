@@ -147,7 +147,12 @@ public class MisskeyApiClient : IDisposable
         };
         request.AddJsonBody(JsonSerializer.Serialize(new {name = name}));
         request.Resource = Endpoints.EMOJI;
-        RestResponse<Emoji> response = await _client.ExecuteGetAsync<Emoji>(request);
+        
+        /*
+         * For some reason, despite api-doc showing this as "GET /api/emoji" it
+         * seems as though the server only wants me to send it a post request.
+         */
+        RestResponse<Emoji> response = await _client.ExecutePostAsync<Emoji>(request);
         response.Data!.Misskey = _misskey;
         return response.Data!;
     }
