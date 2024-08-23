@@ -59,6 +59,18 @@ public class MisskeyClient : BaseMisskeyClient
         => await this.ApiClient.CreateNoteAsync(text, contentWarning, visibility, isLocal, acceptance);
     
     #endregion
+
+    #region Emoji
+
+    /// <summary>
+    /// Gets the requested emoji from the instance the client is on.
+    /// </summary>
+    /// <param name="name">Name of the emoji to fetch</param>
+    /// <returns>Emoji</returns>
+    public async Task<Emoji> GetEmojiAsync(string name)
+        => await this.ApiClient.GetEmojiAsync(name);
+
+    #endregion
     
     #region CurrentInstance
 

@@ -137,6 +137,23 @@ public class MisskeyApiClient : IDisposable
     
     #endregion
     
+    #region Emoji
+
+    internal async ValueTask<Emoji> GetEmojiAsync(string name)
+    {
+        RestRequest request = new RestRequest() 
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        request.AddJsonBody(JsonSerializer.Serialize(new {name = name}));
+        request.Resource = Endpoints.EMOJI;
+        RestResponse<Emoji> response = await _client.ExecuteGetAsync<Emoji>(request);
+        response.Data!.Misskey = _misskey;
+        return response.Data!;
+    }
+    
+    #endregion
+    
     #region CurrentInstance
     internal async ValueTask<int> GetOnlineUserCountAsync()
     {
