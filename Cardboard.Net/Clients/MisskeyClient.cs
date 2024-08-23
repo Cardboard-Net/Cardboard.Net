@@ -96,7 +96,7 @@ public class MisskeyClient : BaseMisskeyClient
     /// <param name="url">Url corresponding to a drive file</param>
     /// <returns>DriveFile</returns>
     public async Task<DriveFile> GetDriveFileAsync(Uri url)
-        => await this.ApiClient.GetDriveFileAsync(url.ToString(), ShowType.FileId);
+        => await this.ApiClient.GetDriveFileAsync(url.ToString(), ShowType.FileUrl);
     
     #endregion
     
