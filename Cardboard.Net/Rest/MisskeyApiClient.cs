@@ -209,7 +209,8 @@ public class MisskeyApiClient : IDisposable
         {
             Interceptors = [new RawJsonInterceptor()]
         };
-        
+
+        request.AddJsonBody(JsonSerializer.Serialize(new { folderId = folderId }));
         request.Resource = Endpoints.DRIVE_FOLDER_SHOW;
         RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
         return response.Data!; 
