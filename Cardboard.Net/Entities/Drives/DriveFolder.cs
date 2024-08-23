@@ -42,4 +42,26 @@ public class DriveFolder : MisskeyObject
     /// </summary>
     [JsonPropertyName("filesCount")]
     public int FilesCount { get; init; }
+
+    /// <summary>
+    /// Deletes the folder
+    /// </summary>
+    public async Task DeleteAsync()
+        => await this.Misskey.ApiClient.DeleteDriveFolderAsync(this.Id);
+    
+    /// <summary>
+    /// Creates a folder within this folder
+    /// </summary>
+    /// <param name="name">Name of the child folder</param>
+    /// <returns>DriveFolder representing the child</returns>
+    public async Task<DriveFolder> CreateChildFolderAsync(string name)
+        => await this.Misskey.ApiClient.CreateDriveFolderAsync(name, this.Id);
+
+    /// <summary>
+    /// Finds a child folder
+    /// </summary>
+    /// <param name="name">Name of the folder to find</param>
+    /// <returns>DriveFolder representing the child</returns>
+    public async Task<DriveFolder> FindChildFolderAsync(string name)
+        => await this.Misskey.ApiClient.FindDriveFolderAsync(name, this.Id);
 }

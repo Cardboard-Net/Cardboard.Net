@@ -22,7 +22,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestClientOptions options = new RestClientOptions(host);
         options.UserAgent = "cardboard.NET/v0.0.1a";
-        options.Interceptors = [new StatusInterceptor()];
+        options.Interceptors = [new StatusInterceptor(), new RawJsonInterceptor()];
         _jopts = new JsonSerializerOptions();
         _jopts.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
@@ -102,10 +102,7 @@ public class MisskeyApiClient : IDisposable
     
     internal async ValueTask<Note> GetNoteAsync(string noteId)
     {
-        RestRequest request = new RestRequest() 
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
+        RestRequest request = new RestRequest();
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
         request.Resource = Endpoints.NOTE_SHOW;
         RestResponse<Note> response = await _client.ExecutePostAsync<Note>(request);
@@ -143,10 +140,7 @@ public class MisskeyApiClient : IDisposable
 
     internal async ValueTask<Emoji> GetEmojiAsync(string name)
     {
-        RestRequest request = new RestRequest() 
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
+        RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {name = name}));
         request.Resource = Endpoints.EMOJI;
         
@@ -165,11 +159,7 @@ public class MisskeyApiClient : IDisposable
     
     internal async ValueTask<DriveUsage> GetDriveUsageAsync()
     {
-        RestRequest request = new RestRequest() 
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
-        
+        RestRequest request = new RestRequest();
         /*
          * For some reason misskey gets pissy if I do not provide a body
          * contradicting api-docs. I have figured out sending an empty json
@@ -183,10 +173,7 @@ public class MisskeyApiClient : IDisposable
 
     internal async ValueTask<DriveFile> GetDriveFileAsync(string input, ShowType type)
     {
-        RestRequest request = new RestRequest()
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
+        RestRequest request = new RestRequest();
         
         switch (type)
         {
@@ -200,32 +187,45 @@ public class MisskeyApiClient : IDisposable
 
         request.Resource = Endpoints.DRIVE_FILE_SHOW;
         RestResponse<DriveFile> response = await _client.ExecutePostAsync<DriveFile>(request);
+        response.Data!.Misskey = _misskey;
         return response.Data!;
     }
 
     internal async ValueTask<DriveFolder> GetDriveFolderAsync(string folderId)
     {
-        RestRequest request = new RestRequest()
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
-
+        RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new { folderId = folderId }));
         request.Resource = Endpoints.DRIVE_FOLDER_SHOW;
         RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
-        return response.Data!; 
+        response.Data!.Misskey = _misskey;
+        return response.Data!;
+    }
+
+    internal async ValueTask<DriveFolder> CreateDriveFolderAsync(string name, string? parentId = null)
+    {
+        RestRequest request = new RestRequest();
+        request.AddJsonBody(JsonSerializer.Serialize(new { name = name, parentId = parentId }));
+        request.Resource = Endpoints.DRIVE_FOLDER_SHOW;
+        RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
+        response.Data!.Misskey = _misskey;
+        return response.Data!;
+    }
+
+    internal async ValueTask DeleteDriveFolderAsync(string folderId)
+    {
+        RestRequest request = new RestRequest();
+        request.AddJsonBody(JsonSerializer.Serialize(new { folderId = folderId }));
+        request.Resource = Endpoints.DRIVE_FOLDER_DELETE;
+        RestResponse response = await _client.ExecutePostAsync(request);
     }
 
     internal async ValueTask<DriveFolder> FindDriveFolderAsync(string name, string? parentId = null)
     {
-        RestRequest request = new RestRequest()
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
-        
+        RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {name = name, parentId = parentId}));
         request.Resource = Endpoints.DRIVE_FOLDER_FIND;
         RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
+        response.Data!.Misskey = _misskey;
         return response.Data!; 
     }
     
@@ -240,12 +240,8 @@ public class MisskeyApiClient : IDisposable
     
     internal async ValueTask<Stats> GetStatsAsync()
     {
-        RestRequest request = new RestRequest() 
-        {
-            Interceptors = [new RawJsonInterceptor()]
-        };
+        RestRequest request = new RestRequest();
         request.Resource = Endpoints.INSTANCE_STATS;
-
         RestResponse<Stats> response = await _client.ExecutePostAsync<Stats>(request);
         return response.Data!;
     }

@@ -115,6 +115,22 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task<DriveFolder> FindDriveFolderAsync(string name, string? parentId = null)
         => await this.ApiClient.FindDriveFolderAsync(name, parentId);
     
+    /// <summary>
+    /// Creates a drive folder
+    /// </summary>
+    /// <param name="name">Name of the folder</param>
+    /// <param name="parentId">Optional parent id if it's a subfolder</param>
+    /// <returns></returns>
+    public async Task<DriveFolder> CreateDriveFolderAsync(string name, string? parentId = null)
+        => await this.ApiClient.CreateDriveFolderAsync(name, parentId);
+    
+    /// <summary>
+    /// Deletes a drive folder
+    /// </summary>
+    /// <param name="folderId">id of the folder to delete</param>
+    public async Task DeleteDriveFolderAsync(string folderId)
+        => await this.ApiClient.DeleteDriveFolderAsync(folderId);
+    
     #endregion
     
     #region CurrentInstance
