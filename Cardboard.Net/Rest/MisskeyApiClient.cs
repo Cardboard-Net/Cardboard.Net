@@ -136,7 +136,7 @@ public class MisskeyApiClient : IDisposable
 
     internal async Task<DriveFolder> GetDriveFolderAsync(string folderId)
     {
-        RestResponse<DriveFolder> response = await SendRequestAsync<DriveFolder>(Endpoints.DRIVE_FILE_SHOW,
+        RestResponse<DriveFolder> response = await SendRequestAsync<DriveFolder>(Endpoints.DRIVE_FOLDER_SHOW,
             JsonSerializer.Serialize(new { folderId = folderId }));
         response.Data!.Misskey = _misskey;
         return response.Data!;
