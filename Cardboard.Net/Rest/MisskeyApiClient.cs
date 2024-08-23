@@ -143,7 +143,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestRequest request = new RestRequest() 
         {
-            Interceptors = [new StatusInterceptor(), new RawJsonInterceptor()]
+            Interceptors = [new RawJsonInterceptor()]
         };
         request.AddJsonBody(JsonSerializer.Serialize(new {name = name}));
         request.Resource = Endpoints.EMOJI;
