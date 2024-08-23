@@ -42,9 +42,9 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {userId = userId}));
         request.Resource = Endpoints.USERS_SHOW;
-        User? response = await this._client.PostAsync<User>(request); 
-        response!.Misskey = _misskey;
-        return response!;
+        RestResponse<User> response = await _client.ExecutePostAsync<User>(request);
+        response.Data!.Misskey = _misskey;
+        return response.Data!;
     }
     
     internal async ValueTask<User> GetUserAsync(string username, string? host = null)
@@ -52,9 +52,9 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new {username = username, host = host}));
         request.Resource = Endpoints.USERS_SHOW;
-        User? response = await _client.PostAsync<User>(request); 
-        response!.Misskey = _misskey;
-        return response!;    
+        RestResponse<User> response = await _client.ExecutePostAsync<User>(request);
+        response.Data!.Misskey = _misskey;
+        return response.Data!;
     }
 
     internal async ValueTask FollowUserAsync(string userId, bool withReplies = false)
@@ -62,7 +62,7 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new { userId = userId, withReplies = withReplies }));
         request.Resource = Endpoints.FOLLOW_CREATE;
-        await this._client.PostAsync<User>(request);
+        await this._client.ExecutePostAsync<User>(request);
     }
     
     #endregion
@@ -90,9 +90,9 @@ public class MisskeyApiClient : IDisposable
         
         request.Resource = Endpoints.NOTE_CREATE;
 
-        CreatedNote? response = await _client.PostAsync<CreatedNote>(request);
+        RestResponse<CreatedNote> response = await _client.ExecutePostAsync<CreatedNote>(request);
         
-        Note responseNote = response!.Note!;
+        Note responseNote = response.Data!.Note;
         responseNote.Misskey = this._misskey;
         
         return responseNote;
@@ -106,9 +106,9 @@ public class MisskeyApiClient : IDisposable
         };
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
         request.Resource = Endpoints.NOTE_SHOW;
-        Note? response = await _client.PostAsync<Note>(request);
-        response!.Misskey = this._misskey;
-        return response!;
+        RestResponse<Note> response = await _client.ExecutePostAsync<Note>(request);
+        response.Data!.Misskey = this._misskey;
+        return response.Data!;
     }
     
     internal async ValueTask DeleteNoteAsync(string noteId)
@@ -116,7 +116,7 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
         request.Resource = Endpoints.NOTE_DELETE;
-        await _client.PostAsync(request);
+        await _client.ExecutePostAsync(request);
     }
     
     internal async ValueTask CreateReactAsync(string noteId, string reaction)
@@ -124,7 +124,7 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId, reaction = reaction }));
         request.Resource = Endpoints.NOTE_REACTS_CREATE;
-        await _client.PostAsync(request);
+        await _client.ExecutePostAsync(request);
     }
 
     internal async ValueTask DeleteReactAsync(string noteId)
@@ -132,7 +132,7 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.AddBody(JsonSerializer.Serialize(new {noteId = noteId }));
         request.Resource = Endpoints.NOTE_REACTS_DELETE;
-        await _client.PostAsync(request);
+        await _client.ExecutePostAsync(request);
     }
     
     #endregion
@@ -140,8 +140,8 @@ public class MisskeyApiClient : IDisposable
     #region CurrentInstance
     internal async ValueTask<int> GetOnlineUserCountAsync()
     {
-        UserCount? response = await _client.GetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
-        return response!.Count;
+        RestResponse<UserCount> response = await _client.ExecuteGetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
+        return response.Data!.Count;
     }
     
     internal async ValueTask<Stats> GetStatsAsync()
@@ -152,8 +152,8 @@ public class MisskeyApiClient : IDisposable
         };
         request.Resource = Endpoints.INSTANCE_STATS;
 
-        Stats? response = await _client.PostAsync<Stats>(request);
-        return response!;
+        RestResponse<Stats> response = await _client.ExecutePostAsync<Stats>(request);
+        return response.Data!;
     }
     
     #endregion

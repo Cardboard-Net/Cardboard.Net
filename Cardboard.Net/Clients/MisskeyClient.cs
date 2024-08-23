@@ -58,7 +58,6 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task<Note> CreateNoteAsync(string text, string? contentWarning = null, VisibilityType visibility = VisibilityType.Public, bool isLocal = false, AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly) 
         => await this.ApiClient.CreateNoteAsync(text, contentWarning, visibility, isLocal, acceptance);
     
-    
     #endregion
     
     #region CurrentInstance
