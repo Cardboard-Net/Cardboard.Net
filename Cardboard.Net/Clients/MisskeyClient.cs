@@ -75,8 +75,12 @@ public class MisskeyClient : BaseMisskeyClient
     
     #region Drive
     
+    /// <summary>
+    /// Fetches information about drive usage
+    /// </summary>
+    /// <returns>DriveUsage</returns>
     public async Task<DriveUsage> GetDriveUsageAsync()
-        => throw new NotImplementedException();
+        => await this.ApiClient.GetDriveUsageAsync();
     
     #endregion
     
