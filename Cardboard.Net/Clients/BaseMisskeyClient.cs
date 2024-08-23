@@ -1,4 +1,3 @@
-using Cardboard.Net.Entities;
 using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Clients;
