@@ -81,6 +81,22 @@ public class MisskeyClient : BaseMisskeyClient
     /// <returns>DriveUsage</returns>
     public async Task<DriveUsage> GetDriveUsageAsync()
         => await this.ApiClient.GetDriveUsageAsync();
+
+    /// <summary>
+    /// Fetches a file from the drive given a fileid
+    /// </summary>
+    /// <param name="fileId">Id of the file to retrieve</param>
+    /// <returns>DriveFile</returns>
+    public async Task<DriveFile> GetDriveFileAsync(string fileId)
+        => await this.ApiClient.GetDriveFileAsync(fileId, ShowType.FileId);
+    
+    /// <summary>
+    /// Fetches a file from the drive given a uri
+    /// </summary>
+    /// <param name="url">Url corresponding to a drive file</param>
+    /// <returns>DriveFile</returns>
+    public async Task<DriveFile> GetDriveFileAsync(Uri url)
+        => await this.ApiClient.GetDriveFileAsync(url.ToString(), ShowType.FileId);
     
     #endregion
     

@@ -8,6 +8,7 @@ using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
 using RestSharp;
 using RestSharp.Serializers.Json;
+using DriveFile = Cardboard.Net.Entities.Drives.DriveFile;
 
 namespace Cardboard.Net.Rest;
 
@@ -177,6 +178,28 @@ public class MisskeyApiClient : IDisposable
         request.AddJsonBody(JsonSerializer.Serialize(new { }));
         request.Resource = Endpoints.DRIVE;
         RestResponse<DriveUsage> response = await _client.ExecutePostAsync<DriveUsage>(request);
+        return response.Data!;
+    }
+
+    internal async ValueTask<DriveFile> GetDriveFileAsync(string input, ShowType type)
+    {
+        RestRequest request = new RestRequest()
+        {
+            Interceptors = [new RawJsonInterceptor()]
+        };
+        
+        switch (type)
+        {
+            case ShowType.FileId:
+                request.AddJsonBody(JsonSerializer.Serialize(new {fileId = input}));
+                break;
+            case ShowType.FileUrl:
+                request.AddJsonBody(JsonSerializer.Serialize(new { url = input }));
+                break;
+        }
+
+        request.Resource = Endpoints.DRIVE_FILE_SHOW;
+        RestResponse<DriveFile> response = await _client.ExecutePostAsync<DriveFile>(request);
         return response.Data!;
     }
     

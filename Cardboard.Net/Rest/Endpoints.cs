@@ -30,6 +30,9 @@ internal static class Endpoints
     #region Drive
     
     public const string DRIVE = "/api/drive";
+    public const string DRIVE_FILE_SHOW = "/api/drive/files/show";
+    public const string DRIVE_FILE_CREATE = "/api/drive/files/create";
+    public const string DRIVE_FILE_DELETE = "/api/drive/files/delete";
     
     #endregion
     
