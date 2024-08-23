@@ -205,7 +205,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestRequest request = new RestRequest();
         request.AddJsonBody(JsonSerializer.Serialize(new { name = name, parentId = parentId }));
-        request.Resource = Endpoints.DRIVE_FOLDER_SHOW;
+        request.Resource = Endpoints.DRIVE_FOLDER_CREATE;
         RestResponse<DriveFolder> response = await _client.ExecutePostAsync<DriveFolder>(request);
         response.Data!.Misskey = _misskey;
         return response.Data!;
