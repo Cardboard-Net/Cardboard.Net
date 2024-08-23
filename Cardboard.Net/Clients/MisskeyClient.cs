@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
@@ -134,6 +135,42 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task<DriveFolder> GetDriveFolderAsync(string folderId)
         => await this.ApiClient.GetDriveFolderAsync(folderId);
 
+    /// <summary>
+    /// Retrieve folders from drive
+    /// </summary>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="folderId">Id of the folder (leave as null for the root folder)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync(int limit = 10, string? folderId = null, string searchQuery = "")
+        => await this.ApiClient.GetDriveFoldersAsync(limit, folderId, searchQuery);
+    
+    /// <summary>
+    /// Retrieve folders from drive
+    /// </summary>
+    /// <param name="beforeId">folder id for folders before</param>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="folderId">Id of the folder (leave as null for the root folder)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync(string beforeId, int limit = 10, string? folderId = null, string searchQuery = "")
+        => await this.ApiClient.GetDriveFoldersAsync(beforeId, limit, folderId, searchQuery);
+    
+    /// <summary>
+    /// Retrieve folders from drive
+    /// </summary>
+    /// <param name="beforeId">folder id for folders before</param>
+    /// <param name="untilId">folder id for folders until</param>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="folderId">Id of the folder (leave as null for the root folder)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFilesAsync(string beforeId, string untilId, int limit = 10, string? folderId = null, string searchQuery = "")
+        => await this.ApiClient.GetDriveFoldersAsync(beforeId, untilId, limit, folderId, searchQuery);
+    
     /// <summary>
     /// Finds a drive folder given a folder name
     /// </summary>

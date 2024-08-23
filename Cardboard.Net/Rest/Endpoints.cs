@@ -33,6 +33,7 @@ internal static class Endpoints
     public const string DRIVE_FILE_SHOW = "/api/drive/files/show";
     public const string DRIVE_FILE_CREATE = "/api/drive/files/create";
     public const string DRIVE_FILE_DELETE = "/api/drive/files/delete";
+    public const string DRIVE_FOLDERS = "/api/drive/folders";
     public const string DRIVE_FOLDER_SHOW = "/api/drive/folders/show";
     public const string DRIVE_FOLDER_FIND = "/api/drive/folders/create";
     public const string DRIVE_FOLDER_CREATE = "/api/drive/folders/create";

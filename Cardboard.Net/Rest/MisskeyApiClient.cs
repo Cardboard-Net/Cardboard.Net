@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cardboard.Net.Clients;
@@ -156,6 +157,62 @@ public class MisskeyApiClient : IDisposable
             JsonSerializer.Serialize(new { name = name, parentId = parentId }));
         response.Data!.Misskey = _misskey;
         return response.Data!; 
+    }
+    
+    
+    [Experimental(diagnosticId: "FoldersExperiment")]
+    internal async ValueTask<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync(int limit = 10, string? folderId = null, string searchQuery = "")
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.DRIVE_FOLDERS,
+            JsonSerializer.Serialize(new {limit = limit, folderId = folderId }));
+
+        if (null == response.Content)
+        {
+            return new List<DriveFolder>();
+        }
+
+        return JsonSerializer.Deserialize<List<DriveFolder>>(response.Content) ?? new List<DriveFolder>();
+    }
+    
+    [Experimental(diagnosticId: "FoldersExperiment")]
+    internal async ValueTask<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync
+    (
+        string beforeId, 
+        int limit = 10, 
+        string? folderId = null, 
+        string searchQuery = ""
+    )
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.DRIVE_FOLDERS,
+            JsonSerializer.Serialize(new {limit = limit, beforeId = beforeId, folderId = folderId, searchQuery = searchQuery }));
+
+        if (null == response.Content)
+        {
+            return new List<DriveFolder>();
+        }
+
+        return JsonSerializer.Deserialize<List<DriveFolder>>(response.Content) ?? new List<DriveFolder>();
+    }
+    
+    [Experimental(diagnosticId: "FoldersExperiment")]
+    internal async ValueTask<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync
+    (
+        string beforeId, 
+        string untilId, 
+        int limit = 10, 
+        string? folderId = null, 
+        string searchQuery = ""
+    )
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.DRIVE_FOLDERS,
+            JsonSerializer.Serialize(new {limit = limit, beforeId = beforeId, untilId = untilId, folderId = folderId, searchQuery = searchQuery }));
+
+        if (null == response.Content)
+        {
+            return new List<DriveFolder>();
+        }
+
+        return JsonSerializer.Deserialize<List<DriveFolder>>(response.Content) ?? new List<DriveFolder>();
     }
     
     #endregion

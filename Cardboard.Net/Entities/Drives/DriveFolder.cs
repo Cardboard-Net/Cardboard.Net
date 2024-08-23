@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cardboard.Net.Rest;
@@ -67,4 +68,37 @@ public class DriveFolder : MisskeyObject
     /// <returns>DriveFolder representing the child</returns>
     public async Task<DriveFolder> FindChildFolderAsync(string name)
         => await this.Misskey.ApiClient.FindDriveFolderAsync(name, this.Id);
+    
+    /// <summary>
+    /// Retrieve child folders if any
+    /// </summary>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync(int limit = 10, string searchQuery = "")
+        => await this.Misskey.ApiClient.GetDriveFoldersAsync(limit, this.Id, searchQuery);
+    
+    /// <summary>
+    /// Retrieve child folders if any
+    /// </summary>
+    /// <param name="beforeId">folder id for folders before</param>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFoldersAsync(string beforeId, int limit = 10, string searchQuery = "")
+        => await this.Misskey.ApiClient.GetDriveFoldersAsync(beforeId, limit, this.Id, searchQuery);
+    
+    /// <summary>
+    /// Retrieve child folders if any
+    /// </summary>
+    /// <param name="beforeId">folder id for folders before</param>
+    /// <param name="untilId">folder id for folders until</param>
+    /// <param name="limit">Limit (default 10, max 100)</param>
+    /// <param name="searchQuery"></param>
+    /// <returns></returns>
+    [Experimental("FoldersExperiment")]
+    public async Task<IReadOnlyList<DriveFolder>> GetDriveFilesAsync(string beforeId, string untilId, int limit = 10, string searchQuery = "")
+        => await this.Misskey.ApiClient.GetDriveFoldersAsync(beforeId, untilId, limit, this.Id, searchQuery);
 }

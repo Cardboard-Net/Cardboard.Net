@@ -52,13 +52,20 @@ public class Note : MisskeyObject
     public int ClippedCount { get; init; }
 
     /// <summary>
-    /// Creates a reaction from the currently logged in user
+    /// Creates a reaction on this note.
     /// </summary>
-    /// <param name="reaction"></param>
+    /// <param name="reaction">Name of the emoji (or the unicode character?)</param>
     public async Task CreateReactAsync(string reaction)
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_CREATE,
             JsonSerializer.Serialize(new { noteId = this.Id, reaction = reaction }));
 
+    /// <summary>
+    /// Creates a reaction on this note.
+    /// </summary>
+    /// <param name="reaction">An emoji object to react with</param>
+    public async Task CreateReactAsync(Emoji reaction)
+        => await CreateReactAsync(reaction.Name);
+    
     /// <summary>
     /// Deletes the reaction from the currently logged in user
     /// </summary>
@@ -69,7 +76,7 @@ public class Note : MisskeyObject
     /// <summary>
     /// Deletes the current note
     /// </summary>
-    public async Task DeleteNoteAsync()
+    public async Task DeleteAsync()
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_DELETE,
             JsonSerializer.Serialize(new { noteId = this.Id }));
 }
