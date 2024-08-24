@@ -1,5 +1,4 @@
-using System.Text.Json.Serialization;
-using Cardboard.Net.Entities;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Notes;
 
@@ -10,11 +9,11 @@ namespace Cardboard.Net.Entities.Notes;
 /// }}
 /// This encapsulates a created note
 /// </summary>
-internal record class CreatedNote
+internal record CreatedNote
 {
     /// <summary>
     /// The note contained within
     /// </summary>
-    [JsonPropertyName("createdNote")]
+    [JsonProperty("createdNote")]
     public required Note Note { get; init; }
 }

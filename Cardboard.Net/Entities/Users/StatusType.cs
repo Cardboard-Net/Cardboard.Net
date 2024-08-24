@@ -1,12 +1,13 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Cardboard.Net.Entities.Users;
 
 /// <summary>
 /// Represents the status of a user
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter<StatusType>))]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum StatusType
 {
     /// <summary>

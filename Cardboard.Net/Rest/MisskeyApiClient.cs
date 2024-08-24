@@ -7,8 +7,10 @@ using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
+using Newtonsoft.Json;
 using RestSharp;
-using RestSharp.Serializers.Json;
+using RestSharp.Serializers.NewtonsoftJson;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Cardboard.Net.Rest;
 
@@ -16,6 +18,7 @@ public class MisskeyApiClient : IDisposable
 {
     readonly RestClient _client;
     readonly JsonSerializerOptions _jopts;
+    private readonly JsonSerializerSettings jsonSettings;
     readonly BaseMisskeyClient _misskey;
     
     public MisskeyApiClient(string token, Uri host, BaseMisskeyClient client)
@@ -26,10 +29,12 @@ public class MisskeyApiClient : IDisposable
         _jopts = new JsonSerializerOptions();
         _jopts.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
+        jsonSettings = new JsonSerializerSettings();
+        
         _client = new RestClient
         (
             options,
-            configureSerialization: s => s.UseSystemTextJson(_jopts)
+            configureSerialization: s => s.UseNewtonsoftJson(jsonSettings)
         );
 
         _client.AddDefaultHeader("Authorization", $"Bearer {token}");

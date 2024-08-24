@@ -1,12 +1,13 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Cardboard.Net.Entities.Notes;
 
 /// <summary>
 /// Reaction acceptance
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter<AcceptanceType>))]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum AcceptanceType
 {
     /// <summary>
@@ -29,5 +30,5 @@ public enum AcceptanceType
     /// reacts for remote
     /// </summary>
     [EnumMember(Value = "nonSensitiveOnlyForLocalLikeOnlyForRemote")]
-    NonSensitiveOnlyforLocalLikeOnlyForRemote
+    NonSensitiveOnlyForLocalLikeOnlyForRemote
 }

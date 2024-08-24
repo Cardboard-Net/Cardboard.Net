@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Users;
 
@@ -10,12 +10,12 @@ public record class Field
     /// <summary>
     /// Name of the field
     /// </summary>
-    [JsonPropertyName("name")]
+    [JsonProperty("name")]
     public required string Name { get; init; }
     
     /// <summary>
     /// Description of the field
     /// </summary>
-    [JsonPropertyName("value")]
+    [JsonProperty("value")]
     public required string Description { get; init; }
 }
