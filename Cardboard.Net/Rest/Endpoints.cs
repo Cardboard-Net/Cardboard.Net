@@ -4,9 +4,9 @@ internal static class Endpoints
 {
     #region Self
 
-    public const string SELF_USER = "/i";
-    public const string SELF_UPDATE = "/i/update";
-    public const string SELF_FAVORITES = "/i/favorites";
+    public const string SELF_USER = "/api/i";
+    public const string SELF_UPDATE = "/api/i/update";
+    public const string SELF_FAVORITES = "/api/i/favorites";
     
     #endregion
     
