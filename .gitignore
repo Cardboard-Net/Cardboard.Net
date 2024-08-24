@@ -1,5 +1,6 @@
 # IDE/Text Editor
-.vscode
+.vscode/
+.idea/
 
 # Build
 Cardboard.Net/obj/
