@@ -7,6 +7,7 @@ internal static class Endpoints
     public const string SELF_USER = "/api/i";
     public const string SELF_UPDATE = "/api/i/update";
     public const string SELF_FAVORITES = "/api/i/favorites";
+    public const string SELF_ACHIEVEMENT_CLAIM = "/api/i/claim-achievement";
     
     #endregion
     

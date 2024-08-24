@@ -1,3 +1,4 @@
+using Cardboard.Net.Rest;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Users;
@@ -74,4 +75,13 @@ public class Account : User
     /// </summary>
     [JsonProperty("hasPendingReceivedFollowRequests")]
     public bool HasIncomingFollowRequests { get; internal set; }
+    
+    /// <summary>
+    /// Claims an achievement
+    /// </summary>
+    /// <param name="achievement">AchievementType of the achievement to redeem</param>
+    /// <returns></returns>
+    public Task ClaimAchievementAsync(AchievementType achievement)
+        => this.Misskey.ApiClient.SendRequestAsync(Endpoints.SELF_ACHIEVEMENT_CLAIM,
+            JsonConvert.SerializeObject(new Achievement { AchievementType = achievement }));
 }
