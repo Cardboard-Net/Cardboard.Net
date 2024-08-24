@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Drives;
 
@@ -10,12 +10,12 @@ public class DriveUsage
     /// <summary>
     /// Capacity of drive in bytes
     /// </summary>
-    [JsonPropertyName("capacity")]
+    [JsonProperty("capacity")]
     public ulong Capacity { get; init; }
     
     /// <summary>
     /// Amount of drive space used in bytes
     /// </summary>
-    [JsonPropertyName("usage")]
+    [JsonProperty("usage")]
     public ulong Usage { get; init; }
 }

@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Cardboard.Net.Rest;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Drives;
 
@@ -13,37 +12,37 @@ public class DriveFolder : MisskeyObject
     /// <summary>
     /// DateTime representing when the folder was created
     /// </summary>
-    [JsonPropertyName("createdAt")]
+    [JsonProperty("createdAt")]
     public required DateTime CreatedAt { get; init; }
     
     /// <summary>
     /// Name of the folder
     /// </summary>
-    [JsonPropertyName("name")]
+    [JsonProperty("name")]
     public required string Name { get; init; }
     
     /// <summary>
     /// Id of this folder's parent if there is any
     /// </summary>
-    [JsonPropertyName("parentId")]
+    [JsonProperty("parentId")]
     public string? ParentId { get; init; }
     
     /// <summary>
     /// Parent folder
     /// </summary>
-    [JsonPropertyName("parent")]
+    [JsonProperty("parent")]
     public DriveFolder? ParentFolder { get; init; }
     
     /// <summary>
     /// Amount of sub folders
     /// </summary>
-    [JsonPropertyName("foldersCount")]
+    [JsonProperty("foldersCount")]
     public int FoldersCount { get; init; }
     
     /// <summary>
     /// Amount of files contained within
     /// </summary>
-    [JsonPropertyName("filesCount")]
+    [JsonProperty("filesCount")]
     public int FilesCount { get; init; }
 
     /// <summary>
@@ -51,7 +50,7 @@ public class DriveFolder : MisskeyObject
     /// </summary>
     public async Task DeleteAsync()
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.DRIVE_FOLDER_DELETE,
-            JsonSerializer.Serialize(new { folderId = this.Id }));
+            JsonConvert.SerializeObject(new { folderId = this.Id }));
     
     /// <summary>
     /// Creates a folder within this folder

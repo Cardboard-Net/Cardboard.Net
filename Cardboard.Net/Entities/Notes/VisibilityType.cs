@@ -1,12 +1,13 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Cardboard.Net.Entities.Notes;
 
 /// <summary>
 /// Represents visibility type
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter<VisibilityType>))]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum VisibilityType
 {
     /// <summary>

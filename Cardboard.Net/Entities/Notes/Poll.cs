@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Notes;
 
@@ -10,27 +10,27 @@ public class Poll
     /// <summary>
     /// An IReadOnlyList containing the poll options
     /// </summary>
-    [JsonPropertyName("choices")]
-    public required IReadOnlyList<string> Choices { get; init; }
+    [JsonProperty("choices")]
+    public IReadOnlyList<string> Choices = [];
     
     /// <summary>
     /// DateTime containing the expiration date (if there is one)
     /// </summary>
-    [JsonPropertyName("expiresAt")]
+    [JsonProperty("expiresAt")]
     // TODO: https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/converters-how-to?pivots=dotnet-8-0
     public DateTime? ExpiresAt { get; init; }
     
     /// <summary>
     /// DateTime containing when the poll expired
     /// </summary>
-    [JsonPropertyName("expiredAfter")]
+    [JsonProperty("expiredAfter")]
     // TODO: https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/converters-how-to?pivots=dotnet-8-0
     public TimeSpan? ExpiredAfter { get; init; }
     
     /// <summary>
     /// Whether the poll allows multiple votes
     /// </summary>
-    [JsonPropertyName("multiple")]
+    [JsonProperty("multiple")]
     public bool MultipleChoice { get; init; }
     
     /// <summary>

@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Drives;
 
@@ -10,72 +10,74 @@ public class DriveFile : MisskeyObject
     /// <summary>
     /// DateTime representing when the file was uploaded
     /// </summary>
-    [JsonPropertyName("createdAt")]
-    public required DateTime CreatedAt { get; init; }
+    [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
+    public DateTime CreatedAt { get; internal set; }
     
     /// <summary>
     /// Name of the file
     /// </summary>
-    [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+    public string Name { get; internal set; }
     
     /// <summary>
     /// Type of file
     /// </summary>
-    [JsonPropertyName("type")]
-    public required string Type { get; init; }
+    [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+    public string Type { get; internal set; }
     
     /// <summary>
     /// Md5 hash of the file
     /// </summary>
-    [JsonPropertyName("md5")]
-    public required string Md5Hash { get; init; }
+    [JsonProperty("md5", NullValueHandling = NullValueHandling.Ignore)]
+    public string Md5Hash { get; internal set; }
     
     /// <summary>
     /// Size of file in bytes
     /// </summary>
-    [JsonPropertyName("size")]
-    public ulong Size { get; init; }
+    [JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
+    public ulong Size { get; internal set; }
     
     /// <summary>
     /// Whether the file is sensitive
     /// </summary>
-    [JsonPropertyName("isSensitive")]
-    public bool IsSensitive { get; init; }
+    [JsonProperty("isSensitive", NullValueHandling = NullValueHandling.Ignore)]
+    public bool IsSensitive { get; internal set; }
     
     /// <summary>
     /// optional blurhash
     /// </summary>
-    [JsonPropertyName("blurhash")]
-    public string? Blurhash { get; init; }
+    [JsonProperty("blurhash", NullValueHandling = NullValueHandling.Ignore)]
+    public string? Blurhash { get; internal set; }
     
     /// <summary>
     /// Corresponding url of the file
     /// </summary>
-    [JsonPropertyName("url")]
-    public required Uri Url { get; init; }
+    [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
+    public Uri Url { get; internal set; }
     
     /// <summary>
     /// Corresponding thumbnail url of the file
     /// </summary>
-    [JsonPropertyName("thumbnailUrl")]
-    public Uri? ThumbnailUrl { get; init; }
+    [JsonProperty("thumbnailUrl", NullValueHandling = NullValueHandling.Ignore)]
+    public Uri? ThumbnailUrl { get; internal set; }
     
     /// <summary>
     /// Alt text of the file if there is any
     /// </summary>
-    [JsonPropertyName("comment")]
-    public string? AltText { get; init; }
+    [JsonProperty("comment", NullValueHandling = NullValueHandling.Ignore)]
+    public string? AltText { get; internal set; }
     
     /// <summary>
     /// Optional id of the folder the file resides within
     /// </summary>
-    [JsonPropertyName("folderId")]
-    public string? FolderId { get; init; }
+    [JsonProperty("folderId", NullValueHandling = NullValueHandling.Ignore)]
+    public string? FolderId { get; internal set; }
     
     /// <summary>
     /// The id of the user who uploaded the file
     /// </summary>
-    [JsonPropertyName("userId")]
-    public required string UploaderId { get; init; }
+    [JsonProperty("userId", NullValueHandling = NullValueHandling.Ignore)]
+    public string UploaderId { get; internal set; }
+    
+    internal DriveFile() {}
 }

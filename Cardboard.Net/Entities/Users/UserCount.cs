@@ -1,15 +1,15 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Users;
 
 /// <summary>
 /// This encapsulates usercount
 /// </summary>
-internal record class UserCount
+internal record UserCount
 {
     /// <summary>
     /// The number of users online
     /// </summary>
-    [JsonPropertyName("count")]
+    [JsonProperty("count")]
     public required int Count { get; init; }
 }
