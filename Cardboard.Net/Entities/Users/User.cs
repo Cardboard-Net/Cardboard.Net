@@ -56,7 +56,7 @@ public class User : MisskeyObject
     public IReadOnlyList<UserDecoration> AvatarDecorations
         => this.avatarDecorations;
 
-    [JsonProperty("fields")] 
+    [JsonProperty("decorations")] 
     internal List<UserDecoration> avatarDecorations = [];
     
     /// <summary>
