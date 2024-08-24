@@ -1,3 +1,4 @@
+using Cardboard.Net.Entities;
 using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Clients;
@@ -6,9 +7,16 @@ public abstract class BaseMisskeyClient : IDisposable
 {
     protected internal MisskeyApiClient ApiClient { get; internal init; }
     
-    internal BaseMisskeyClient(string token, Uri host)
+    public User CurrentUser { get; internal set; }
+    
+    internal BaseMisskeyClient() { }
+
+    public virtual async Task InitializeAsync()
     {
-        this.ApiClient = new MisskeyApiClient(token, host, this);
+        if (this.CurrentUser is null)
+        {
+            this.CurrentUser = await this.ApiClient.GetCurrentUserAsync();
+        }
     }
     
     /// <summary>

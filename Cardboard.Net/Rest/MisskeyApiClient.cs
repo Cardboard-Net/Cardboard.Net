@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Cardboard.Net.Clients;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
@@ -14,40 +12,45 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Cardboard.Net.Rest;
 
-public class MisskeyApiClient : IDisposable
+public sealed class MisskeyApiClient : IDisposable
 {
-    readonly RestClient _client;
-    readonly JsonSerializerOptions _jopts;
+    private readonly RestClient rest;
     private readonly JsonSerializerSettings jsonSettings;
-    readonly BaseMisskeyClient _misskey;
+    internal BaseMisskeyClient? client;
     
-    public MisskeyApiClient(string token, Uri host, BaseMisskeyClient client)
+    public MisskeyApiClient(string token, Uri host)
     {
         RestClientOptions options = new RestClientOptions(host);
         options.UserAgent = "cardboard.NET/v0.0.1a";
         options.Interceptors = [new StatusInterceptor(), new RawJsonInterceptor()];
-        _jopts = new JsonSerializerOptions();
-        _jopts.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-
         jsonSettings = new JsonSerializerSettings();
         
-        _client = new RestClient
+        rest = new RestClient
         (
             options,
             configureSerialization: s => s.UseNewtonsoftJson(jsonSettings)
         );
 
-        _client.AddDefaultHeader("Authorization", $"Bearer {token}");
-        _misskey = client;
+        rest.AddDefaultHeader("Authorization", $"Bearer {token}");
     }
+    
+    internal void SetClient(BaseMisskeyClient client)
+        => this.client = client;
     
     #region Users
 
+    internal async ValueTask<User> GetCurrentUserAsync()
+    {
+        RestResponse<User> response = await SendRequestAsync<User>(Endpoints.SELF_USER);
+        response.Data!.Misskey = client;
+        return response.Data!;
+    }
+    
     internal async ValueTask<User> GetUserAsync(string userId)
     {
         RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
             JsonSerializer.Serialize(new {userId = userId}));
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
     
@@ -55,13 +58,14 @@ public class MisskeyApiClient : IDisposable
     {
         RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
             JsonSerializer.Serialize(new {username = username, host = host}));
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
     
     #endregion
     
     #region Notes
+
     internal async ValueTask<Note> CreateNoteAsync
     (
         string text,
@@ -71,19 +75,18 @@ public class MisskeyApiClient : IDisposable
         AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly
     )
     {
-        string body = JsonSerializer.Serialize(new 
-        {
-            text = text, 
-            cw = contentWarning, 
-            visibility = visibility,
-            localOnly = isLocal,
-            reactionAcceptance = acceptance
-        }, _jopts);
-        
-        RestResponse<CreatedNote> response = await SendRequestAsync<CreatedNote>(Endpoints.NOTE_CREATE, body);
-        
+        RestResponse<CreatedNote> response = await SendRequestAsync<CreatedNote>(Endpoints.NOTE_CREATE,
+            JsonConvert.SerializeObject(new {
+                text = text,
+                cw = contentWarning,
+                visibility = visibility,
+                localOnly = isLocal,
+                reactionAcceptance = acceptance
+            }    
+        ));
+
         Note responseNote = response.Data!.Note;
-        responseNote.Misskey = this._misskey;
+        responseNote.Misskey = this.client!;
         
         return responseNote;
     }
@@ -91,7 +94,7 @@ public class MisskeyApiClient : IDisposable
     internal async ValueTask<Note> GetNoteAsync(string noteId)
     {
         RestResponse<Note> response = await SendRequestAsync<Note>(Endpoints.NOTE_SHOW, JsonSerializer.Serialize(new {noteId = noteId }));
-        response.Data!.Misskey = this._misskey;
+        response.Data!.Misskey = this.client!;
         return response.Data!;
     }
     
@@ -108,7 +111,7 @@ public class MisskeyApiClient : IDisposable
          *      GET $URL/api/emoji?name=example
          */
         RestResponse<Emoji> response = await SendRequestAsync<Emoji>(Endpoints.EMOJI, JsonSerializer.Serialize(new {name = name}));
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
     
@@ -136,7 +139,7 @@ public class MisskeyApiClient : IDisposable
         }
 
         RestResponse<DriveFile> response = await SendRequestAsync<DriveFile>(Endpoints.DRIVE_FILE_SHOW, body);
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
 
@@ -144,7 +147,7 @@ public class MisskeyApiClient : IDisposable
     {
         RestResponse<DriveFolder> response = await SendRequestAsync<DriveFolder>(Endpoints.DRIVE_FOLDER_SHOW,
             JsonSerializer.Serialize(new { folderId = folderId }));
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
 
@@ -152,15 +155,15 @@ public class MisskeyApiClient : IDisposable
     {
         RestResponse<DriveFolder> response = await SendRequestAsync<DriveFolder>(Endpoints.DRIVE_FOLDER_CREATE,
             JsonSerializer.Serialize(new { name = name, parentId = parentId }));
-        response.Data!.Misskey = _misskey;
+        response.Data!.Misskey = client!;
         return response.Data!;
     }
     
     internal async ValueTask<DriveFolder> FindDriveFolderAsync(string name, string? parentId = null)
     {
         RestResponse<DriveFolder> response = await SendRequestAsync<DriveFolder>(Endpoints.DRIVE_FOLDER_FIND, 
-            JsonSerializer.Serialize(new { name = name, parentId = parentId }));
-        response.Data!.Misskey = _misskey;
+            JsonConvert.SerializeObject(new { name = name, parentId = parentId }));
+        response.Data!.Misskey = client!;
         return response.Data!; 
     }
     
@@ -189,7 +192,7 @@ public class MisskeyApiClient : IDisposable
     )
     {
         RestResponse response = await SendRequestAsync(Endpoints.DRIVE_FOLDERS,
-            JsonSerializer.Serialize(new {limit = limit, beforeId = beforeId, folderId = folderId, searchQuery = searchQuery }));
+            JsonConvert.SerializeObject(new {limit = limit, beforeId = beforeId, folderId = folderId, searchQuery = searchQuery }));
 
         if (null == response.Content)
         {
@@ -210,7 +213,7 @@ public class MisskeyApiClient : IDisposable
     )
     {
         RestResponse response = await SendRequestAsync(Endpoints.DRIVE_FOLDERS,
-            JsonSerializer.Serialize(new {limit = limit, beforeId = beforeId, untilId = untilId, folderId = folderId, searchQuery = searchQuery }));
+            JsonConvert.SerializeObject(new {limit = limit, beforeId = beforeId, untilId = untilId, folderId = folderId, searchQuery = searchQuery }));
 
         if (null == response.Content)
         {
@@ -225,7 +228,7 @@ public class MisskeyApiClient : IDisposable
     #region CurrentInstance
     internal async ValueTask<int> GetOnlineUserCountAsync()
     {
-        RestResponse<UserCount> response = await _client.ExecuteGetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
+        RestResponse<UserCount> response = await rest.ExecuteGetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
         return response.Data!.Count;
     }
     
@@ -242,7 +245,7 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.Resource = endpoint;
         request.AddJsonBody(body);
-        return await _client.ExecutePostAsync<T>(request);
+        return await rest.ExecutePostAsync<T>(request);
     }
 
     internal async Task<RestResponse> SendRequestAsync(string endpoint, string body = "{}")
@@ -250,12 +253,12 @@ public class MisskeyApiClient : IDisposable
         RestRequest request = new RestRequest();
         request.Resource = endpoint;
         request.AddJsonBody(body);
-        return await _client.ExecutePostAsync(request);
+        return await rest.ExecutePostAsync(request);
     }
     
     public void Dispose()
     {
-        _client?.Dispose();
+        client?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

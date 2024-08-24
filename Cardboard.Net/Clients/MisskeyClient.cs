@@ -9,8 +9,12 @@ namespace Cardboard.Net.Clients;
 
 public class MisskeyClient : BaseMisskeyClient
 {
-    public MisskeyClient(string token, Uri host) : base(token, host) { }
-
+    public MisskeyClient(string token, Uri host) : base()
+    {
+        this.ApiClient = new MisskeyApiClient(token, host);
+        this.ApiClient.SetClient(this);
+    }
+    
     #region Users
     
     /// <summary>

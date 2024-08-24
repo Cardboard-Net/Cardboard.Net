@@ -2,6 +2,14 @@ namespace Cardboard.Net.Rest;
 
 internal static class Endpoints
 {
+    #region Self
+
+    public const string SELF_USER = "/i";
+    public const string SELF_UPDATE = "/i/update";
+    public const string SELF_FAVORITES = "/i/favorites";
+    
+    #endregion
+    
     #region Notes
     
     public const string NOTE_CREATE = "/api/notes/create";

@@ -44,6 +44,18 @@ public class User : MisskeyObject
     public Uri? AvatarUrl { get; init; }
 
     /// <summary>
+    /// The AP url, aka https://transfem.social/@puppygirlhornypost
+    /// </summary>
+    [JsonProperty("url")]
+    public Uri ApUrl { get; internal set; }
+    
+    /// <summary>
+    /// The ID based url, aka https://transfem.social/users/9py50pj1e9wy0033
+    /// </summary>
+    [JsonProperty("uri")]
+    public Uri InstanceUrl { get; internal set; }
+    
+    /// <summary>
     /// Whether the user is an administrator
     /// </summary>
     [JsonProperty("isAdministrator")]
@@ -84,7 +96,7 @@ public class User : MisskeyObject
     /// </summary>
     [JsonProperty("speakAsCat")]
     public bool IsCatSpeak { get; init; }
-
+    
     /// <summary>
     /// The amount of users this user follows, 0 if private
     /// </summary>

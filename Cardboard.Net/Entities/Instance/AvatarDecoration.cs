@@ -3,47 +3,68 @@ using Newtonsoft.Json;
 namespace Cardboard.Net.Entities;
 
 /// <summary>
-/// Represents an avatar decoration
+/// Represents an avatar decoration on the instance
 /// </summary>
-public class AvatarDecoration
+public class AvatarDecoration : MisskeyObject
 {
     /// <summary>
-    /// Id of the decoration
+    /// DateTime representing when the decoration was created
     /// </summary>
-    [JsonProperty("id", Required = Required.Always)]
-#pragma warning disable CS8618 
-    public string Id { get; protected set; }
-#pragma warning restore CS8618
-
+    [JsonProperty("createdAt")]
+    public DateTime CreatedAt { get; internal set; }
+    
     /// <summary>
-    /// Angle of the decoration
+    /// DateTime representing when the decoration was updated (if ever)
     /// </summary>
-    [JsonProperty("angle")]
-    public int Angle { get; protected set; }
-
+    [JsonProperty("updatedAt")]
+    public DateTime? UpdatedAt { get; internal set; }
+    
     /// <summary>
-    /// Whether the decoration is flipped horizontally
+    /// The name of the avatar decoration
     /// </summary>
-    [JsonProperty("flipH")]
-    public bool FlipH { get; protected set; }
-
+    [JsonProperty("name")]
+    public string Name { get; internal set; }
+    
     /// <summary>
-    /// The URL the decoration corresponds to
+    /// The description of the avatar decoration
     /// </summary>
-    [JsonProperty("url", Required = Required.Always)]
-#pragma warning disable CS8618
-    public Uri Url { get; protected set; }
-#pragma warning restore CS8618
-
+    [JsonProperty("description")]
+    public string Description { get; internal set; }
+    
     /// <summary>
-    /// The X offset of the decoration
+    /// The url of the avatar decoration
     /// </summary>
-    [JsonProperty("offsetX")]
-    public int XOffset { get; protected set; }
+    [JsonProperty("url")]
+    public Uri Url { get; internal set; }
+    
+    [JsonIgnore]
+    public IReadOnlyList<string> AllowedRoleIds
+        => this.allowedRoleIds;
 
+    [JsonProperty("roleIdsThatCanBeUsedThisDecoration")]
+    internal List<string> allowedRoleIds = [];
+    
     /// <summary>
-    /// The Y offset of the decoration
+    /// Fetches the roles corresponding with each id.
     /// </summary>
-    [JsonProperty("offsetY")]
-    public int YOffset { get; protected set; }
+    /// <returns>IReadOnlyList containing the full role object</returns>
+    public async Task<IReadOnlyList<Role>> GetRolesAsync()
+        => throw new NotImplementedException("GetRoles is not implemented.");
+    
+    /// <summary>
+    /// Updates this avatar decoration
+    /// </summary>
+    /// <param name="name">Optional name to change over to</param>
+    /// <param name="description">Optional description</param>
+    /// <param name="url">Optional url</param>
+    /// <param name="roleIds">Optional list of role ids, set to null for no updating</param>
+    /// <returns></returns>
+    public async Task<AvatarDecoration> ModifyAsync(string? name = null, string? description = null, Uri? url = null, List<string>? roleIds = null)
+        => throw new NotImplementedException("Modify is not implemented.");
+    
+    /// <summary>
+    /// Deletes this avatar decoration
+    /// </summary>
+    public async Task DeleteAsync()
+        => throw new NotImplementedException("Delete is not implemented.");
 }
