@@ -39,10 +39,19 @@ public sealed class MisskeyApiClient : IDisposable
     
     #region Users
 
-    internal async ValueTask<User> GetCurrentUserAsync()
+    internal async ValueTask<Account> GetCurrentUserAsync()
     {
-        RestResponse<User> response = await SendRequestAsync<User>(Endpoints.SELF_USER);
-        response.Data!.Misskey = client;
+        RestResponse<Account> response = await SendRequestAsync<Account>(Endpoints.SELF_USER);
+        response.Data!.Misskey = client!;
+
+        if (response.Data!.avatarDecorations.Any())
+        {
+            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            {
+                decoration.Misskey = client!;
+            }
+        }
+        
         return response.Data!;
     }
     
@@ -51,6 +60,15 @@ public sealed class MisskeyApiClient : IDisposable
         RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
             JsonSerializer.Serialize(new {userId = userId}));
         response.Data!.Misskey = client!;
+        
+        if (response.Data!.avatarDecorations.Any())
+        {
+            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            {
+                decoration.Misskey = client!;
+            }
+        }
+        
         return response.Data!;
     }
     
@@ -59,6 +77,15 @@ public sealed class MisskeyApiClient : IDisposable
         RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
             JsonSerializer.Serialize(new {username = username, host = host}));
         response.Data!.Misskey = client!;
+        
+        if (response.Data!.avatarDecorations.Any())
+        {
+            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            {
+                decoration.Misskey = client!;
+            }
+        }
+        
         return response.Data!;
     }
     
@@ -226,6 +253,7 @@ public sealed class MisskeyApiClient : IDisposable
     #endregion
     
     #region CurrentInstance
+    
     internal async ValueTask<int> GetOnlineUserCountAsync()
     {
         RestResponse<UserCount> response = await rest.ExecuteGetAsync<UserCount>(Endpoints.INSTANCE_USERS_ONLINE);
@@ -236,6 +264,22 @@ public sealed class MisskeyApiClient : IDisposable
     {
         RestResponse<Stats> response = await SendRequestAsync<Stats>(Endpoints.INSTANCE_STATS);
         return response.Data!;
+    }
+    
+    internal async ValueTask<IReadOnlyList<AvatarDecoration>> GetAvatarDecorationsAsync()
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.AVATAR_DECORATIONS_GET);
+
+        List<AvatarDecoration> decorations = JsonConvert.DeserializeObject<List<AvatarDecoration>>(response.Content!) ?? [];
+        if (decorations.Any())
+        {
+            foreach (AvatarDecoration decoration in decorations)
+            {
+                decoration.Misskey = client!;
+            }
+        }
+        
+        return decorations;
     }
     
     #endregion

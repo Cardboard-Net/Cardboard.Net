@@ -35,6 +35,13 @@ internal static class Endpoints
     
     #endregion
     
+    #region AvatarDecorations
+
+    public const string ADMIN_AVATAR_DECORATIONS_LIST = "/api/admin/avatar-decorations/list";
+    public const string AVATAR_DECORATIONS_GET = "/api/get-avatar-decorations";
+    
+    #endregion
+    
     #region Drive
     
     public const string DRIVE = "/api/drive";
@@ -48,6 +55,7 @@ internal static class Endpoints
     public const string DRIVE_FOLDER_DELETE = "/api/drive/folders/delete";
     
     #endregion
+    
     
     public const string INSTANCE_USERS_ONLINE = "/api/get-online-users-count";
     public const string INSTANCE_PING = "/api/ping";

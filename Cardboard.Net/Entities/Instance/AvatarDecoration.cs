@@ -8,13 +8,15 @@ namespace Cardboard.Net.Entities;
 public class AvatarDecoration : MisskeyObject
 {
     /// <summary>
-    /// DateTime representing when the decoration was created
+    /// DateTime representing when the decoration was created, is only shown to
+    /// admins via the admin endpoint.
     /// </summary>
     [JsonProperty("createdAt")]
-    public DateTime CreatedAt { get; internal set; }
+    public DateTime? CreatedAt { get; internal set; }
     
     /// <summary>
-    /// DateTime representing when the decoration was updated (if ever)
+    /// DateTime representing when the decoration was updated (if ever), is only
+    /// shown to admins via the admin endpoint
     /// </summary>
     [JsonProperty("updatedAt")]
     public DateTime? UpdatedAt { get; internal set; }

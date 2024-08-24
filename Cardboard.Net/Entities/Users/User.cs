@@ -44,6 +44,22 @@ public class User : MisskeyObject
     public Uri? AvatarUrl { get; init; }
 
     /// <summary>
+    /// The blurhash for the avatar
+    /// </summary>
+    [JsonProperty("avatarBlurhash")]
+    public string AvatarBlurhash { get; internal set; }
+    
+    /// <summary>
+    /// List of avatar decorations in the profile
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<UserDecoration> AvatarDecorations
+        => this.avatarDecorations;
+
+    [JsonProperty("fields")] 
+    internal List<UserDecoration> avatarDecorations = [];
+    
+    /// <summary>
     /// The AP url, aka https://transfem.social/@puppygirlhornypost
     /// </summary>
     [JsonProperty("url")]

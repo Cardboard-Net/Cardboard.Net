@@ -1,4 +1,5 @@
 using Cardboard.Net.Entities;
+using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest;
 
 namespace Cardboard.Net.Clients;
@@ -7,7 +8,7 @@ public abstract class BaseMisskeyClient : IDisposable
 {
     protected internal MisskeyApiClient ApiClient { get; internal init; }
     
-    public User CurrentUser { get; internal set; }
+    public Account CurrentUser { get; internal set; }
     
     internal BaseMisskeyClient() { }
 
