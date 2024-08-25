@@ -152,6 +152,28 @@ public class User : MisskeyObject
             JsonConvert.SerializeObject(new { userId = this.Id, withReplies = withReplies }));
 
     /// <summary>
+    /// Silence a user, preventing them from showing up without being directly looked for.
+    /// </summary>
+    /// <returns>void</returns>
+    public async Task SilenceUserAsync() {
+        if (this.IsSuspended) return;
+        this.IsSilenced = true;
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.SilenceUser(this.Id);
+    }
+
+    /// <summary>
+    /// Unsilence a user, allowing for the user to be found in feeds.
+    /// </summary>
+    /// <returns>void</returns>
+    public async Task UnsilenceUserAsync() {
+        if (!this.IsSilenced) return;
+        this.IsSilenced = false;
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.SilenceUser(this.Id);
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     public async Task SuspendUserAsync()
