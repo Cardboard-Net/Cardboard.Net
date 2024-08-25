@@ -87,8 +87,14 @@ public class User : MisskeyObject
     /// Whether the user is silenced
     /// </summary>
     [JsonProperty("isSilenced")]
-    public bool IsSilenced { get; init; }
+    public bool IsSilenced { get; internal set; }
 
+    /// <summary>
+    /// Whether the user is suspended
+    /// </summary>
+    [JsonProperty("isSuspended")]
+    public bool IsSuspended { get; internal set; }
+    
     /// <summary>
     /// Whether the user has indexing enabled
     /// </summary>
@@ -144,4 +150,30 @@ public class User : MisskeyObject
     public async Task SendFollowRequestAsync(bool withReplies = false)
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.FOLLOW_CREATE, 
             JsonConvert.SerializeObject(new { userId = this.Id, withReplies = withReplies }));
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public async Task SuspendUserAsync()
+    {
+        if (this.IsSuspended) return;
+
+        this.IsSuspended = true;
+        
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.SuspendUser(this.Id);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public async Task UnsuspendUserAsync()
+    {
+        if (!this.IsSuspended) return;
+
+        this.IsSuspended = false;
+        
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.UnsuspendUser(this.Id);
+    }
 }

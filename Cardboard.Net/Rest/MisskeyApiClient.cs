@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using Cardboard.Net.Clients;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
@@ -87,6 +88,28 @@ public sealed class MisskeyApiClient : IDisposable
         }
         
         return response.Data!;
+    }
+
+    internal async ValueTask SuspendUser(string userId)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SUSPEND_USER, 
+            JsonConvert.SerializeObject(new {userId = userId}));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to suspend!");
+        }
+    }
+    
+    internal async ValueTask UnsuspendUser(string userId)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSUSPEND_USER, 
+            JsonConvert.SerializeObject(new {userId = userId}));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to unsuspend!");
+        }
     }
     
     #endregion
