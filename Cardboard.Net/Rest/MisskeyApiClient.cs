@@ -382,6 +382,8 @@ public sealed class MisskeyApiClient : IDisposable
     
     internal async Task<Announcement?> GetAnnouncementAsync(string announcementId)
     {
+        Utilities.NullOrWhitespaceCheck(nameof(announcementId), announcementId);
+        
         RestResponse response = await SendRequestAsync(Endpoints.INSTANCE_ANNOUNCEMENTS_SHOW, 
             JsonConvert.SerializeObject(new { announcementId = announcementId }));
         if (null == response.Content) return null;
@@ -401,6 +403,8 @@ public sealed class MisskeyApiClient : IDisposable
         bool isActive = true
     )
     {
+        Utilities.CheckLimit(nameof(limit), limit);
+        
         string body = JsonConvert.SerializeObject(new
         {
             limit = limit,
@@ -424,6 +428,53 @@ public sealed class MisskeyApiClient : IDisposable
         return announcements;
     }
 
+    /// <summary>
+    /// Gets announcements with the reads property
+    /// </summary>
+    /// <param name="limit">Limit</param>
+    /// <param name="sinceId"></param>
+    /// <param name="untilId"></param>
+    /// <param name="userId">user id if it's for a given user</param>
+    /// <returns></returns>
+    internal async Task<IReadOnlyList<AdminAnnouncementLite>> GetAnnouncementsAdminAsync
+    (
+        int limit = 10,
+        string? sinceId = null,
+        string? untilId = null,
+        string? userId = null
+    )
+    {
+        Utilities.CheckLimit(nameof(limit), limit);
+        
+        string body = JsonConvert.SerializeObject(new
+        {
+            limit = limit,
+            sinceId = sinceId,
+            untilId = untilId,
+            userId = userId
+        }, new JsonSerializerSettings() {NullValueHandling = NullValueHandling.Ignore});
+        
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_ANNOUNCEMENTS_LIST, body);
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have the ability to list announcements from admin view");
+        }
+        
+        if (null == response.Content) return [];
+        
+        List<AdminAnnouncementLite> announcements = JsonConvert.DeserializeObject<List<AdminAnnouncementLite>>(response.Content) ?? [];
+        if (!announcements.Any()) return announcements;
+
+        foreach (AdminAnnouncementLite announcement in announcements)
+        {
+            announcement.Misskey = client!;
+            announcement.IsActive = null;
+        }
+        
+        return announcements;
+    }
+    
     internal async Task<AnnouncementLite?> CreateAnnouncementAsync
     (
         string title, 

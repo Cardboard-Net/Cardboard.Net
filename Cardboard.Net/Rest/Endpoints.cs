@@ -73,9 +73,10 @@ internal static class Endpoints
     public const string INSTANCE_SERVERINFO = "/api/server-info";
     public const string INSTANCE_ANNOUNCEMENTS = "/api/announcements";
     public const string INSTANCE_ANNOUNCEMENTS_SHOW = "/api/announcements/show";
-    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_DELETE = "/api/announcements/delete";
-    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_CREATE = "/api/announcements/create";
-    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_UPDATE = "/api/announcements/update";
+    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_LIST = "/api/admin/announcements/list";
+    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_DELETE = "/api/admin/announcements/delete";
+    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_CREATE = "/api/admin/announcements/create";
+    public const string ADMIN_INSTANCE_ANNOUNCEMENTS_UPDATE = "/api/admin/announcements/update";
     public const string ADMIN_INSTANCE_SERVERINFO = "/api/admin/server-info";
     public const string ADMIN_INSTANCE_META = "/api/admin/meta";
     public const string ADMIN_USER_IPS = "/api/admin/get-user-ips";

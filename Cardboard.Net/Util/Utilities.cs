@@ -11,4 +11,17 @@ public static class Utilities
             throw new ArgumentException($"{nameof} cannot be empty or whitespace.", nameof);
         }
     }
+
+    public static void CheckLimit(string nameof, int limit, int lowerBound = 0, int upperBound = 100)
+    {
+        if (limit > upperBound)
+        {
+            throw new ArgumentException($"{nameof} cannot exceed {upperBound}.", nameof);
+        }
+
+        if (limit < lowerBound)
+        {
+            throw new ArgumentException($"'{nameof}' cannot be less than {lowerBound}.", nameof);
+        }
+    }
 }

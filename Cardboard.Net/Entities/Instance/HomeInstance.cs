@@ -89,6 +89,7 @@ public class HomeInstance
     public async Task<Announcement?> GetAnnouncementAsync(string announcementId)
         => await this.Misskey.ApiClient.GetAnnouncementAsync(announcementId);
     
+    
     /// <summary>
     /// Gets an announcement
     /// </summary>
@@ -103,6 +104,13 @@ public class HomeInstance
     /// <returns>IReadOnlyList of announcements</returns>
     public async Task<IReadOnlyList<Announcement>> GetAnnouncementsAsync()
         => await this.Misskey.ApiClient.GetAnnouncementsAsync();
+    
+    /// <summary>
+    /// Gets a list of announcements from admin view
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IReadOnlyList<AdminAnnouncementLite>> GetAnnouncementsAdminAsync()
+        => await this.Misskey.ApiClient.GetAnnouncementsAdminAsync();
     
     /// <summary>
     /// Deletes an announcement

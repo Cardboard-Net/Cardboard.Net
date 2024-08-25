@@ -43,8 +43,8 @@ public class AnnouncementLite : MisskeyObject
     /// <summary>
     /// Whether the announcement is active
     /// </summary>
-    [JsonIgnore]
-    public bool IsActive { get; internal set; }
+    [JsonProperty("isActive")]
+    public bool? IsActive { get; internal set; }
 
     /// <summary>
     /// Gets the full announcement type from this announcementlite
@@ -64,7 +64,7 @@ public class AnnouncementLite : MisskeyObject
     /// <exception cref="InvalidOperationException">Throws an exception if it's already activated.</exception>
     public async Task ActivateAsync()
     {
-        if (this.IsActive)
+        if (this.IsActive.HasValue && this.IsActive.Value)
         {
             throw new InvalidOperationException("The announcement is already activated!");
         }
@@ -78,7 +78,7 @@ public class AnnouncementLite : MisskeyObject
     /// <exception cref="InvalidOperationException">Throws an exception if it's already deactivated.</exception>
     public async Task DeactivateAsync()
     {
-        if (!this.IsActive)
+        if (this.IsActive.HasValue && !this.IsActive.Value)
         {
             throw new InvalidOperationException("The announcement is already deactivated!");
         }
@@ -155,4 +155,16 @@ public class AnnouncementLite : MisskeyObject
     
     public async Task DeleteAsync()
         => await this.Misskey.ApiClient.DeleteAnnouncementAsync(this.Id);
+}
+
+/// <summary>
+/// An admin announcement lite, encapsulating the reads property
+/// </summary>
+public class AdminAnnouncementLite : AnnouncementLite
+{
+    /// <summary>
+    /// The number of reads for this announcement
+    /// </summary>
+    [JsonProperty("reads")]
+    public ulong Reads { get; init; }
 }
