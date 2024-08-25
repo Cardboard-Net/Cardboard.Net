@@ -70,6 +70,7 @@ internal static class Endpoints
     public const string INSTANCE_META = "/api/meta";
     public const string INSTANCE_STATS = "/api/stats";
     public const string ADMIN_INSTANCE_META = "/api/admin/meta";
-    
+    public const string ADMIN_USER_IPS = "/api/get-user-ips";
+
     #endregion
 }

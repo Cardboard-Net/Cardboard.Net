@@ -44,7 +44,7 @@ public class Note : MisskeyObject
     /// The reaction acceptance level of the current note
     /// </summary>
     [JsonProperty("reactionAcceptance")]
-    public Notes.AcceptanceType Acceptance { get; init; }
+    public Notes.AcceptanceType? Acceptance { get; init; }
 
     /// <summary>
     /// Amount of times this note has been clipped

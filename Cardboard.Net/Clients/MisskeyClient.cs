@@ -22,7 +22,7 @@ public class MisskeyClient : BaseMisskeyClient
     /// </summary>
     /// <param name="userId">misskey:id of the user</param>
     /// <returns>User</returns>
-    public async Task<User> GetUserAsync(string userId)
+    public async Task<User?> GetUserAsync(string userId)
         => await this.ApiClient.GetUserAsync(userId);
 
     /// <summary>
@@ -31,7 +31,7 @@ public class MisskeyClient : BaseMisskeyClient
     /// <param name="username">username of the user</param>
     /// <param name="host">host of the user, leave null for local</param>
     /// <returns>User</returns>
-    public async Task<User> GetUserAsync(string username, string? host = null)
+    public async Task<User?> GetUserAsync(string username, string? host = null)
         => await this.ApiClient.GetUserAsync(username, host);
     
     /// <summary>

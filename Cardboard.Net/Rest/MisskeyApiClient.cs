@@ -40,54 +40,90 @@ public sealed class MisskeyApiClient : IDisposable
     
     #region Users
 
-    internal async ValueTask<Account> GetCurrentUserAsync()
+    internal async ValueTask<Account?> GetCurrentUserAsync()
     {
-        RestResponse<Account> response = await SendRequestAsync<Account>(Endpoints.SELF_USER);
-        response.Data!.Misskey = client!;
+        RestResponse response = await SendRequestAsync(Endpoints.SELF_USER);
+        if (null == response.Content) return null;
+        
+        Account? acc = JsonConvert.DeserializeObject<Account>(response.Content);
+        if (null == acc) return null;
+        
+        if (acc.avatarDecorations.Any())
+        {
+            foreach (UserDecoration decoration in acc.avatarDecorations)
+            {
+                decoration.Misskey = client!;
+            }
+        }
 
-        if (response.Data!.avatarDecorations.Any())
+        if (acc.pinnedNotes.Any())
         {
-            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            foreach (Note note in acc.pinnedNotes)
             {
-                decoration.Misskey = client!;
+                note.Misskey = client!;
             }
         }
         
-        return response.Data!;
+        acc.Misskey = client!;
+        return acc;
     }
     
-    internal async ValueTask<User> GetUserAsync(string userId)
+    internal async ValueTask<User?> GetUserAsync(string userId)
     {
-        RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
+        RestResponse response = await SendRequestAsync(Endpoints.USERS_SHOW,
             JsonSerializer.Serialize(new {userId = userId}));
-        response.Data!.Misskey = client!;
+        if (null == response.Content) return null;
+
+        User? user = JsonConvert.DeserializeObject<User>(response.Content!);
+        if (null == user) return null;
         
-        if (response.Data!.avatarDecorations.Any())
+        if (user.avatarDecorations.Any())
         {
-            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            foreach (UserDecoration decoration in user.avatarDecorations)
             {
                 decoration.Misskey = client!;
             }
         }
+
+        if (user.pinnedNotes.Any())
+        {
+            foreach (Note note in user.pinnedNotes)
+            {
+                note.Misskey = client!;
+            }
+        }
         
-        return response.Data!;
+        user.Misskey = client!;
+        return user;
     }
     
-    internal async ValueTask<User> GetUserAsync(string username, string? host = null)
+    internal async ValueTask<User?> GetUserAsync(string username, string? host = null)
     {
-        RestResponse<User> response = await SendRequestAsync<User>(Endpoints.USERS_SHOW,
-            JsonSerializer.Serialize(new {username = username, host = host}));
-        response.Data!.Misskey = client!;
+        RestResponse response = await SendRequestAsync(Endpoints.USERS_SHOW,
+            JsonConvert.SerializeObject(new {username = username, host = host}));
+
+        User? user = JsonConvert.DeserializeObject<User>(response.Content!);
         
-        if (response.Data!.avatarDecorations.Any())
+        if (null == user) return null;
+        
+        if (user.avatarDecorations.Any())
         {
-            foreach (UserDecoration decoration in response.Data!.avatarDecorations)
+            foreach (UserDecoration decoration in user.avatarDecorations)
             {
                 decoration.Misskey = client!;
             }
         }
+
+        if (user.pinnedNotes.Any())
+        {
+            foreach (Note note in user.pinnedNotes)
+            {
+                note.Misskey = client!;
+            }
+        }
         
-        return response.Data!;
+        user.Misskey = client!;
+        return user;
     }
 
     internal async Task SilenceUserAsync(string userId) {
@@ -145,6 +181,14 @@ public sealed class MisskeyApiClient : IDisposable
         AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly
     )
     {
+        if (null != this.client!.CurrentInstance)
+        {
+            if (text.Length > this.client!.CurrentInstance.Meta.MaxNoteLength)
+            {
+                throw new ArgumentException($"Text is greater than note length for this instance {this.client!.CurrentInstance.Meta.MaxNoteLength}");
+            }
+        }
+        
         RestResponse<CreatedNote> response = await SendRequestAsync<CreatedNote>(Endpoints.NOTE_CREATE,
             JsonConvert.SerializeObject(new {
                 text = text,
@@ -312,16 +356,16 @@ public sealed class MisskeyApiClient : IDisposable
     internal async ValueTask<IReadOnlyList<AvatarDecoration>> GetAvatarDecorationsAsync()
     {
         RestResponse response = await SendRequestAsync(Endpoints.AVATAR_DECORATIONS_GET);
-
-        List<AvatarDecoration> decorations = JsonConvert.DeserializeObject<List<AvatarDecoration>>(response.Content!) ?? [];
-        if (decorations.Any())
-        {
-            foreach (AvatarDecoration decoration in decorations)
-            {
-                decoration.Misskey = client!;
-            }
-        }
+        if (null == response.Content) return [];
         
+        List<AvatarDecoration> decorations = JsonConvert.DeserializeObject<List<AvatarDecoration>>(response.Content) ?? [];
+        if (!decorations.Any()) return decorations;
+        
+        foreach (AvatarDecoration decoration in decorations)
+        {
+            decoration.Misskey = client!;
+        }
+
         return decorations;
     }
 
@@ -329,15 +373,28 @@ public sealed class MisskeyApiClient : IDisposable
     {
         RestResponse<Meta> response = await SendRequestAsync<Meta>(Endpoints.INSTANCE_META);
 
-        if (response.Data!.ads.Any())
+        if (!response.Data!.ads.Any()) return response.Data!;
+        
+        foreach (Ad ad in response.Data!.ads)
         {
-            foreach (Ad ad in response.Data!.ads)
-            {
-                ad.Misskey = client!;
-            }
+            ad.Misskey = client!;
+        }
+
+        return response.Data!;
+    }
+
+    internal async ValueTask<IReadOnlyList<AdminUserIp>> GetUserIpsAsync(string userId)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.SELF_USER);
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to get ips");
         }
         
-        return response.Data!;
+        if (null == response.Content) return [];
+        List<AdminUserIp> ips = JsonConvert.DeserializeObject<List<AdminUserIp>>(response.Content) ?? [];
+        return ips;
     }
     
     #endregion
