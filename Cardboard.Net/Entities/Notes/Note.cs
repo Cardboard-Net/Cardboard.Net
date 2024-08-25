@@ -1,5 +1,7 @@
+using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest;
 using Newtonsoft.Json;
+using RestSharp;
 
 namespace Cardboard.Net.Entities;
 
@@ -57,6 +59,31 @@ public class Note : MisskeyObject
     public async Task CreateReactAsync(string reaction)
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_CREATE,
             JsonConvert.SerializeObject(new { noteId = this.Id, reaction = reaction }));
+
+    /// <summary>
+    /// Pin a note to your profile.
+    /// </summary>
+    /// <returns>void</returns>
+    /// <exception cref="InvalidOperationException">Will fail if you are not the owner of the note.</exception>
+    public async Task PinAsync() {
+        if (this.Misskey.CurrentUser.Id != this.AuthorId) throw new InvalidOperationException("Cannot pin a note that does not belong to you!");
+        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
+        this.Misskey.CurrentUser = response.Data!;
+    }
+
+    /// <summary>
+    /// Unpin a note from your profile.
+    /// </summary>
+    /// <returns>void</returns>
+    /// <exception cref="InvalidOperationException">Will fail if note is not already pinned.</exception>
+    public async Task UnpinAsync() {
+        if (this.Misskey.CurrentUser.PinnedNotes.FirstOrDefault(Note => Note.Id  == this.Id) == null) {
+            throw new InvalidOperationException("Cannot unpin a non-pinned note!");
+        }
+        await this.Misskey.ApiClient.SendRequestAsync(Endpoints.UNPIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
+        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
+        this.Misskey.CurrentUser = response.Data!;
+    }
 
     /// <summary>
     /// Creates a reaction on this note.
