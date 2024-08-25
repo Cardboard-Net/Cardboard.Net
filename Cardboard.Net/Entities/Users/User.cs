@@ -38,6 +38,16 @@ public class User : MisskeyObject
     internal List<Users.Field> fields = [];
 
     /// <summary>
+    /// A list of read-only pinned notes. Pin more through the note function Note.pinAsync().
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<Note> PinnedNotes
+        => this.pinnedNotes;
+
+    [JsonProperty("pinnedNotes")]
+    internal List<Note> pinnedNotes = [];
+
+    /// <summary>
     /// The url corresponding to this user's avatar
     /// </summary>
     [JsonProperty("avatarUrl")]
@@ -154,12 +164,10 @@ public class User : MisskeyObject
     /// <summary>
     /// Silence a user, preventing them from showing up without being directly looked for.
     /// </summary>
-    public async Task SilenceUserAsync() 
-    {
+    /// <returns>void</returns>
+    public async Task SilenceUserAsync() {
         if (this.IsSuspended) return;
-        
         this.IsSilenced = true;
-        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
         await this.Misskey.ApiClient.SilenceUserAsync(this.Id);
     }
@@ -167,14 +175,12 @@ public class User : MisskeyObject
     /// <summary>
     /// Unsilence a user, allowing for the user to be found in feeds.
     /// </summary>
-    public async Task UnsilenceUserAsync() 
-    {
+    /// <returns>void</returns>
+    public async Task UnsilenceUserAsync() {
         if (!this.IsSilenced) return;
-        
         this.IsSilenced = false;
-        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.UnsilenceUserAsync(this.Id);
+        await this.Misskey.ApiClient.SilenceUserAsync(this.Id);
     }
 
     /// <summary>
