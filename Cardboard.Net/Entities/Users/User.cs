@@ -174,7 +174,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public async Task SuspendUserAsync()
     {
@@ -187,7 +187,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    /// 
+    /// Unsuspend this user
     /// </summary>
     public async Task UnsuspendUserAsync()
     {

@@ -115,7 +115,7 @@ public sealed class MisskeyApiClient : IDisposable
         }
     }
     
-    internal async ValueTask UnsuspendUser(string userId)
+    internal async Task UnsuspendUser(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
