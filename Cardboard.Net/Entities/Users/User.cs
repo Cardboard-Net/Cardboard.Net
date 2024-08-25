@@ -152,7 +152,7 @@ public class User : MisskeyObject
             JsonConvert.SerializeObject(new { userId = this.Id, withReplies = withReplies }));
 
     /// <summary>
-    /// 
+    /// Suspend this user
     /// </summary>
     public async Task SuspendUserAsync()
     {
@@ -165,7 +165,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    /// 
+    /// Unsuspend this user
     /// </summary>
     public async Task UnsuspendUserAsync()
     {

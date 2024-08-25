@@ -90,7 +90,7 @@ public sealed class MisskeyApiClient : IDisposable
         return response.Data!;
     }
 
-    internal async ValueTask SuspendUser(string userId)
+    internal async Task SuspendUser(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
@@ -101,7 +101,7 @@ public sealed class MisskeyApiClient : IDisposable
         }
     }
     
-    internal async ValueTask UnsuspendUser(string userId)
+    internal async Task UnsuspendUser(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
