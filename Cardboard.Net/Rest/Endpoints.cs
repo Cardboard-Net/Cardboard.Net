@@ -25,6 +25,8 @@ internal static class Endpoints
     
     public const string USERS_SHOW = "/api/users/show";
     public const string USERS_SEARCH = "/api/users/search";
+    public const string ADMIN_SILENCE_USER = "/api/admin/silence-user";
+    public const string ADMIN_UNSILENCE_USER = "/api/admin/unsilence-user";
     public const string ADMIN_SUSPEND_USER = "/api/admin/suspend-user";
     public const string ADMIN_UNSUSPEND_USER = "/api/admin/unsuspend-user";
     public const string FOLLOW_CREATE = "/api/following/create";

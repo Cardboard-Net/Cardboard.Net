@@ -90,7 +90,21 @@ public sealed class MisskeyApiClient : IDisposable
         return response.Data!;
     }
 
-    internal async Task SuspendUser(string userId)
+    internal async ValueTask SilenceUser(string userId) {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SILENCE_USER, JsonConvert.SerializeObject(new {userId = userId}));
+        if (response.StatusCode == HttpStatusCode.Forbidden) {
+            throw new InvalidOperationException("Account does not have permission to silence!");
+        }
+    }
+
+    internal async ValueTask UnsilenceUser(string userId) {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSILENCE_USER, JsonConvert.SerializeObject(new {userId = userId}));
+        if (response.StatusCode == HttpStatusCode.Forbidden) {
+            throw new InvalidOperationException("Account does not have permission to unsilence!");
+        }
+    }
+
+    internal async ValueTask SuspendUser(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));

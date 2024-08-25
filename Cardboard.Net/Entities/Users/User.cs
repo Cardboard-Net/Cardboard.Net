@@ -152,7 +152,29 @@ public class User : MisskeyObject
             JsonConvert.SerializeObject(new { userId = this.Id, withReplies = withReplies }));
 
     /// <summary>
-    /// Suspend this user
+    /// Silence a user, preventing them from showing up without being directly looked for.
+    /// </summary>
+    /// <returns>void</returns>
+    public async Task SilenceUserAsync() {
+        if (this.IsSuspended) return;
+        this.IsSilenced = true;
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.SilenceUser(this.Id);
+    }
+
+    /// <summary>
+    /// Unsilence a user, allowing for the user to be found in feeds.
+    /// </summary>
+    /// <returns>void</returns>
+    public async Task UnsilenceUserAsync() {
+        if (!this.IsSilenced) return;
+        this.IsSilenced = false;
+        // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
+        await this.Misskey.ApiClient.SilenceUser(this.Id);
+    }
+
+    /// <summary>
+    /// Suspend a user from being able to use the host server altogether, showing up in feeds, or otherwise creating objects.
     /// </summary>
     public async Task SuspendUserAsync()
     {
@@ -165,7 +187,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    /// Unsuspend this user
+    /// Unsuspend a user, allowing them to login to misskey, show up in feeds, use the drive, etc.
     /// </summary>
     public async Task UnsuspendUserAsync()
     {
