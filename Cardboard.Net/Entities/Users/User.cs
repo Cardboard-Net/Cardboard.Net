@@ -180,7 +180,7 @@ public class User : MisskeyObject
         if (!this.IsSilenced) return;
         this.IsSilenced = false;
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SilenceUserAsync(this.Id);
+        await this.Misskey.ApiClient.UnsilenceUserAsync(this.Id);
     }
 
     /// <summary>
