@@ -47,7 +47,8 @@ public class MisskeyClient : BaseMisskeyClient
     /// Suspends a user
     /// </summary>
     /// <param name="userId">An id of the user you want to suspend</param>
-    public async Task SuspendUserAsync(string userId)
+    /// <param name="selfsuspend">overrides default behavior (throwing an exception) to allow user to delete itself</param>
+    public async Task SuspendUserAsync(string userId, bool selfsuspend = false)
         => await this.ApiClient.SuspendUserAsync(userId);
 
     /// <summary>
@@ -61,7 +62,8 @@ public class MisskeyClient : BaseMisskeyClient
     /// Silences a user
     /// </summary>
     /// <param name="userId">An id of the user you want to silence</param>
-    public async Task SilenceUserAsync(string userId)
+    /// <param name="selfsilence">overrides default behavior (throwing an exception) to allow user to delete itself</param>
+    public async Task SilenceUserAsync(string userId, bool selfsilence = false)
         => await this.ApiClient.SilenceUserAsync(userId);
 
     /// <summary>

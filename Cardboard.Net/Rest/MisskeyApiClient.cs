@@ -126,7 +126,18 @@ public sealed class MisskeyApiClient : IDisposable
         return user;
     }
 
-    internal async Task SilenceUserAsync(string userId) {
+    internal async Task SilenceUserAsync(string userId, bool selfsilence = false) {
+        if (!selfsilence && userId == this.client!.CurrentUser!.Id)
+        {
+            /*
+             * I actually haven't tested this for *obvious* reasons, but in my
+             * opinion we should throw an error by default. I don't want people
+             * potentially shooting themselves in the foot. If they're insistent
+             * they can override this behavior.
+             */
+            throw new InvalidOperationException("Cannot silence self, to override: set selfsilence to true!");
+        }
+        
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SILENCE_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
         
@@ -146,8 +157,19 @@ public sealed class MisskeyApiClient : IDisposable
         }
     }
 
-    internal async Task SuspendUserAsync(string userId)
+    internal async Task SuspendUserAsync(string userId, bool selfsuspend = false)
     {
+        if (!selfsuspend && userId == this.client!.CurrentUser!.Id)
+        {
+            /*
+             * I actually haven't tested this for *obvious* reasons, but in my
+             * opinion we should throw an error by default. I don't want people
+             * potentially shooting themselves in the foot. If they're insistent
+             * they can override this behavior.
+             */
+            throw new InvalidOperationException("Cannot silence self, to override: set selfsuspend to true!");
+        }
+        
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
 
@@ -468,6 +490,28 @@ public sealed class MisskeyApiClient : IDisposable
         }
         
         return null == response.Content ? null : JsonConvert.DeserializeObject<AdminServerInfo>(response.Content);
+    }
+
+    internal async ValueTask DeleteUserAsync(string userId, bool selfdelete = false)
+    {
+        if (!selfdelete && userId == this.client!.CurrentUser!.Id)
+        {
+            /*
+             * I actually haven't tested this for *obvious* reasons, but in my
+             * opinion we should throw an error by default. I don't want people
+             * potentially shooting themselves in the foot. If they're insistent
+             * they can override this behavior.
+             */
+            throw new InvalidOperationException("Cannot delete self, to override: set selfdelete to true!");
+        }
+        
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_ACCOUNTS_DELETE, 
+            JsonConvert.SerializeObject(new {userId = userId}));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to delete user");
+        }
     }
     
     #endregion

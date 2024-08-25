@@ -72,6 +72,14 @@ public class HomeInstance
     public async Task<AdminServerInfo?> GetAdminServerInfoAsync()
         => await this.Misskey.ApiClient.GetAdminServerInfoAsync();
     
+    /// <summary>
+    /// Deletes a user
+    /// </summary>
+    /// <param name="userId">The id of the user to delete</param>
+    /// <param name="selfdelete">overrides default behavior (throwing an exception) to allow user to delete itself</param>
+    public async Task DeleteUserAsync(string userId, bool selfdelete = false)
+        => await this.Misskey.ApiClient.DeleteUserAsync(userId, selfdelete);
+    
     //TODO: Implement
     public async Task<Announcement> GetAnnouncementAsync(string announcementId)
         => throw new NotImplementedException();

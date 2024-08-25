@@ -165,11 +165,14 @@ public class User : MisskeyObject
     /// Silence a user, preventing them from showing up without being directly looked for.
     /// </summary>
     /// <returns>void</returns>
-    public async Task SilenceUserAsync() {
+    /// <param name="selfsilence">overrides default behavior (throwing an exception) to allow user to silence itself</param>
+    public async Task SilenceUserAsync(bool selfsilence = false) {
         if (this.IsSuspended) return;
-        this.IsSilenced = true;
+        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SilenceUserAsync(this.Id);
+        await this.Misskey.ApiClient.SilenceUserAsync(this.Id, selfsilence);
+        
+        this.IsSilenced = true;
     }
 
     /// <summary>
@@ -178,22 +181,25 @@ public class User : MisskeyObject
     /// <returns>void</returns>
     public async Task UnsilenceUserAsync() {
         if (!this.IsSilenced) return;
-        this.IsSilenced = false;
+        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
         await this.Misskey.ApiClient.UnsilenceUserAsync(this.Id);
+        
+        this.IsSilenced = false;
     }
 
     /// <summary>
     /// Suspend a user from being able to use the host server altogether, showing up in feeds, or otherwise creating objects.
     /// </summary>
-    public async Task SuspendUserAsync()
+    /// <param name="selfsuspend">overrides default behavior (throwing an exception) to allow user to suspend itself</param> 
+    public async Task SuspendUserAsync(bool selfsuspend = false)
     {
         if (this.IsSuspended) return;
 
-        this.IsSuspended = true;
-        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SuspendUserAsync(this.Id);
+        await this.Misskey.ApiClient.SuspendUserAsync(this.Id, selfsuspend);
+        
+        this.IsSuspended = true;
     }
 
     /// <summary>
@@ -202,11 +208,11 @@ public class User : MisskeyObject
     public async Task UnsuspendUserAsync()
     {
         if (!this.IsSuspended) return;
-
-        this.IsSuspended = false;
         
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
         await this.Misskey.ApiClient.UnsuspendUserAsync(this.Id);
+        
+        this.IsSuspended = false;
     }
 
     /// <summary>
@@ -215,4 +221,11 @@ public class User : MisskeyObject
     /// <returns></returns>
     public async Task<IReadOnlyList<AdminUserIp>> GetIpsAsync()
         => await this.Misskey.ApiClient.GetUserIpsAsync(this.Id);
+
+    /// <summary>
+    /// Deletes the current user
+    /// </summary>
+    /// <param name="selfdelete">overrides default behavior (throwing an exception) to allow user to delete itself</param>
+    public async Task DeleteAsync(bool selfdelete = false)
+        => await this.Misskey.ApiClient.DeleteUserAsync(this.Id, selfdelete);
 }
