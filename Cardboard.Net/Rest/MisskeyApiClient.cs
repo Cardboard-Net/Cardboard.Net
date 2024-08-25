@@ -385,7 +385,8 @@ public sealed class MisskeyApiClient : IDisposable
 
     internal async ValueTask<IReadOnlyList<AdminUserIp>> GetUserIpsAsync(string userId)
     {
-        RestResponse response = await SendRequestAsync(Endpoints.SELF_USER);
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_USER_IPS,
+            JsonConvert.SerializeObject(new {userId = userId}));
 
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
@@ -393,8 +394,80 @@ public sealed class MisskeyApiClient : IDisposable
         }
         
         if (null == response.Content) return [];
+
         List<AdminUserIp> ips = JsonConvert.DeserializeObject<List<AdminUserIp>>(response.Content) ?? [];
         return ips;
+    }
+
+    internal async ValueTask<Relay?> AddRelayAsync(Uri inbox)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_RELAY_ADD,
+            JsonConvert.SerializeObject(new { inbox = inbox }));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to add relays");
+        }
+        
+        if (null == response.Content) return null;
+        
+        Relay? relay = JsonConvert.DeserializeObject<Relay>(response.Content);
+        if (null == relay) return null;
+        
+        relay.Misskey = client!;
+        return relay;
+    }
+    
+    internal async ValueTask<IReadOnlyList<Relay>> GetRelaysAsync()
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_RELAY_LIST);
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to add relays");
+        }
+        
+        if (null == response.Content) return [];
+        
+        List<Relay> relays = JsonConvert.DeserializeObject<List<Relay>>(response.Content) ?? [];
+        if (!relays.Any()) return relays;
+
+        foreach (Relay relay in relays)
+        {
+            relay.Misskey = client!;
+        }
+
+        return relays;
+    }
+    
+    public async Task DeleteRelayAsync(Uri inbox)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_RELAY_REMOVE,
+            JsonConvert.SerializeObject(new { inbox = inbox }));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to remove relays");
+        }
+    }
+    
+    internal async ValueTask<ServerInfo?> GetServerInfoAsync()
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.INSTANCE_SERVERINFO);
+        
+        return null == response.Content ? null : JsonConvert.DeserializeObject<ServerInfo>(response.Content);
+    }
+    
+    internal async ValueTask<AdminServerInfo?> GetAdminServerInfoAsync()
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_SERVERINFO);
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to view admin server info");
+        }
+        
+        return null == response.Content ? null : JsonConvert.DeserializeObject<AdminServerInfo>(response.Content);
     }
     
     #endregion

@@ -208,4 +208,11 @@ public class User : MisskeyObject
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
         await this.Misskey.ApiClient.UnsuspendUserAsync(this.Id);
     }
+
+    /// <summary>
+    /// Gets a list of ips for this user
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IReadOnlyList<AdminUserIp>> GetIpsAsync()
+        => await this.Misskey.ApiClient.GetUserIpsAsync(this.Id);
 }

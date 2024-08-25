@@ -69,8 +69,13 @@ internal static class Endpoints
     public const string INSTANCE_PING = "/api/ping";
     public const string INSTANCE_META = "/api/meta";
     public const string INSTANCE_STATS = "/api/stats";
+    public const string INSTANCE_SERVERINFO = "/api/server-info";
+    public const string ADMIN_INSTANCE_SERVERINFO = "/api/admin/server-info";
     public const string ADMIN_INSTANCE_META = "/api/admin/meta";
-    public const string ADMIN_USER_IPS = "/api/get-user-ips";
+    public const string ADMIN_USER_IPS = "/api/admin/get-user-ips";
+    public const string ADMIN_RELAY_ADD = "/api/admin/relays/add";
+    public const string ADMIN_RELAY_LIST = "/api/admin/relays/list";
+    public const string ADMIN_RELAY_REMOVE = "/api/admin/relays/remove";
 
     #endregion
 }
