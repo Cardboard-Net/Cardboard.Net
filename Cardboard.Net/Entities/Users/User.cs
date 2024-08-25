@@ -174,7 +174,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    ///
+    /// Suspend a user from being able to use the host server altogether, showing up in feeds, or otherwise creating objects.
     /// </summary>
     public async Task SuspendUserAsync()
     {
@@ -187,7 +187,7 @@ public class User : MisskeyObject
     }
 
     /// <summary>
-    /// Unsuspend this user
+    /// Unsuspend a user, allowing them to login to misskey, show up in feeds, use the drive, etc.
     /// </summary>
     public async Task UnsuspendUserAsync()
     {
