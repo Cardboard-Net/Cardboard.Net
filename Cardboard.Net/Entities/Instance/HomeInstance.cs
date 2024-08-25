@@ -1,4 +1,5 @@
 using Cardboard.Net.Clients;
+using Cardboard.Net.Entities.Instance;
 using Cardboard.Net.Entities.Users;
 
 namespace Cardboard.Net.Entities;
@@ -80,13 +81,49 @@ public class HomeInstance
     public async Task DeleteUserAsync(string userId, bool selfdelete = false)
         => await this.Misskey.ApiClient.DeleteUserAsync(userId, selfdelete);
     
-    //TODO: Implement
-    public async Task<Announcement> GetAnnouncementAsync(string announcementId)
-        => throw new NotImplementedException();
+    /// <summary>
+    /// Gets an announcement
+    /// </summary>
+    /// <param name="announcementId">Announcement id of the announcement</param>
+    /// <returns></returns>
+    public async Task<Announcement?> GetAnnouncementAsync(string announcementId)
+        => await this.Misskey.ApiClient.GetAnnouncementAsync(announcementId);
     
-    //TODO: Implement
+    /// <summary>
+    /// Gets an announcement
+    /// </summary>
+    /// <param name="announcement">AnnouncementLite of the announcement</param>
+    /// <returns></returns>
+    public async Task<Announcement?> GetAnnouncementAsync(AnnouncementLite announcement)
+        => await announcement.GetAnnouncementAsync();
+    
+    /// <summary>
+    /// Gets the announcements
+    /// </summary>
+    /// <returns>IReadOnlyList of announcements</returns>
     public async Task<IReadOnlyList<Announcement>> GetAnnouncementsAsync()
-        => throw new NotImplementedException();
+        => await this.Misskey.ApiClient.GetAnnouncementsAsync();
+    
+    /// <summary>
+    /// Deletes an announcement
+    /// </summary>
+    /// <param name="announcementId">The id of the announcement to delete</param>
+    public async Task DeleteAnnouncementAsync(string announcementId)
+        => await this.Misskey.ApiClient.DeleteAnnouncementAsync(announcementId);
+    
+    /// <summary>
+    /// Deletes an announcement
+    /// </summary>
+    /// <param name="announcement">The announcement to delete</param>
+    public async Task DeleteAnnouncementAsync(AnnouncementLite announcement)
+        => await this.Misskey.ApiClient.DeleteAnnouncementAsync(announcement.Id);
+    
+    /// <summary>
+    /// Deletes an announcement
+    /// </summary>
+    /// <param name="announcement">The announcement to delete</param>
+    public async Task DeleteAnnouncementAsync(Announcement announcement)
+        => await this.Misskey.ApiClient.DeleteAnnouncementAsync(announcement.Id);
     
     //TODO: Implement
     public async Task<Invite> CreateInviteAsync()

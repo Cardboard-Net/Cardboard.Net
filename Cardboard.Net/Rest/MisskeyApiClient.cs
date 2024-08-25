@@ -3,9 +3,12 @@ using System.Net;
 using Cardboard.Net.Clients;
 using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
+using Cardboard.Net.Entities.Instance;
+using Cardboard.Net.Entities.Instance.Announcements;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
+using Cardboard.Net.Util;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
@@ -374,6 +377,184 @@ public sealed class MisskeyApiClient : IDisposable
         RestResponse<Stats> response = await SendRequestAsync<Stats>(Endpoints.INSTANCE_STATS);
         return response.Data!;
     }
+
+    #region Announcements
+    
+    internal async Task<Announcement?> GetAnnouncementAsync(string announcementId)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.INSTANCE_ANNOUNCEMENTS_SHOW, 
+            JsonConvert.SerializeObject(new { announcementId = announcementId }));
+        if (null == response.Content) return null;
+        
+        Announcement? announcement = JsonSerializer.Deserialize<Announcement>(response.Content); 
+        if (null == announcement) return null;
+        
+        announcement.Misskey = client!;
+        return announcement;
+    }
+
+    internal async Task<IReadOnlyList<Announcement>> GetAnnouncementsAsync
+    (
+        int limit = 10,
+        string? sinceId = null,
+        string? untilId = null,
+        bool isActive = true
+    )
+    {
+        string body = JsonConvert.SerializeObject(new
+        {
+            limit = limit,
+            sinceId = sinceId,
+            untilId = untilId,
+            isactive = isActive
+        }, new JsonSerializerSettings() {NullValueHandling = NullValueHandling.Ignore});
+        
+        RestResponse response = await SendRequestAsync(Endpoints.INSTANCE_ANNOUNCEMENTS, body);
+        if (null == response.Content) return [];
+        
+        List<Announcement> announcements = JsonConvert.DeserializeObject<List<Announcement>>(response.Content) ?? [];
+        if (!announcements.Any()) return announcements;
+
+        foreach (Announcement announcement in announcements)
+        {
+            announcement.Misskey = client!;
+            announcement.IsActive = isActive;
+        }
+        
+        return announcements;
+    }
+
+    internal async Task<AnnouncementLite?> CreateAnnouncementAsync
+    (
+        string title, 
+        string text,
+        Uri? imageUrl = null, 
+        DisplayType displayType = DisplayType.Normal,
+        IconType iconType = IconType.Info,
+        bool existingUsers = false,
+        bool silence = false,
+        bool readConfirmation = false,
+        string? userId = null
+    )
+    {
+        Utilities.NullOrWhitespaceCheck(nameof(title), title);
+        Utilities.NullOrWhitespaceCheck(nameof(text), text);
+
+        string body = JsonConvert.SerializeObject(new
+        {
+            title = title,
+            text = text,
+            imageUrl = imageUrl,
+            displayType = displayType,
+            iconType = iconType,
+            existingUsers = existingUsers,
+            silence = silence,
+            readConfirmation = readConfirmation,
+            userId = userId
+        }, new JsonSerializerSettings() {NullValueHandling = NullValueHandling.Ignore});
+        
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_ANNOUNCEMENTS_CREATE, body);
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have the ability to create announcements");
+        }
+        
+        if (null == response.Content) return null;
+        
+        AnnouncementLite? announcement = JsonConvert.DeserializeObject<AnnouncementLite>(response.Content);
+        if (announcement == null) return null;
+        
+        announcement.Misskey = client!;
+        announcement.IsActive = true;
+        
+        return announcement;
+    }
+    
+    internal async Task<bool> ModifyAnnouncementAsync
+    (
+        string announcementId,
+        string? title = null, 
+        string? text = null,
+        Uri? imageUrl = null, 
+        bool? existingUsers = null,
+        bool? isActive = null
+    )
+    {
+        Utilities.NullOrWhitespaceCheck(nameof(title), announcementId);
+        
+        string body = JsonConvert.SerializeObject(new
+        {
+            announcementId = announcementId,
+            title = title,
+            text = text,
+            imageUrl = imageUrl,
+            existingUsers = existingUsers,
+            isActive = isActive
+        }, new JsonSerializerSettings() {NullValueHandling = NullValueHandling.Ignore});
+        
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_ANNOUNCEMENTS_UPDATE, body);
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have the ability to modify announcements");
+        }
+
+        return response.StatusCode == HttpStatusCode.NoContent;
+    }
+    
+    internal async Task<bool> ModifyAnnouncementAsync
+    (
+        string announcementId,
+        string? title = null, 
+        string? text = null,
+        Uri? imageUrl = null, 
+        IconType? iconType = null,
+        DisplayType? displayType = null,
+        bool? existingUsers = null,
+        bool? silence = null,
+        bool? readConfirmation = null,
+        bool? isActive = null
+    )
+    {
+        Utilities.NullOrWhitespaceCheck(nameof(title), announcementId);
+        
+        string body = JsonConvert.SerializeObject(new
+        {
+            announcementId = announcementId,
+            title = title,
+            text = text,
+            imageUrl = imageUrl,
+            displayType = displayType,
+            existingUsers = existingUsers,
+            silence = silence,
+            readConfirmation = readConfirmation,
+            isActive = isActive
+        }, new JsonSerializerSettings() {NullValueHandling = NullValueHandling.Ignore});
+        
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_ANNOUNCEMENTS_UPDATE, body);
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have the ability to modify announcements");
+        }
+
+        return response.StatusCode == HttpStatusCode.NoContent;
+    }
+
+    
+    internal async Task DeleteAnnouncementAsync(string announcementId)
+    {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_INSTANCE_ANNOUNCEMENTS_DELETE,
+            JsonConvert.SerializeObject(new { announcementId = announcementId }));
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("Account does not have permission to delete announcements");
+        }
+    }
+    
+    #endregion
     
     internal async ValueTask<IReadOnlyList<AvatarDecoration>> GetAvatarDecorationsAsync()
     {
@@ -446,7 +627,7 @@ public sealed class MisskeyApiClient : IDisposable
         
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
-            throw new InvalidOperationException("Account does not have permission to add relays");
+            throw new InvalidOperationException("Account does not have permission to view relays");
         }
         
         if (null == response.Content) return [];
