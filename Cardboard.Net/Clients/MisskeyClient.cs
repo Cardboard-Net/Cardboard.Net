@@ -42,6 +42,34 @@ public class MisskeyClient : BaseMisskeyClient
     public async Task FollowUserAsync(string userId, bool withReplies = false)
         => await this.ApiClient.SendRequestAsync<User>(Endpoints.FOLLOW_CREATE, 
             JsonSerializer.Serialize(new { userId = userId, withReplies = withReplies }));
+
+    /// <summary>
+    /// Suspends a user
+    /// </summary>
+    /// <param name="userId">An id of the user you want to suspend</param>
+    public async Task SuspendUserAsync(string userId)
+        => await this.ApiClient.SuspendUserAsync(userId);
+
+    /// <summary>
+    /// Unsuspends a user
+    /// </summary>
+    /// <param name="userId">An id of the user you want to unsuspend</param>
+    public async Task UnsuspendUserAsync(string userId)
+        => await this.ApiClient.UnsuspendUserAsync(userId);
+
+    /// <summary>
+    /// Silences a user
+    /// </summary>
+    /// <param name="userId">An id of the user you want to silence</param>
+    public async Task SilenceUserAsync(string userId)
+        => await this.ApiClient.SilenceUserAsync(userId);
+
+    /// <summary>
+    /// Unsilences a user
+    /// </summary>
+    /// <param name="userId">An id of the user you want to unsilence</param>
+    public async Task UnsilenceUserAsync(string userId)
+        => await this.ApiClient.SilenceUserAsync(userId);
     
     #endregion
     

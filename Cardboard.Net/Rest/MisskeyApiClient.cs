@@ -90,21 +90,27 @@ public sealed class MisskeyApiClient : IDisposable
         return response.Data!;
     }
 
-    internal async ValueTask SilenceUser(string userId) {
-        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SILENCE_USER, JsonConvert.SerializeObject(new {userId = userId}));
-        if (response.StatusCode == HttpStatusCode.Forbidden) {
+    internal async Task SilenceUserAsync(string userId) {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SILENCE_USER, 
+            JsonConvert.SerializeObject(new {userId = userId}));
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden) 
+        {
             throw new InvalidOperationException("Account does not have permission to silence!");
         }
     }
 
-    internal async ValueTask UnsilenceUser(string userId) {
-        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSILENCE_USER, JsonConvert.SerializeObject(new {userId = userId}));
-        if (response.StatusCode == HttpStatusCode.Forbidden) {
+    internal async Task UnsilenceUserAsync(string userId) {
+        RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSILENCE_USER, 
+            JsonConvert.SerializeObject(new {userId = userId}));
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden) 
+        {
             throw new InvalidOperationException("Account does not have permission to unsilence!");
         }
     }
 
-    internal async ValueTask SuspendUser(string userId)
+    internal async Task SuspendUserAsync(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_SUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));
@@ -115,7 +121,7 @@ public sealed class MisskeyApiClient : IDisposable
         }
     }
     
-    internal async Task UnsuspendUser(string userId)
+    internal async Task UnsuspendUserAsync(string userId)
     {
         RestResponse response = await SendRequestAsync(Endpoints.ADMIN_UNSUSPEND_USER, 
             JsonConvert.SerializeObject(new {userId = userId}));

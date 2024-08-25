@@ -154,23 +154,27 @@ public class User : MisskeyObject
     /// <summary>
     /// Silence a user, preventing them from showing up without being directly looked for.
     /// </summary>
-    /// <returns>void</returns>
-    public async Task SilenceUserAsync() {
+    public async Task SilenceUserAsync() 
+    {
         if (this.IsSuspended) return;
+        
         this.IsSilenced = true;
+        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SilenceUser(this.Id);
+        await this.Misskey.ApiClient.SilenceUserAsync(this.Id);
     }
 
     /// <summary>
     /// Unsilence a user, allowing for the user to be found in feeds.
     /// </summary>
-    /// <returns>void</returns>
-    public async Task UnsilenceUserAsync() {
+    public async Task UnsilenceUserAsync() 
+    {
         if (!this.IsSilenced) return;
+        
         this.IsSilenced = false;
+        
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SilenceUser(this.Id);
+        await this.Misskey.ApiClient.UnsilenceUserAsync(this.Id);
     }
 
     /// <summary>
@@ -183,7 +187,7 @@ public class User : MisskeyObject
         this.IsSuspended = true;
         
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.SuspendUser(this.Id);
+        await this.Misskey.ApiClient.SuspendUserAsync(this.Id);
     }
 
     /// <summary>
@@ -196,6 +200,6 @@ public class User : MisskeyObject
         this.IsSuspended = false;
         
         // TODO: Throw an exception if we do not have permission, *BEFORE* sending the request
-        await this.Misskey.ApiClient.UnsuspendUser(this.Id);
+        await this.Misskey.ApiClient.UnsuspendUserAsync(this.Id);
     }
 }
