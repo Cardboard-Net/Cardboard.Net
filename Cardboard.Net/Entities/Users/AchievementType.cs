@@ -270,24 +270,156 @@ public enum AchievementType
     /// </summary>
     [EnumMember(Value = "loggedInOnNewYearsDay")]
     NewYearsLogin,
+    /// <summary>
+    /// Clip your first note
+    /// </summary>
     [EnumMember(Value = "noteClipped1")]
     NoteClipped,
+    /// <summary>
+    /// Favorite your first note
+    /// </summary>
     [EnumMember(Value = "noteFavorited1")]
     NoteFavorited,
-    [EnumMember(Value = "")]
+    /// <summary>
+    /// Have somebody else favorite one of your notes
+    /// </summary>
+    [EnumMember(Value = "myNoteFavorited1")]
     SelfNoteFavorited,
+    /// <summary>
+    /// Set up your profile
+    /// </summary>
+    [EnumMember(Value = "profileFilled")]
     ProfileFilled,
+    /// <summary>
+    /// Mark your account as a cat
+    /// </summary>
+    [EnumMember(Value = "markedAsCat")]
     MarkedAsCat,
+    /// <summary>
+    /// Earn 30 achievements
+    /// </summary>
+    [EnumMember(Value = "collectAchievements30")]
     CollectAchievements,
+    /// <summary>
+    /// Look at your list of achievements for at least 3 minutes
+    /// </summary>
+    [EnumMember(Value = "viewAchievements3min")]
     ViewAchievements,
+    /// <summary>
+    /// Post I <3 Misskey
+    /// </summary>
+    [EnumMember(Value = "iLoveMisskey")]
     ILoveMisskey,
+    /// <summary>
+    /// You've found the hidden treasure
+    /// </summary>
+    [EnumMember(Value = "foundTreasure")]
     FoundTreasure,
+    /// <summary>
+    /// Keep client open for at least 30 minutes
+    /// </summary>
+    [EnumMember(Value = "client30min")]
     Client30Min,
+    /// <summary>
+    /// Keep client open for at least 60 minutes
+    /// </summary>
+    [EnumMember(Value = "client60min")]
     Client60Min,
+    /// <summary>
+    /// Delete a note within a minute of posting it
+    /// </summary>
+    [EnumMember(Value = "noteDeletedWithin1min")]
+    NoteDelete,
+    /// <summary>
+    /// Post a note late at night
+    /// </summary>
+    [EnumMember(Value = "postedAtLateNight")]
     PostLate,
-    PostAt0min0sec,
+    /// <summary>
+    /// Post a note at 00:00
+    /// </summary>
+    [EnumMember(Value = "postedAt0min0sec")]
+    PostAtMidnight,
+    /// <summary>
+    /// Quote your own note
+    /// </summary>
+    [EnumMember(Value = "selfQuote")]
     SelfQuote,
-    Hit120npm
+    /// <summary>
+    /// Have the speed of your home timeline exceed 20 notes per minute
+    /// </summary>
+    [EnumMember(Value = "ht120npm")]
+    FloodedTimeline,
+    /// <summary>
+    /// View your instance's charts
+    /// </summary>
+    [EnumMember(Value = "viewInstanceChart")]
+    ViewInstanceChart,
+    /// <summary>
+    /// Output "hello world" in the Scratchpad
+    /// </summary>
+    [EnumMember(Value = "outputHelloWorldOnScratchpad")]
+    HelloWorld,
+    /// <summary>
+    /// Have at least 3 windows open at the same time
+    /// </summary>
+    [EnumMember(Value = "open3windows")]
+    Open3Windows,
+    /// <summary>
+    /// Attempt to create a recursively nested folder in drive
+    /// </summary>
+    [EnumMember(Value = "driveFolderCircularReference")]
+    RecursiveDriveFolder,
+    /// <summary>
+    /// React on a note that's over 100 characters long within 3 seconds of it being posted
+    /// </summary>
+    [EnumMember(Value = "reactWithoutRead")]
+    ReactWithoutRead,
+    /// <summary>
+    /// You've clicked here
+    /// </summary>
+    [EnumMember(Value = "clickedClickHere")]
+    ClickedClickHere,
+    /// <summary>
+    /// Has a chance to be obtained with a probability of 0.005% every 10 seconds
+    /// </summary>
+    [EnumMember(Value = "justPlainLucky")]
+    JustPlainLucky,
+    /// <summary>
+    /// Set your name to "syuilo"
+    /// </summary>
+    [EnumMember(Value = "setNameToSyuilo")]
+    SetNameToSyuilo,
+    /// <summary>
+    /// Clicked the cookie
+    /// </summary>
+    [EnumMember(Value = "cookieClicked")]
+    CookieClicked,
+    /// <summary>
+    /// Post the link to Brain Diver
+    /// </summary>
+    [EnumMember(Value = "brainDiver")]
+    BrainDiver,
+    /// <summary>
+    /// Trigger the notification test repeatedly within an extremely short time
+    /// </summary>
+    [EnumMember(Value = "smashTestNotificationButton")]
+    SmashTestButton,
+    /// <summary>
+    /// Tutorial completed
+    /// </summary>
+    [EnumMember(Value = "tutorialCompleted")]
+    CompleteTutorial,
+    /// <summary>
+    /// The biggest object in the bubble game
+    /// </summary>
+    [EnumMember(Value = "bubbleGameExplodingHead")]
+    ExplodingHead,
+    /// <summary>
+    /// Two of the biggest objects in the bubble game at the same time
+    /// </summary>
+    [EnumMember(Value = "bubbleGameDoubleExplodingHead")]
+    DoubleExplodingHead
     
     #endregion
 }
