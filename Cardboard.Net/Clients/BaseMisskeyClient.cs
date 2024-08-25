@@ -8,16 +8,17 @@ public abstract class BaseMisskeyClient : IDisposable
 {
     protected internal MisskeyApiClient ApiClient { get; internal init; }
     
-    public Account CurrentUser { get; internal set; }
+    public Account? CurrentUser { get; internal set; }
+    public HomeInstance? CurrentInstance { get; internal set; }
     
     internal BaseMisskeyClient() { }
 
     public virtual async Task InitializeAsync()
     {
-        if (this.CurrentUser is null)
-        {
-            this.CurrentUser = await this.ApiClient.GetCurrentUserAsync();
-        }
+        this.CurrentUser ??= await this.ApiClient.GetCurrentUserAsync();
+        this.CurrentInstance ??= new HomeInstance() { Misskey = this };
+        await this.CurrentInstance.RefreshMetaAsync();
+        await this.CurrentInstance.RefreshStatsAsync();
     }
     
     /// <summary>

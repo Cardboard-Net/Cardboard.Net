@@ -63,10 +63,13 @@ internal static class Endpoints
     
     #endregion
     
+    #region HomeInstance
     
     public const string INSTANCE_USERS_ONLINE = "/api/get-online-users-count";
     public const string INSTANCE_PING = "/api/ping";
     public const string INSTANCE_META = "/api/meta";
     public const string INSTANCE_STATS = "/api/stats";
     public const string ADMIN_INSTANCE_META = "/api/admin/meta";
+    
+    #endregion
 }

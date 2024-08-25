@@ -324,6 +324,21 @@ public sealed class MisskeyApiClient : IDisposable
         
         return decorations;
     }
+
+    internal async ValueTask<Meta> GetMetaAsync()
+    {
+        RestResponse<Meta> response = await SendRequestAsync<Meta>(Endpoints.INSTANCE_META);
+
+        if (response.Data!.ads.Any())
+        {
+            foreach (Ad ad in response.Data!.ads)
+            {
+                ad.Misskey = client!;
+            }
+        }
+        
+        return response.Data!;
+    }
     
     #endregion
     
