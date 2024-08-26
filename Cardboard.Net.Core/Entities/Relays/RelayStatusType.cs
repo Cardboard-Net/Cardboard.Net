@@ -2,18 +2,8 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities;
+namespace Cardboard.Relays;
 
-/// <summary>
-/// Class representing relay status
-/// </summary>
-public class Relay : MisskeyObject
-{
-    [JsonProperty("inbox")]
-    public required Uri Inbox { get; init; }
-    [JsonProperty("status")]
-    public required RelayStatusType Status { get; init; }
-}
 
 /// <summary>
 /// The status for a relay
