@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities.Federation;
+namespace Cardboard.Instances;
 
 /// <summary>
 /// Suspension state types for remote instances

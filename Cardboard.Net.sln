@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Sample", "Car
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Rest", "Cardboard.Net.Rest\Cardboard.Net.Rest.csproj", "{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Core", "Cardboard.Net.Core\Cardboard.Net.Core.csproj", "{59C45F32-820B-449E-9A89-942A0B4C2F64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C45F32-820B-449E-9A89-942A0B4C2F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C45F32-820B-449E-9A89-942A0B4C2F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C45F32-820B-449E-9A89-942A0B4C2F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C45F32-820B-449E-9A89-942A0B4C2F64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

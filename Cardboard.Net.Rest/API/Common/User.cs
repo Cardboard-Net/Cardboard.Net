@@ -1,4 +1,4 @@
-using Cardboard.Net.Entities.Users;
+using Cardboard.Users;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
@@ -59,7 +59,6 @@ internal class UserLite
     public BadgeRole[] BadgeRoles { get; set; }
 }
 
-// TODO: Implement
 internal class User : UserLite, IUserRelation
 {
     [JsonProperty("url")]

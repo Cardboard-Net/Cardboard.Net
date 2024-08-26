@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities.Users;
+namespace Cardboard.Users;
 
 /// <summary>
 /// Represents all misskey achievements
@@ -242,8 +242,6 @@ public enum AchievementType
     
     #endregion
     #region Misc
-    
-    // TODO: FINISH THESE.
     
     /// <summary>
     /// One year has passed since your account was created

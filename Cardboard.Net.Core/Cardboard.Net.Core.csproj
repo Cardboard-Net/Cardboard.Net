@@ -7,16 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Cardboard.Net.Core\Cardboard.Net.Core.csproj" />
-      <ProjectReference Include="..\Cardboard.Net\Cardboard.Net.csproj" />
+      <Folder Include="Entities\Drives\" />
     </ItemGroup>
 
 </Project>

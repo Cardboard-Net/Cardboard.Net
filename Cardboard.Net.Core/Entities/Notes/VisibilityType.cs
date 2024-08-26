@@ -2,29 +2,32 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities.Users;
+namespace Cardboard.Notes;
 
 /// <summary>
-/// Value representing follower and following visibility
+/// Represents visibility type
 /// </summary>
 [JsonConverter(typeof(StringEnumConverter))]
-public enum FollowVisibilityType
+public enum VisibilityType
 {
     /// <summary>
-    /// Public, anyone can access
+    /// Public, no restriction
     /// </summary>
     [EnumMember(Value = "public")]
     Public,
-
     /// <summary>
-    /// Followers only, only followers can access
+    /// Home timeline, unlisted on *oma
+    /// </summary>
+    [EnumMember(Value = "home")]
+    Home,
+    /// <summary>
+    /// Followers only
     /// </summary>
     [EnumMember(Value = "followers")]
     Followers,
-    
     /// <summary>
-    /// Private, only the user can access.
+    /// Direct message
     /// </summary>
-    [EnumMember(Value = "private")]
-    Private
+    [EnumMember(Value = "specified")]
+    Specified
 }

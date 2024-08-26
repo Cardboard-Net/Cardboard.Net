@@ -1,5 +1,6 @@
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest;
+using Cardboard.Users;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities;

@@ -9,6 +9,7 @@ using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
 using Cardboard.Net.Util;
+using Cardboard.Notes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

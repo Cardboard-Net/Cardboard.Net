@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities.Users;
+namespace Cardboard.Users;
 
 /// <summary>
 /// Represents the status of a user

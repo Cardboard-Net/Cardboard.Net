@@ -5,6 +5,7 @@ using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Rest;
 using Cardboard.Net.Util;
+using Cardboard.Notes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

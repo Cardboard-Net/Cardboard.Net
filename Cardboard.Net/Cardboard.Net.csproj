@@ -29,4 +29,8 @@
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="111.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cardboard.Net.Core\Cardboard.Net.Core.csproj" />
+  </ItemGroup>
+
 </Project>
