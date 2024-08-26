@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Websocket", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Sample", "Cardboard.Net.Sample\Cardboard.Net.Sample.csproj", "{A4D90F57-5063-4FAA-A5F6-880A9CB87B50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardboard.Net.Rest", "Cardboard.Net.Rest\Cardboard.Net.Rest.csproj", "{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{A4D90F57-5063-4FAA-A5F6-880A9CB87B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4D90F57-5063-4FAA-A5F6-880A9CB87B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D90F57-5063-4FAA-A5F6-880A9CB87B50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCAAEC4-856F-4E33-91CD-8053DDE8A32C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
