@@ -115,7 +115,8 @@ internal class Meta
     [JsonProperty("maxNoteTextLength")]
     public ulong MaxNoteLength { get; set; }
     
-    // TODO: ads[]
+    [JsonProperty("ads")]
+    public Ad[] Ads { get; set; }
     
     [JsonProperty("notesPerOneAd")]
     public ulong NotesPerAd { get; set; }
@@ -156,5 +157,6 @@ internal class Meta
     [JsonProperty("themeColor")]
     public string? ThemeColor { get; set; }
     
-    // TODO: policies
+    [JsonProperty("policies")]
+    public RolePolicy Policies { get; set; }
 }
