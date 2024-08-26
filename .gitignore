@@ -1,7 +1,17 @@
 # IDE/Text Editor
 .vscode/
 .idea/
+.vs/
+Generated\ Files/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
 
 # Build
 **/obj/*
 **/bin/*
+
+# Docs
+docs/_site/*
+docs/api/*
+!docs/api/index.md
