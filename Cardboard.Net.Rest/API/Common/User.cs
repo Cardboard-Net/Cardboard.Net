@@ -1,3 +1,4 @@
+using Cardboard.Net.Entities.Users;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
@@ -50,10 +51,9 @@ internal class UserLite
     public UserInstance Instance { get; set; }
     
     //TODO: Add emojis
-    //TODO: turn to enum
     
     [JsonProperty("onlineStatus")]
-    public string OnlineStatus { get; set; }
+    public StatusType OnlineStatus { get; set; }
     
     [JsonProperty("badgeRoles")]
     public BadgeRole[] BadgeRoles { get; set; }
@@ -138,13 +138,11 @@ internal class User : UserLite, IUserRelation
     [JsonProperty("publicReactions")]
     public bool PublicReactions { get; set; }
     
-    // TODO: Change to enum
     [JsonProperty("followingVisibility")]
-    public string FollowingVisibility { get; set; }
+    public FollowVisibilityType FollowingVisibility { get; set; }
     
-    // TODO: Change to enum
     [JsonProperty("followersVisibility")]
-    public string FollowersVisibility { get; set; }
+    public FollowVisibilityType FollowersVisibility { get; set; }
     
     [JsonProperty("twoFactorEnabled")]
     public bool TwoFactorEnabled { get; set; }
