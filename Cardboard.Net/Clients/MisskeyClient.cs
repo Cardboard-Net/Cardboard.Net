@@ -4,6 +4,7 @@ using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Rest;
+using Cardboard.Net.Util;
 
 namespace Cardboard.Net.Clients;
 
@@ -11,6 +12,7 @@ public class MisskeyClient : BaseMisskeyClient
 {
     public MisskeyClient(string token, Uri host) : base()
     {
+        Utilities.NullOrWhitespaceCheck(nameof(token), token);
         this.ApiClient = new MisskeyApiClient(token, host);
         this.ApiClient.SetClient(this);
     }

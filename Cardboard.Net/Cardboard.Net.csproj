@@ -7,6 +7,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>0.3.0</Version>
+    <Title>Cardboard.Net</Title>
+    <Authors>puppygirlhornypost, kio</Authors>
+    <Copyright>MIT</Copyright>
+    <PackageProjectUrl>https://github.com/puppygirlhornypost/cardboard.NET</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/puppygirlhornypost/cardboard.NET/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/puppygirlhornypost/cardboard.NET</RepositoryUrl>
+    <RepositoryType>https://github.com/puppygirlhornypost/cardboard.NET</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

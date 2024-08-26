@@ -68,9 +68,19 @@ public class User : UserLite
     /// <summary>
     /// The visibility setting for followers
     /// </summary>
-    [JsonProperty("followerVisibility")]
-    public FollowVisibilityType FollowerVisibility { get; init; }
+    [JsonProperty("followersVisibility")]
+    public FollowVisibilityType FollowersVisibility { get; init; }
 
+    /// <summary>
+    /// The current roles of the user
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<RoleLite> Roles
+        => this.roles;
+    
+    [JsonProperty("roles")]
+    internal List<RoleLite> roles = [];
+    
     /// <summary>
     /// Sends a follow request to the user stored
     /// </summary>
