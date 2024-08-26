@@ -2,6 +2,7 @@ using Cardboard.Net.Entities;
 using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
+using Cardboard.Notes;
 
 namespace Cardboard.Net.Clients;
 

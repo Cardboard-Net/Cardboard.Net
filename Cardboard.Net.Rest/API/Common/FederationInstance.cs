@@ -1,4 +1,4 @@
-using Cardboard.Net.Entities.Federation;
+using Cardboard.Instances;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;

@@ -4,6 +4,7 @@ using Cardboard.Net.Entities.Drives;
 using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest;
+using Cardboard.Notes;
 using Microsoft.Extensions.Logging;
 
 namespace Cardboard.Net.Clients;

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Cardboard.Users;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Entities.Users;

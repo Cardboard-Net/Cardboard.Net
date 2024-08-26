@@ -1,5 +1,6 @@
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest;
+using Cardboard.Notes;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -38,13 +39,13 @@ public class Note : MisskeyObject
     /// The visibility setting of the current note
     /// </summary>
     [JsonProperty("visibility")]
-    public Notes.VisibilityType Visibility { get; init; }
+    public VisibilityType Visibility { get; init; }
 
     /// <summary>
     /// The reaction acceptance level of the current note
     /// </summary>
     [JsonProperty("reactionAcceptance")]
-    public Notes.AcceptanceType? Acceptance { get; init; }
+    public AcceptanceType? Acceptance { get; init; }
 
     /// <summary>
     /// Amount of times this note has been clipped

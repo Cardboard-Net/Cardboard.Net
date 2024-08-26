@@ -1,4 +1,5 @@
-using Cardboard.Net.Entities.Notes;
+
+using Cardboard.Notes;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
