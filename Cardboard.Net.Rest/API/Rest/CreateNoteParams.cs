@@ -1,12 +1,12 @@
+using Cardboard.Net.Entities.Notes;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
 
 internal class CreateNoteParams
 {
-    // TODO: Change to enum type
     [JsonProperty("visibility")]
-    public string Visibility { get; set; }
+    public VisibilityType Visibility { get; set; }
     
     [JsonProperty("visibileUserIds")]
     public string[] VisibileUserIds { get; set; }
@@ -16,10 +16,9 @@ internal class CreateNoteParams
     
     [JsonProperty("localOnly")]
     public bool LocalOnly { get; set; }
-
-    // TODO: Change to enum type
+    
     [JsonProperty("reactionAcceptance")]
-    public string ReactionAcceptance { get; set; }
+    public AcceptanceType ReactionAcceptance { get; set; }
     
     [JsonProperty("noExtractMentions")]
     public bool NoExtractMentions { get; set; }
