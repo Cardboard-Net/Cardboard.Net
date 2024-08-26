@@ -9,6 +9,8 @@ using Cardboard.Net.Entities.Notes;
 using Cardboard.Net.Entities.Users;
 using Cardboard.Net.Rest.Interceptors;
 using Cardboard.Net.Util;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
@@ -20,22 +22,30 @@ public sealed class MisskeyApiClient : IDisposable
 {
     private readonly RestClient rest;
     private readonly JsonSerializerSettings jsonSettings;
+    private ILogger Logger { get; }
     internal BaseMisskeyClient? client;
     
-    public MisskeyApiClient(string token, Uri host)
+    public MisskeyApiClient(
+        IOptions<MisskeyClientOptions> options, 
+        ILogger<MisskeyApiClient> logger,
+        StatusInterceptor statusInterceptor,
+        RawJsonInterceptor rawJsonInterceptor)
     {
-        RestClientOptions options = new RestClientOptions(host);
-        options.UserAgent = "cardboard.NET/v0.0.1a";
-        options.Interceptors = [new StatusInterceptor(), new RawJsonInterceptor()];
+        Logger = logger;
+        Utilities.NullOrWhitespaceCheck(nameof(options.Value.Token), options.Value.Token);
+
+        RestClientOptions restClientOptions = new RestClientOptions(options.Value.Host);
+        restClientOptions.UserAgent = "cardboard.NET/v0.0.1a";
+        restClientOptions.Interceptors = [statusInterceptor, rawJsonInterceptor];
         jsonSettings = new JsonSerializerSettings();
         
         rest = new RestClient
         (
-            options,
+            restClientOptions,
             configureSerialization: s => s.UseNewtonsoftJson(jsonSettings)
         );
 
-        rest.AddDefaultHeader("Authorization", $"Bearer {token}");
+        rest.AddDefaultHeader("Authorization", $"Bearer {options.Value.Token}");
     }
     
     internal void SetClient(BaseMisskeyClient client)
@@ -129,8 +139,12 @@ public sealed class MisskeyApiClient : IDisposable
         return user;
     }
 
-    internal async Task SilenceUserAsync(string userId, bool selfsilence = false) {
-        if (!selfsilence && userId == this.client!.CurrentUser!.Id)
+    internal async Task SilenceUserAsync(string userId, bool selfsilence = false)
+    {
+        if (client == null)
+            throw new InvalidOperationException("Client is null in internal method");
+        var currentUser = await client.GetCurrentUserAsync();
+        if (!selfsilence && userId == currentUser?.Id)
         {
             /*
              * I actually haven't tested this for *obvious* reasons, but in my
@@ -162,7 +176,10 @@ public sealed class MisskeyApiClient : IDisposable
 
     internal async Task SuspendUserAsync(string userId, bool selfsuspend = false)
     {
-        if (!selfsuspend && userId == this.client!.CurrentUser!.Id)
+        if (client == null)
+            throw new InvalidOperationException("Client is null in internal method");
+        var currentUser = await client.GetCurrentUserAsync();
+        if (!selfsuspend && userId == currentUser?.Id)
         {
             /*
              * I actually haven't tested this for *obvious* reasons, but in my
@@ -206,11 +223,14 @@ public sealed class MisskeyApiClient : IDisposable
         AcceptanceType acceptance = AcceptanceType.NonSensitiveOnly
     )
     {
-        if (null != this.client!.CurrentInstance)
+        if (client == null)
+            throw new InvalidOperationException("Client is null in internal method");
+        var instance = await client.GetCurrentInstanceAsync();
+        if (instance != null)
         {
-            if (text.Length > this.client!.CurrentInstance.Meta.MaxNoteLength)
+            if (text.Length > instance.Meta?.MaxNoteLength)
             {
-                throw new ArgumentException($"Text is greater than note length for this instance {this.client!.CurrentInstance.Meta.MaxNoteLength}");
+                throw new ArgumentException($"Text is greater than note length for this instance {instance.Meta.MaxNoteLength}");
             }
         }
         
@@ -726,7 +746,10 @@ public sealed class MisskeyApiClient : IDisposable
 
     internal async ValueTask DeleteUserAsync(string userId, bool selfdelete = false)
     {
-        if (!selfdelete && userId == this.client!.CurrentUser!.Id)
+        if (client == null)
+            throw new InvalidOperationException("Client is null in internal method");
+        var currentUser = await client.GetCurrentUserAsync();
+        if (!selfdelete && userId == currentUser?.Id)
         {
             /*
              * I actually haven't tested this for *obvious* reasons, but in my
@@ -766,7 +789,7 @@ public sealed class MisskeyApiClient : IDisposable
     
     public void Dispose()
     {
-        client?.Dispose();
+        rest?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

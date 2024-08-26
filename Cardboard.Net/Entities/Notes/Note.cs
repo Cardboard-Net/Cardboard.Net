@@ -32,14 +32,14 @@ public class Note : MisskeyObject
     /// The contents of the current note
     /// </summary>
     [JsonProperty("text")]
-    public string? Text {get; init;}
+    public string? Text { get; init; }
 
     /// <summary>
     /// The visibility setting of the current note
     /// </summary>
     [JsonProperty("visibility")]
-    public Notes.VisibilityType Visibility {get; init;}
-    
+    public Notes.VisibilityType Visibility { get; init; }
+
     /// <summary>
     /// The reaction acceptance level of the current note
     /// </summary>
@@ -65,10 +65,16 @@ public class Note : MisskeyObject
     /// </summary>
     /// <returns>void</returns>
     /// <exception cref="InvalidOperationException">Will fail if you are not the owner of the note.</exception>
-    public async Task PinAsync() {
-        if (this.Misskey.CurrentUser.Id != this.AuthorId) throw new InvalidOperationException("Cannot pin a note that does not belong to you!");
-        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
-        this.Misskey.CurrentUser = response.Data!;
+    public async Task PinAsync()
+    {
+        var currentUser = await Misskey.GetCurrentUserAsync();
+        if (currentUser?.Id != this.AuthorId)
+            throw new InvalidOperationException("Cannot pin a note that does not belong to you!");
+        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE,
+            JsonConvert.SerializeObject(new { noteId = this.Id }));
+     
+        // TODO: What to replace this with?
+        // this.Misskey.CurrentUser = response.Data!;
     }
 
     /// <summary>
@@ -76,13 +82,23 @@ public class Note : MisskeyObject
     /// </summary>
     /// <returns>void</returns>
     /// <exception cref="InvalidOperationException">Will fail if note is not already pinned.</exception>
-    public async Task UnpinAsync() {
-        if (this.Misskey.CurrentUser.PinnedNotes.FirstOrDefault(Note => Note.Id  == this.Id) == null) {
+    public async Task UnpinAsync()
+    {
+        var currentUser = await Misskey.GetCurrentUserAsync();
+
+        if (currentUser?.PinnedNotes.FirstOrDefault(Note => Note.Id == this.Id) == null)
+        {
             throw new InvalidOperationException("Cannot unpin a non-pinned note!");
         }
-        await this.Misskey.ApiClient.SendRequestAsync(Endpoints.UNPIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
-        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE, JsonConvert.SerializeObject(new {noteId = this.Id}));
-        this.Misskey.CurrentUser = response.Data!;
+
+        await this.Misskey.ApiClient.SendRequestAsync(Endpoints.UNPIN_NOTE,
+            JsonConvert.SerializeObject(new { noteId = this.Id }));
+
+        RestResponse<Account> response = await this.Misskey.ApiClient.SendRequestAsync<Account>(Endpoints.PIN_NOTE,
+            JsonConvert.SerializeObject(new { noteId = this.Id }));
+        
+        // TODO: What to replace this with?
+        // this.Misskey.CurrentUser = response.Data!;
     }
 
     /// <summary>
@@ -91,20 +107,22 @@ public class Note : MisskeyObject
     /// <param name="reaction">An emoji object to react with</param>
     public async Task CreateReactAsync(Emoji reaction)
         => await CreateReactAsync(reaction.Name);
-    
+
     /// <summary>
     /// Deletes the reaction from the currently logged in user
     /// </summary>
     public async Task DeleteReactAsync()
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_REACTS_DELETE,
             JsonConvert.SerializeObject(new { noteId = this.Id }));
-    
+
     /// <summary>
     /// Deletes the current note
     /// </summary>
     public async Task DeleteAsync()
         => await this.Misskey.ApiClient.SendRequestAsync(Endpoints.NOTE_DELETE,
             JsonConvert.SerializeObject(new { noteId = this.Id }));
-    
-    internal Note() {}
+
+    internal Note()
+    {
+    }
 }
