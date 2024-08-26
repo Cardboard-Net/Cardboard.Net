@@ -1,13 +1,15 @@
+using Microsoft.Extensions.Logging;
 using RestSharp;
 
 namespace Cardboard.Net.Rest.Interceptors;
 
-public class RawJsonInterceptor : RestSharp.Interceptors.Interceptor 
+public class RawJsonInterceptor(ILogger<RawJsonInterceptor> logger) : RestSharp.Interceptors.Interceptor
 {
+    private ILogger Logger { get; } = logger;
+
     public override ValueTask BeforeDeserialization(RestResponse response, CancellationToken cancellationToken)
     {
-        // yes. if it works it works
-        Console.WriteLine(response.Content);
+        Logger.LogDebug("Received from server: {data}", response.Content);
         return base.BeforeDeserialization(response, cancellationToken);
     }
 }
