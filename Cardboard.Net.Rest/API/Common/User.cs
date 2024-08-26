@@ -129,7 +129,9 @@ internal class User : UserLite
     [JsonProperty("pinnedNoteIds")]
     public string[] PinnedNoteIds { get; set; }
     
-    // TODO: Notes
+    [JsonProperty("pinnedNotes")]
+    public Note[] PinnedNotes { get; set; }
+    
     [JsonProperty("pinnedPageId")]
     public string? PinnedPageId { get; set; }
     // TODO: Page
@@ -185,9 +187,8 @@ internal class User : UserLite
     [JsonProperty("isRenoteMuted")]
     public bool IsRenoteMuted { get; set; }
     
-    //TODO: Change to enum
     [JsonProperty("notify")]
-    public string Notify { get; set; }
+    public NotifyType Notify { get; set; }
     
     [JsonProperty("withReplies")]
     public bool WithReplies { get; set; }
