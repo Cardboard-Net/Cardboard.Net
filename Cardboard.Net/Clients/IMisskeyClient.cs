@@ -197,12 +197,6 @@ public interface IMisskeyClient
     /// <returns>int</returns>
     Task<int> GetOnlineUserCountAsync();
 
-    /// <summary>
-    /// Gets the stats from the instance the client is registered to.
-    /// </summary>
-    /// <returns></returns>
-    Task<Stats> GetStatsAsync();
-
     void Dispose();
     Task InitializeAsync();
 }

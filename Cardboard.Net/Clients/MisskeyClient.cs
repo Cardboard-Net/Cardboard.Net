@@ -245,13 +245,6 @@ public class MisskeyClient : BaseMisskeyClient
     public override async Task<int> GetOnlineUserCountAsync()
         => await this.ApiClient.GetOnlineUserCountAsync();
     
-    /// <summary>
-    /// Gets the stats from the instance the client is registered to.
-    /// </summary>
-    /// <returns></returns>
-    public override async Task<Stats> GetStatsAsync()
-        => await this.ApiClient.GetStatsAsync();
-    
     #endregion
     
     public override void Dispose()

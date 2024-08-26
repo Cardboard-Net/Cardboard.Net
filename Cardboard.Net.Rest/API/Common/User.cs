@@ -24,7 +24,7 @@ internal class UserLite
     public string? AvatarBlurhash { get; set; }
     
     [JsonProperty("avatarDecorations")]
-    public UserDecorations[] AvatarDecorations { get; set; }
+    public UserDecoration[] AvatarDecorations { get; set; }
     
     [JsonProperty("isAdmin")]
     public bool IsAdmin { get; set; }
@@ -59,7 +59,7 @@ internal class UserLite
     public BadgeRole[] BadgeRoles { get; set; }
 }
 
-internal class User : UserLite, IUserRelation
+internal class User : UserLite
 {
     [JsonProperty("url")]
     public Uri? Url { get; set; }
@@ -193,7 +193,7 @@ internal class User : UserLite, IUserRelation
     public bool WithReplies { get; set; }
 }
 
-internal class UserDecorations
+internal class UserDecoration
 {
     [JsonProperty("id")]
     public string Id { get; set; }
@@ -244,7 +244,7 @@ internal class UserFields
     public string Description { get; set; }
 }
 
-internal class UserRelation : IUserRelation
+internal class UserRelation
 {
     [JsonProperty("id")]
     public string Id { get; set; }
@@ -272,16 +272,4 @@ internal class UserRelation : IUserRelation
     
     [JsonProperty("isRenoteMuted")]
     public bool IsRenoteMuted { get; set; }
-}
-
-internal interface IUserRelation
-{
-    public bool HasOutgoingFollowRequest { get; }
-    public bool HasIncomingFollowRequest { get; }
-    public bool IsFollowed { get; }
-    public bool IsFollowing { get; }
-    public bool IsBlocked { get; }
-    public bool IsBlocking { get; }
-    public bool IsMuted { get; }
-    public bool IsRenoteMuted { get; }
 }

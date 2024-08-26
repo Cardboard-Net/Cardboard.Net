@@ -34,7 +34,6 @@ public abstract class BaseMisskeyClient : IDisposable, IMisskeyClient
         
         this.currentInstance = new HomeInstance() { Misskey = this };
         await currentInstance.RefreshMetaAsync();
-        await currentInstance.RefreshStatsAsync();
 
         return this.currentInstance;
     }
@@ -42,7 +41,6 @@ public abstract class BaseMisskeyClient : IDisposable, IMisskeyClient
     {
         this.currentInstance ??= new HomeInstance() { Misskey = this };
         await this.currentInstance.RefreshMetaAsync();
-        await this.currentInstance.RefreshStatsAsync();
     }
 
     public abstract Task<User?> GetUserAsync(string userId);
@@ -75,7 +73,6 @@ public abstract class BaseMisskeyClient : IDisposable, IMisskeyClient
     public abstract Task<DriveFolder> CreateDriveFolderAsync(string name, string? parentId = null);
     public abstract Task DeleteDriveFolderAsync(string folderId);
     public abstract Task<int> GetOnlineUserCountAsync();
-    public abstract Task<Stats> GetStatsAsync();
 
     /// <summary>
     /// Disposes this client.

@@ -20,15 +20,6 @@ public class HomeInstance
     public async Task<Meta> RefreshMetaAsync()
         => this.Meta = await this.Misskey.ApiClient.GetMetaAsync();
     
-    public Stats? Stats { get; internal set; }
-    
-    /// <summary>
-    /// Updates the stats for this class, returning the stats object it grabbed
-    /// </summary>
-    /// <returns></returns>
-    public async Task<Stats> RefreshStatsAsync()
-        => this.Stats = await this.Misskey.ApiClient.GetStatsAsync();
-    
     /// <summary>
     /// Gets a list of ips for a given user
     /// </summary>
@@ -36,42 +27,6 @@ public class HomeInstance
     /// <returns></returns>
     public async Task<IReadOnlyList<AdminUserIp>> GetUserIpsAsync(string userId)
         => await this.Misskey.ApiClient.GetUserIpsAsync(userId);
-    
-    /// <summary>
-    /// Add a relay to the server
-    /// </summary>
-    /// <param name="inbox">The url to the relay's inbox</param>
-    /// <returns></returns>
-    public async Task<Relay?> AddRelayAsync(Uri inbox)
-        => await this.Misskey.ApiClient.AddRelayAsync(inbox);
-    
-    /// <summary>
-    /// List all relays on the instance
-    /// </summary>
-    /// <returns></returns>
-    public async Task<IReadOnlyList<Relay>> GetRelaysAsync()
-        => await this.Misskey.ApiClient.GetRelaysAsync();
-
-    /// <summary>
-    /// Removes a relay from the server
-    /// </summary>
-    /// <param name="inbox"></param>
-    public async Task DeleteRelayAsync(Uri inbox)
-        => await this.Misskey.ApiClient.DeleteRelayAsync(inbox);
-
-    /// <summary>
-    /// Gets the server info from the instance
-    /// </summary>
-    /// <returns></returns>
-    public async Task<ServerInfo?> GetServerInfoAsync()
-        => await this.Misskey.ApiClient.GetServerInfoAsync();
-
-    /// <summary>
-    /// Gets the admin server info from the instance
-    /// </summary>
-    /// <returns></returns>
-    public async Task<AdminServerInfo?> GetAdminServerInfoAsync()
-        => await this.Misskey.ApiClient.GetAdminServerInfoAsync();
     
     /// <summary>
     /// Deletes a user
