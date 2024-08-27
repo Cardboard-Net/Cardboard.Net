@@ -2,7 +2,7 @@ using Cardboard.Roles;
 
 namespace Cardboard.Users;
 
-public interface IUser
+public interface IUser : IMisskeyEntity
 {
     /// <summary>
     /// The optional display name of the user

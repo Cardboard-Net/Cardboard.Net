@@ -4,7 +4,10 @@ namespace Cardboard.Net.Rest;
 
 public class MisskeyRestClient : BaseMisskeyClient
 {
-
+    public new RestSelfUser CurrentUser { get => base.CurrentUser as RestSelfUser; internal set => base.CurrentUser = value; }
+    
+    public MisskeyRestClient() : this(new MisskeyConfig()) { }
+    
     public MisskeyRestClient(MisskeyConfig config) : base(config, CreateApiClient(config))
     {
         
@@ -18,7 +21,7 @@ public class MisskeyRestClient : BaseMisskeyClient
     internal override async Task OnLoginAsync(string token, Uri baseUrl)
     {
         var user = await ApiClient.GetSelfUserAsync().ConfigureAwait(false);
-        Console.WriteLine(user.Name);
+        Console.WriteLine(user.Name); 
     }
     
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
