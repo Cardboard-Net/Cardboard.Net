@@ -1,4 +1,3 @@
-using Cardboard.Net.Entities.Users;
 using Cardboard.Rest;
 using Cardboard.Roles;
 using Cardboard.Users;
@@ -72,6 +71,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     
     public IUserInstance Instance { get; private set; }
     public StatusType OnlineStatus { get; private set; }
+    
     public IReadOnlyList<IBadgeRole> BadgeRoles { get; private set; }
     public Uri? Url { get; private set; }
     public Uri? Uri { get; private set; }

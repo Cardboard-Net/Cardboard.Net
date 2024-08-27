@@ -346,7 +346,7 @@ public enum AchievementType
     /// <summary>
     /// Have the speed of your home timeline exceed 20 notes per minute
     /// </summary>
-    [EnumMember(Value = "ht120npm")]
+    [EnumMember(Value = "htl20npm")]
     FloodedTimeline,
     /// <summary>
     /// View your instance's charts
