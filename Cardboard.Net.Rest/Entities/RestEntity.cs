@@ -1,19 +1,14 @@
 namespace Cardboard.Rest;
 
-public abstract class RestEntity : IMisskeyEntity
+public abstract class RestEntity<T> : IEntity<T>
+    where T : IEquatable<T>
 {
     internal BaseMisskeyClient Misskey { get; }
-    public string Id { get; }
+    public T Id { get; }
 
-    internal RestEntity(BaseMisskeyClient misskey, string id)
+    internal RestEntity(BaseMisskeyClient misskey, T id)
     {
         Misskey = misskey;
         Id = id;
-    }
-    
-    public bool Equals(string? other)
-    {
-        if (other is null) return false;
-        return Id == other;
     }
 }
