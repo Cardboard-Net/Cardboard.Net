@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cardboard.Net.Rest\Cardboard.Net.Rest.csproj" />
-      <ProjectReference Include="..\Cardboard.Net\Cardboard.Net.csproj" />
     </ItemGroup>
 
 </Project>

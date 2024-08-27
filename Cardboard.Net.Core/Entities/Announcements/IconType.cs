@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Cardboard.Net.Entities.Instance.Announcements;
+namespace Cardboard.Announcements;
 
 [JsonConverter(typeof(StringEnumConverter))]
 public enum IconType
