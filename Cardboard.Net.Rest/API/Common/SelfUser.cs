@@ -6,7 +6,7 @@ namespace Cardboard.Net.Rest.API;
 // TODO: finish later
 internal class SelfUser : User
 {
-    [JsonProperty("")]
+    [JsonProperty("hasUnreadNotifications")]
     public bool HasUnreadNotifications { get; set; }
     
     [JsonProperty("hasPendingReceivedFollowRequest")]
