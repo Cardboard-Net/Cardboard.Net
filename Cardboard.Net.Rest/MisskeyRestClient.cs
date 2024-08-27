@@ -24,6 +24,9 @@ public class MisskeyRestClient : BaseMisskeyClient
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
         => new MisskeyRestApiClient(MisskeyConfig.UserAgent);
     
-    public Task<RestUser> GetUserAsync(string userId)
-        => ClientHelper.GetUserAsync(this, userId);
+    public async Task<RestUser> GetUserAsync(string userId)
+        => await ClientHelper.GetUserAsync(this, userId);
+
+    public async Task ReportUserAsync(string userId, string comment)
+        => await ApiClient.ReportUserAsync(userId, comment);
 }

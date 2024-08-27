@@ -55,6 +55,8 @@ internal class MisskeyRestApiClient : IDisposable
         finally { _stateLock.Release(); }
     }
     
+    #region Users
+    
     public async Task<SelfUser> GetSelfUserAsync()
     {
         return await SendRequestAsync<SelfUser>("/api/i");
@@ -64,6 +66,11 @@ internal class MisskeyRestApiClient : IDisposable
     {
         return await SendRequestAsync<User>($"/api/users/show", JsonConvert.SerializeObject(new { userId = id}));
     }
+    
+    public async Task ReportUserAsync(string id, string comment)
+        => await SendRequestAsync("/api/users/report-abuse", JsonConvert.SerializeObject(new { userId = id, comment = comment}));
+    
+    #endregion
     
     internal async Task<T?> SendRequestAsync<T>(string endpoint, string body = "{}")
     {

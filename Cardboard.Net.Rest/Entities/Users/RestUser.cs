@@ -16,21 +16,60 @@ namespace Cardboard.Rest;
  * transformations so I have a "working" library again. We will clean up this
  * later.
  */
-public class RestUser : RestEntity, IUser, IUpdateable
+
+[Flags]
+internal enum UserFlags : int
 {
+    None       = 0,
+    Admin      = 1 << 0,
+    Moderator  = 1 << 1,
+    Silenced   = 1 << 2,
+    NoIndex    = 1 << 3,
+    Bot        = 1 << 4,
+    Cat        = 1 << 5,
+    SpeakAsCat = 1 << 6,
+    Locked     = 1 << 7,
+    Suspended  = 1 << 8
+}
+
+public class RestUser : RestEntity<string>, IUser, IUpdateable
+{
+    private UserFlags _flags = UserFlags.None;
+    
+    public bool IsAdmin 
+        => _flags.HasFlag(UserFlags.Admin);
+    
+    public bool IsModerator 
+        => _flags.HasFlag(UserFlags.Moderator);
+    
+    public bool IsSilenced
+        => _flags.HasFlag(UserFlags.Silenced);
+
+    public bool NoIndex
+        => _flags.HasFlag(UserFlags.NoIndex);
+
+    public bool IsBot
+        => _flags.HasFlag(UserFlags.Bot);
+
+    public bool IsCat
+        => _flags.HasFlag(UserFlags.Cat);
+
+    public bool SpeakAsCat
+        => _flags.HasFlag(UserFlags.SpeakAsCat);
+    
+    public bool IsLocked
+        => _flags.HasFlag(UserFlags.Locked);
+
+    public bool IsSuspended 
+        => _flags.HasFlag(UserFlags.Suspended);
+    
     public string? Name { get; private set; }
     public string Username { get; private set; }
     public string? Host { get; private set; }
     public Uri? AvatarUrl { get; private set; }
     public string? AvatarBlurhash { get; private set; }
     public IReadOnlyList<IUserDecoration> AvatarDecorations { get; private set; }
-    public bool IsAdmin { get; private set; }
-    public bool IsModerator { get; private set; }
-    public bool IsSilenced { get; private set; }
-    public bool NoIndex { get; private set; }
-    public bool IsBot { get; private set; }
-    public bool IsCat { get; private set; }
-    public bool SpeakAsCat { get; private set; }
+    
     public IUserInstance Instance { get; private set; }
     public StatusType OnlineStatus { get; private set; }
     public IReadOnlyList<IBadgeRole> BadgeRoles { get; private set; }
@@ -43,8 +82,6 @@ public class RestUser : RestEntity, IUser, IUpdateable
     public string? BannerBlurhash { get; private set; }
     public Uri? BackgroundUrl { get; private set; }
     public string? BackgroundBlurhash { get; private set; }
-    public bool IsLocked { get; private set; }
-    public bool IsSuspended { get; private set; }
     public string? Description { get; private set; }
     public string? Location { get; private set; }
     public string? Birthday { get; private set; }
@@ -85,6 +122,17 @@ public class RestUser : RestEntity, IUser, IUpdateable
     
     internal virtual void Update(Model model)
     {
+        // Set appropriate flags
+        if (model.IsAdmin) _flags |= UserFlags.Admin;
+        if (model.IsModerator) _flags |= UserFlags.Moderator;
+        if (model.IsSilenced) _flags |= UserFlags.Silenced;
+        if (model.NoIndex) _flags |= UserFlags.NoIndex;
+        if (model.IsBot) _flags |= UserFlags.Bot;
+        if (model.IsCat) _flags |= UserFlags.Cat;
+        if (model.SpeakAsCat) _flags |= UserFlags.SpeakAsCat;
+        if (model.IsLocked) _flags |= UserFlags.Locked;
+        if (model.IsSuspended) _flags |= UserFlags.Suspended;
+        
         this.Name = model.Name; 
         this.Username = model.Username;
         this.Host = model.Host;
@@ -92,13 +140,6 @@ public class RestUser : RestEntity, IUser, IUpdateable
         this.AvatarBlurhash = model.AvatarBlurhash;
         // TODO: Populate
         this.AvatarDecorations = [];
-        this.IsAdmin = model.IsAdmin;
-        this.IsModerator = model.IsModerator;
-        this.IsSilenced = model.IsSilenced;
-        this.NoIndex = model.NoIndex;
-        this.IsBot = model.IsBot;
-        this.IsCat = model.IsCat;
-        this.SpeakAsCat = model.SpeakAsCat;
         this.OnlineStatus = model.OnlineStatus;
         this.Url = model.Url;
         this.Uri = model.Uri;
@@ -108,8 +149,6 @@ public class RestUser : RestEntity, IUser, IUpdateable
         this.BannerBlurhash = model.BannerBlurhash;
         this.BackgroundUrl = model.BackgroundUrl;
         this.BackgroundBlurhash = model.BackgroundBlurhash;
-        this.IsLocked = model.IsLocked;
-        this.IsSuspended = model.IsSuspended;
         this.Description = model.Description;
         this.Location = model.Location;
         this.Birthday = model.Birthday;
@@ -142,7 +181,55 @@ public class RestUser : RestEntity, IUser, IUpdateable
     
     public virtual async Task UpdateAsync()
     {
-        //var model = await Misskey.ApiClient.GetUserAsync()
-        throw new NotImplementedException();
+        var model = await Misskey.ApiClient.GetUserAsync(Id);
+        Update(model);
     }
+    
+    /*
+     * We have a lot to do, I will list them out here...
+     *
+     * User relation:
+     * TODO: following/operation/following___update
+     * TODO: following/operation/following___invalidate
+     * TODO: following/operation/following___requests___accept
+     * TODO: following/operation/following___requests___cancel
+     * TODO: following/operation/following___requests___reject
+     *
+     * User administration:
+     *
+     * TODO: admin/operation/admin___announcements___create (I want to populate userId with this.Id)
+     * Task<Announcement> CreateAnnouncementAsync()
+     * TODO: admin/operation/admin___delete-all-files-of-a-user
+     * Task DeleteAllFilesAsync();
+     * TODO: admin/operation/admin___unset-user-avatar
+     * Task UnsetAvatarAsync();
+     * TODO: admin/operation/admin___unset-user-banner
+     * Task UnsetBannerAsync();
+     * TODO: admin/operation/admin___get-user-ips
+     * Task<IReadOnlyList<UserIp>> GetIpsAsync();
+     * TODO: admin/operation/admin___show-user
+     * TODO: admin/operation/admin___silence-user
+     * Task SilenceAsync();
+     *
+     * TODO:
+     */
+
+    /// <summary>
+    /// Reports the user to your home instance
+    /// </summary>
+    public async Task ReportAsync(string message)
+        => await Misskey.ApiClient.ReportUserAsync(this.Id, message);
+
+    /// <summary>
+    /// Follows the user (or sends a follow request)
+    /// </summary>
+    /// <param name="withReplies">Whether you'd like to see their replies in timeline</param>
+    Task FollowAsync(bool withReplies = false)
+        => throw new NotImplementedException();
+
+    /// <summary>
+    /// Unfollows the user
+    /// </summary>
+    Task UnfollowAsync()
+        => throw new NotImplementedException();
 }
