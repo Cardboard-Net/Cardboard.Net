@@ -19,48 +19,92 @@ namespace Cardboard.Rest;
 [Flags]
 internal enum UserFlags : int
 {
-    None       = 0,
-    Admin      = 1 << 0,
-    Moderator  = 1 << 1,
-    Silenced   = 1 << 2,
-    NoIndex    = 1 << 3,
-    Bot        = 1 << 4,
-    Cat        = 1 << 5,
-    SpeakAsCat = 1 << 6,
-    Locked     = 1 << 7,
-    Suspended  = 1 << 8
+    None            = 0,
+    Admin           = 1 << 0,
+    Moderator       = 1 << 1,
+    Silenced        = 1 << 2,
+    NoIndex         = 1 << 3,
+    Bot             = 1 << 4,
+    Cat             = 1 << 5,
+    SpeakAsCat      = 1 << 6,
+    Locked          = 1 << 7,
+    Suspended       = 1 << 8,
+    PublicReactions = 1 << 9,
+}
+
+[Flags]
+internal enum RelationFlags : int
+{
+    None = 0,
+    OutgoingFollowReq = 1 << 0,
+    IncomingFollowReq = 1 << 1,
+    Followed          = 1 << 2,
+    Following         = 1 << 3,
+    Blocked           = 1 << 4,
+    Blocking          = 1 << 5,
+    Muted             = 1 << 6,
+    RenoteMuted       = 1 << 7
+}
+
+public class Relation
+{
+    private RelationFlags _relationFlags = RelationFlags.None;
+    public bool HasOutgoingFollowRequest 
+        => _relationFlags.HasFlag(RelationFlags.OutgoingFollowReq);
+    public bool HasIncomingFollowRequest
+        => _relationFlags.HasFlag(RelationFlags.IncomingFollowReq);
+    public bool IsFollowed 
+        => _relationFlags.HasFlag(RelationFlags.Followed);
+    public bool IsFollowing
+        => _relationFlags.HasFlag(RelationFlags.Following);
+    public bool IsBlocked 
+        => _relationFlags.HasFlag(RelationFlags.Blocked);
+    public bool IsBlocking
+        => _relationFlags.HasFlag(RelationFlags.Blocking);
+    public bool IsMuted 
+        => _relationFlags.HasFlag(RelationFlags.Muted);
+    public bool IsRenoteMuted 
+        => _relationFlags.HasFlag(RelationFlags.RenoteMuted);
+
+    internal Relation(RelationFlags flags)
+    {
+        _relationFlags = flags;
+    }
 }
 
 public class RestUser : RestEntity<string>, IUser, IUpdateable
 {
-    private UserFlags _flags = UserFlags.None;
+    private UserFlags _userFlags = UserFlags.None;
     
     public bool IsAdmin 
-        => _flags.HasFlag(UserFlags.Admin);
+        => _userFlags.HasFlag(UserFlags.Admin);
     
     public bool IsModerator 
-        => _flags.HasFlag(UserFlags.Moderator);
+        => _userFlags.HasFlag(UserFlags.Moderator);
     
     public bool IsSilenced
-        => _flags.HasFlag(UserFlags.Silenced);
+        => _userFlags.HasFlag(UserFlags.Silenced);
 
     public bool NoIndex
-        => _flags.HasFlag(UserFlags.NoIndex);
+        => _userFlags.HasFlag(UserFlags.NoIndex);
 
     public bool IsBot
-        => _flags.HasFlag(UserFlags.Bot);
+        => _userFlags.HasFlag(UserFlags.Bot);
 
     public bool IsCat
-        => _flags.HasFlag(UserFlags.Cat);
+        => _userFlags.HasFlag(UserFlags.Cat);
 
     public bool SpeakAsCat
-        => _flags.HasFlag(UserFlags.SpeakAsCat);
+        => _userFlags.HasFlag(UserFlags.SpeakAsCat);
     
     public bool IsLocked
-        => _flags.HasFlag(UserFlags.Locked);
+        => _userFlags.HasFlag(UserFlags.Locked);
 
     public bool IsSuspended 
-        => _flags.HasFlag(UserFlags.Suspended);
+        => _userFlags.HasFlag(UserFlags.Suspended);
+    
+    public bool PublicReactions 
+        => _userFlags.HasFlag(UserFlags.PublicReactions);
     
     public string? Name { get; private set; }
     public string Username { get; private set; }
@@ -91,7 +135,6 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public int FollowersCount { get; private set; }
     public int FollowingCount { get; private set; }
     public int NotesCount { get; private set; }
-    public bool PublicReactions { get; private set; }
     public FollowVisibilityType FollowingVisibility { get; private set; }
     public FollowVisibilityType FollowersVisibility { get; private set; }
     public bool TwoFactorEnabled { get; private set; }
@@ -99,14 +142,8 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public bool SecurityKeys { get; private set; }
     public string? Memo { get; private set; }
     public string ModerationNote { get; private set; }
-    public bool HasOutgoingFollowRequest { get; private set; }
-    public bool HasIncomingFollowRequest { get; private set; }
-    public bool IsFollowed { get; private set; }
-    public bool IsFollowing { get; private set; }
-    public bool IsBlocked { get; private set; }
-    public bool IsBlocking { get; private set; }
-    public bool IsMuted { get; private set; }
-    public bool IsRenoteMuted { get; private set; }
+    
+    public Relation Relation { get; private set; }
     
     public NotifyType Notify { get; private set; }
     public bool WithReplies { get; private set; }
@@ -123,15 +160,16 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     internal virtual void Update(Model model)
     {
         // Set appropriate flags
-        if (model.IsAdmin) _flags |= UserFlags.Admin;
-        if (model.IsModerator) _flags |= UserFlags.Moderator;
-        if (model.IsSilenced) _flags |= UserFlags.Silenced;
-        if (model.NoIndex) _flags |= UserFlags.NoIndex;
-        if (model.IsBot) _flags |= UserFlags.Bot;
-        if (model.IsCat) _flags |= UserFlags.Cat;
-        if (model.SpeakAsCat) _flags |= UserFlags.SpeakAsCat;
-        if (model.IsLocked) _flags |= UserFlags.Locked;
-        if (model.IsSuspended) _flags |= UserFlags.Suspended;
+        if (model.IsAdmin) _userFlags |= UserFlags.Admin;
+        if (model.IsModerator) _userFlags |= UserFlags.Moderator;
+        if (model.IsSilenced) _userFlags |= UserFlags.Silenced;
+        if (model.NoIndex) _userFlags |= UserFlags.NoIndex;
+        if (model.IsBot) _userFlags |= UserFlags.Bot;
+        if (model.IsCat) _userFlags |= UserFlags.Cat;
+        if (model.SpeakAsCat) _userFlags |= UserFlags.SpeakAsCat;
+        if (model.IsLocked) _userFlags |= UserFlags.Locked;
+        if (model.IsSuspended) _userFlags |= UserFlags.Suspended;
+        if (model.PublicReactions) _userFlags |= UserFlags.PublicReactions;
         
         this.Name = model.Name; 
         this.Username = model.Username;
@@ -159,7 +197,6 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         this.FollowersCount = model.FollowersCount;
         this.FollowingCount = model.FollowingCount;
         this.NotesCount = model.NotesCount;
-        this.PublicReactions = model.PublicReactions;
         this.FollowingVisibility = model.FollowingVisibility;
         this.FollowersVisibility = model.FollowersVisibility;
         this.TwoFactorEnabled = model.TwoFactorEnabled;
@@ -167,14 +204,20 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         this.SecurityKeys = model.SecurityKeys;
         this.Memo = model.Memo;
         this.ModerationNote = model.ModerationNote;
-        this.HasOutgoingFollowRequest = model.HasOutgoingFollowRequest;
-        this.HasIncomingFollowRequest = model.HasIncomingFollowRequest;
-        this.IsFollowed = model.IsFollowed;
-        this.IsFollowing = model.IsFollowing;
-        this.IsBlocked = model.IsBlocked;
-        this.IsBlocking = model.IsBlocking;
-        this.IsMuted = model.IsMuted;
-        this.IsRenoteMuted = model.IsRenoteMuted;
+        
+        RelationFlags relationFlags = RelationFlags.None;
+        
+        if (model.HasOutgoingFollowRequest) relationFlags |= RelationFlags.OutgoingFollowReq;
+        if (model.HasIncomingFollowRequest) relationFlags |= RelationFlags.IncomingFollowReq;
+        if (model.IsFollowed) relationFlags |= RelationFlags.Followed;
+        if (model.IsFollowing) relationFlags |= RelationFlags.Following;
+        if (model.IsBlocked) relationFlags |= RelationFlags.Blocked;
+        if (model.IsBlocking) relationFlags |= RelationFlags.Blocking;
+        if (model.IsMuted) relationFlags |= RelationFlags.Muted;
+        if (model.IsRenoteMuted) relationFlags |= RelationFlags.RenoteMuted;
+
+        Relation = new Relation(relationFlags);
+        
         this.Notify = model.Notify;
         this.WithReplies = model.WithReplies;
     }
