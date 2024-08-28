@@ -66,6 +66,7 @@ internal class AdminMeta
 
     [JsonProperty("app192IconUrl")]
     public Uri? App192IconUrl {get;set;}
+    
     [JsonProperty("app512IconUrl")]
     public Uri? App512IconUrl {get;set;}
 
@@ -100,7 +101,7 @@ internal class AdminMeta
     public string[] BannedEmailDomains {get; set;}
 
     [JsonProperty("preservedUsernames")]
-    public string[] PinnedUsers {get; set;}
+    public string[] PreservedUsernames {get; set;}
 
     [JsonProperty("bubbleInstances")]
     public string[] BubbleInstances {get; set;}
@@ -146,7 +147,7 @@ internal class AdminMeta
     public string? SmtpHost {get; set;}
 
     [JsonProperty("smtpPort")]
-    public number? SmtpPort {get; set;}
+    public int? SmtpPort {get; set;}
 
     [JsonProperty("smtpUser")]
     public string? SmtpUser {get; set;}
@@ -157,8 +158,7 @@ internal class AdminMeta
 
     [JsonProperty("swPrivateKey")]
     public string? SwPrivateKey {get; set;}
-
-    // #region Object Storage
+    
     [JsonProperty("useObjectStorage")]
     public bool UseObjectStorage {get; set;}
 
@@ -178,7 +178,7 @@ internal class AdminMeta
     public string? ObjectStorageRegion {get; set;}
 
     [JsonProperty("objectStoragePort")]
-    public number? ObjectStoragePort {get; set;}
+    public int? ObjectStoragePort {get; set;}
 
     [JsonProperty("objectStorageAccessKey")]
     public string? ObjectStorageAccessKey {get; set;}
@@ -197,7 +197,6 @@ internal class AdminMeta
 
     [JsonProperty("objectStorageS3ForcePathStyle")]
     public bool ObjectStorageS3ForcePathStyle {get; set;}
-    //#endregion
 
     [JsonProperty("enableIpLogging")]
     public bool EnableIpLogging {get; set;}
@@ -329,10 +328,10 @@ internal class AdminMeta
     public bool UrlPreviewEnabled {get; set;}
     
     [JsonProperty("urlPreviewTimeout")]
-    public number UrlPreviewTimeout {get; set;}
+    public int UrlPreviewTimeout {get; set;}
 
     [JsonProperty("urlPreviewMaximumContentLength")]
-    public number UrlPreviewMaximumContentLength {get; set}
+    public int UrlPreviewMaximumContentLength {get; set;  }
 
     [JsonProperty("urlPreviewRequireContentLength")]
     public bool UrlPreviewRequireContentLength {get; set;}
