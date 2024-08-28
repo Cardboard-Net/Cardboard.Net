@@ -4,262 +4,260 @@ using System.Text;
 
 namespace Cardboard.Net.Websocket;
 
-public class WebSocketClient : IWebSocketClient
+internal class WebSocketClient : IWebSocketClient, IDisposable
 {
+    public const int ReceiveChunkSize = 16384; 
+    public const int SendChunkSize = 16384;
 
-    private const int OutgoingChunkSize = 16384;
-    private const int IncomingChunkSize = 16384;
+    public event Func<byte[], int, int, Task> BinaryMessage;
+    public event Func<string, Task> TextMessage;
+    public event Func<Exception, Task> Closed;
 
-    public IReadOnlyDictionary<string, string> DefaultHeaders { get; }
-
-    public bool IsConnected 
-        => this.IsConnected;
-
-    private readonly Dictionary<string, string> defaultHeaders;
-
-    private Task receiverTask;
-    private CancellationTokenSource receiverTokenSource;
-    private CancellationToken receiverToken;
-    private readonly SemaphoreSlim senderLock;
-
-    private CancellationTokenSource socketTokenSource;
-    private CancellationToken socketToken;
-    private ClientWebSocket ws;
-
-    private volatile bool isClientClose = false;
-    private volatile bool isConnected = false;
-    private bool isDisposed = false;
+    private readonly SemaphoreSlim _lock;
+    private readonly Dictionary<string, string> _headers;
+    private ClientWebSocket _client;
+    private Task _task;
+    private CancellationTokenSource _disconnectTokenSource, _cancelTokenSource;
+    private CancellationToken _cancelToken, _parentToken;
+    private bool _isDisposed, _isDisconnecting;
 
     public WebSocketClient()
     {
-        this.defaultHeaders = [];
-        this.DefaultHeaders = new ReadOnlyDictionary<string, string>(this.defaultHeaders);
-
-        this.receiverTokenSource = null;
-        this.receiverToken = CancellationToken.None;
-        this.senderLock = new SemaphoreSlim(1);
-
-        this.socketTokenSource = null;
-        this.socketToken = CancellationToken.None;
+        _lock = new SemaphoreSlim(1, 1);
+        _disconnectTokenSource = new CancellationTokenSource();
+        _cancelToken = CancellationToken.None;
+        _parentToken = CancellationToken.None;
+        _headers = new Dictionary<string, string>();
+    }
+    private void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                DisconnectInternalAsync(isDisposing: true).GetAwaiter().GetResult();
+                _disconnectTokenSource?.Dispose();
+                _cancelTokenSource?.Dispose();
+                _lock?.Dispose();
+            }
+            _isDisposed = true;
+        }
+    }
+    public void Dispose()
+    {
+        Dispose(true);
     }
 
-    public async Task ConnectAsync(Uri uri)
+    public async Task ConnectAsync(string host)
     {
-        // Disconnect first
+        await _lock.WaitAsync().ConfigureAwait(false);
         try
         {
-            await DisconnectAsync();
-        }
-        catch { }
-
-        // Disallow sending messages
-        await this.senderLock.WaitAsync();
-
-        try
-        {
-            // This can be null at this point
-            this.receiverTokenSource?.Dispose();
-            this.socketTokenSource?.Dispose();
-
-            this.ws?.Dispose();
-            this.ws = new ClientWebSocket();
-            this.ws.Options.KeepAliveInterval = TimeSpan.Zero;
-            if (this.defaultHeaders != null)
-            {
-                foreach ((string k, string v) in this.defaultHeaders)
-                {
-                    this.ws.Options.SetRequestHeader(k, v);
-                }
-            }
-
-            this.receiverTokenSource = new CancellationTokenSource();
-            this.receiverToken = this.receiverTokenSource.Token;
-
-            this.socketTokenSource = new CancellationTokenSource();
-            this.socketToken = this.socketTokenSource.Token;
-
-            this.isClientClose = false;
-            this.isDisposed = false;
-            await this.ws.ConnectAsync(uri, this.socketToken);
-            this.receiverTask = Task.Run(ReceiverLoopAsync, this.receiverToken);
+            await ConnectInternalAsync(host).ConfigureAwait(false);
         }
         finally
         {
-            this.senderLock.Release();
+            _lock.Release();
         }
     }
-
-    public async Task DisconnectAsync()
+    private async Task ConnectInternalAsync(string host)
     {
-        // Ensure that messages cannot be sent
-        await this.senderLock.WaitAsync();
+        await DisconnectInternalAsync().ConfigureAwait(false);
+
+        _disconnectTokenSource?.Dispose();
+        _cancelTokenSource?.Dispose();
+
+        _disconnectTokenSource = new CancellationTokenSource();
+        _cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(_parentToken, _disconnectTokenSource.Token);
+        _cancelToken = _cancelTokenSource.Token;
+
+        _client?.Dispose();
+        _client = new ClientWebSocket();
+        _client.Options.KeepAliveInterval = TimeSpan.Zero;
+        foreach (var header in _headers)
+        {
+            if (header.Value != null)
+                _client.Options.SetRequestHeader(header.Key, header.Value);
+        }
+
+        await _client.ConnectAsync(new Uri(host), _cancelToken).ConfigureAwait(false);
+        _task = RunAsync(_cancelToken);
+    }
+
+    public async Task DisconnectAsync(int closeCode = 1000)
+    {
+        await _lock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await DisconnectInternalAsync(closeCode: closeCode).ConfigureAwait(false);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+    private async Task DisconnectInternalAsync(int closeCode = 1000, bool isDisposing = false)
+    {
+        _isDisconnecting = true;
+        
+        if (_client != null)
+        {
+            if (!isDisposing)
+            {
+                try
+                {
+                    await _client.CloseOutputAsync((WebSocketCloseStatus)closeCode, "", new CancellationToken());
+                } catch { }
+            }
+
+            try
+            {
+                _client.Dispose();
+            }
+            catch { }
+
+            try
+            {
+                _disconnectTokenSource.Cancel(false);
+            }
+            catch { }
+
+            _client = null;
+        }
 
         try
         {
-            this.isClientClose = true;
-            if (this.ws != null && (this.ws.State == WebSocketState.Open || this.ws.State == WebSocketState.CloseReceived))
-            {
-                await this.ws.CloseOutputAsync((WebSocketCloseStatus)1000, "", CancellationToken.None);
-            }
-
-            if (this.receiverTask != null)
-            {
-                await this.receiverTask; // Ensure that receiving completed
-            }
-
-            if (this.isConnected)
-            {
-                this.isConnected = false;
-            }
-
-            if (!this.isDisposed)
-            {
-                // Cancel all running tasks
-                if (this.socketToken.CanBeCanceled)
-                {
-                    this.socketTokenSource?.Cancel();
-                }
-
-                this.socketTokenSource?.Dispose();
-
-                if (this.receiverToken.CanBeCanceled)
-                {
-                    this.receiverTokenSource?.Cancel();
-                }
-
-                this.receiverTokenSource?.Dispose();
-
-                this.isDisposed = true;
-            }
+            await (_task ?? Task.Delay(0)).ConfigureAwait(false);
+            _task = null;
         }
-        catch { }
+        finally { _isDisconnecting = false; }
+    }
+    
+    private async Task OnClosed(Exception ex)
+    {
+        if (_isDisconnecting)
+            return; //Ignore, this disconnect was requested.
+
+        await _lock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await DisconnectInternalAsync(isDisposing: false);
+        }
         finally
         {
-            this.senderLock.Release();
+            _lock.Release();
         }
+        await Closed(ex);
     }
 
-    public async Task SendMessageAsync(string message)
+    public void SetHeader(string key, string value)
     {
-        if (this.ws == null)
+        _headers[key] = value;
+    }
+    
+    public void SetCancelToken(CancellationToken cancelToken)
+    {
+        _cancelTokenSource?.Dispose();
+
+        _parentToken = cancelToken;
+        _cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(_parentToken, _disconnectTokenSource.Token);
+        _cancelToken = _cancelTokenSource.Token;
+    }
+
+    public async Task SendAsync(byte[] data, int index, int count, bool isText)
+    {
+        try
+        {
+            await _lock.WaitAsync(_cancelToken).ConfigureAwait(false);
+        }
+        catch (TaskCanceledException)
         {
             return;
         }
-
-        if (this.ws.State is not WebSocketState.Open and not WebSocketState.CloseReceived)
-        {
-            return;
-        }
-
-        byte[] bytes = Encoding.UTF8.GetBytes(message);
-        await this.senderLock.WaitAsync();
         try
         {
-            int len = bytes.Length;
-            int segCount = len / OutgoingChunkSize;
-            if (len % OutgoingChunkSize != 0)
-            {
-                segCount++;
-            }
+            if (_client == null)
+                return;
 
-            for (int i = 0; i < segCount; i++)
-            {
-                int segStart = OutgoingChunkSize * i;
-                int segLen = Math.Min(OutgoingChunkSize, len - segStart);
+            int frameCount = (int)Math.Ceiling((double)count / SendChunkSize);
 
-                await this.ws.SendAsync(new ArraySegment<byte>(bytes, segStart, segLen), WebSocketMessageType.Text, i == segCount - 1, CancellationToken.None);
+            for (int i = 0; i < frameCount; i++, index += SendChunkSize)
+            {
+                bool isLast = i == (frameCount - 1);
+
+                int frameSize;
+                if (isLast)
+                    frameSize = count - (i * SendChunkSize);
+                else
+                    frameSize = SendChunkSize;
+
+                var type = isText ? WebSocketMessageType.Text : WebSocketMessageType.Binary;
+                await _client.SendAsync(new ArraySegment<byte>(data, index, count), type, isLast, _cancelToken).ConfigureAwait(false);
             }
         }
         finally
         {
-            this.senderLock.Release();
+            _lock.Release();
         }
     }
 
-    public bool AddDefaultHeader(string name, string value)
+    private async Task RunAsync(CancellationToken cancelToken)
     {
-        this.defaultHeaders[name] = value;
-        return true;
-    }
-
-    public bool RemoveDefaultHeader(string name)
-        => this.defaultHeaders.Remove(name);
-
-    internal async Task ReceiverLoopAsync()
-    {
-        await Task.Yield();
-
-        CancellationToken token = this.receiverToken;
-        ArraySegment<byte> buffer = new(new byte[IncomingChunkSize]);
+        var buffer = new ArraySegment<byte>(new byte[ReceiveChunkSize]);
 
         try
         {
-            using MemoryStream bs = new();
-            while (!token.IsCancellationRequested)
+            while (!cancelToken.IsCancellationRequested)
             {
-                // See https://github.com/RogueException/Discord.Net/commit/ac389f5f6823e3a720aedd81b7805adbdd78b66d
-                // for explanation on the cancellation token
+                WebSocketReceiveResult socketResult = await _client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
+                byte[] result;
+                int resultCount;
 
-                WebSocketReceiveResult result;
-                byte[] resultBytes;
-                do
+                if (socketResult.MessageType == WebSocketMessageType.Close)
+                    await DisconnectAsync();
+
+                if (!socketResult.EndOfMessage)
                 {
-                    result = await this.ws.ReceiveAsync(buffer, CancellationToken.None);
-
-                    if (result.MessageType == WebSocketMessageType.Close)
+                    //This is a large message (likely just READY), lets create a temporary expandable stream
+                    using (var stream = new MemoryStream())
                     {
-                        break;
+                        stream.Write(buffer.Array, 0, socketResult.Count);
+                        do
+                        {
+                            if (cancelToken.IsCancellationRequested)
+                                return;
+                            socketResult = await _client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
+                            stream.Write(buffer.Array, 0, socketResult.Count);
+                        }
+                        while (socketResult == null || !socketResult.EndOfMessage);
+
+                        //Use the internal buffer if we can get it
+                        resultCount = (int)stream.Length;
+
+                        result = stream.TryGetBuffer(out var streamBuffer) ? streamBuffer.Array : stream.ToArray();
+
                     }
-
-                    bs.Write(buffer.Array, 0, result.Count);
                 }
-                while (!result.EndOfMessage);
-
-                resultBytes = new byte[bs.Length];
-                bs.Position = 0;
-                bs.Read(resultBytes, 0, resultBytes.Length);
-                bs.Position = 0;
-                bs.SetLength(0);
-
-                if (!this.isConnected && result.MessageType != WebSocketMessageType.Close)
+                else
                 {
-                    this.isConnected = true;
+                    //Small message
+                    resultCount = socketResult.Count;
+                    result = buffer.Array;
                 }
 
-                if (result.MessageType == WebSocketMessageType.Binary)
+                if (socketResult.MessageType == WebSocketMessageType.Text)
                 {
-
+                    string text = Encoding.UTF8.GetString(result, 0, resultCount);
+                    await TextMessage(text).ConfigureAwait(false);
                 }
-                else if (result.MessageType == WebSocketMessageType.Text)
-                {
-
-                }
-                else // close
-                {
-                    if (!this.isClientClose)
-                    {
-                        WebSocketCloseStatus code = result.CloseStatus.Value;
-                        code = code is WebSocketCloseStatus.NormalClosure or WebSocketCloseStatus.EndpointUnavailable
-                            ? (WebSocketCloseStatus)4000
-                            : code;
-
-                        await this.ws.CloseOutputAsync(code, result.CloseStatusDescription, CancellationToken.None);
-                    }
-                    break;
-                }
+                else
+                    await BinaryMessage(result, 0, resultCount).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
         {
+            //This cannot be awaited otherwise we'll deadlock when DiscordApiClient waits for this task to complete.
+            var _ = OnClosed(ex);
         }
-
-        // Don't await or you deadlock
-        // DisconnectAsync waits for this method
-        _ = DisconnectAsync();
-    }
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
     }
 }
