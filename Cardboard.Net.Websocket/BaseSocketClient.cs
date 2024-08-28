@@ -7,9 +7,7 @@ public abstract partial class BaseSocketClient : BaseMisskeyClient, IMisskeyClie
     /// </summary>
     public abstract MisskeySocketRestClient Rest { get; }
     
-    internal BaseSocketClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client)
-    {
-    }
+    internal BaseSocketClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client) { }
 
     /// <inheritdoc />
     public abstract Task StartAsync();
