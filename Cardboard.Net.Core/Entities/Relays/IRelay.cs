@@ -1,6 +1,6 @@
 namespace Cardboard.Relays;
 
-public interface IRelay : IMisskeyEntity
+public interface IRelay : IMisskeyEntity, IDeletable
 {
     /// <summary>
     /// The inbox url of the relay
