@@ -16,4 +16,8 @@
       <ProjectReference Include="..\Cardboard.Net.Core\Cardboard.Net.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Entities\Relays\" />
+    </ItemGroup>
+
 </Project>
