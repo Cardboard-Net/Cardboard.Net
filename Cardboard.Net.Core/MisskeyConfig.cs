@@ -10,6 +10,9 @@ public class MisskeyConfig
     /// </returns>
     public static string UserAgent { get; } = "MisskeyBot (https://github.com/Cardboard-Net/Cardboard.Net)";
     
+    
+    public int ConnectionTimeout { get; set; } = 60;
+    
     /// <summary>
     ///     Returns the maximum amount of poll choices
     /// </summary>
