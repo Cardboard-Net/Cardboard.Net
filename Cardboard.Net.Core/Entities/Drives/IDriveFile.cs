@@ -2,7 +2,7 @@ using Cardboard.Users;
 
 namespace Cardboard.Drives;
 
-public interface IDriveFile : IMisskeyEntity
+public interface IDriveFile : IMisskeyEntity, IDeletable
 {
     /// <summary>
     /// When the file was created

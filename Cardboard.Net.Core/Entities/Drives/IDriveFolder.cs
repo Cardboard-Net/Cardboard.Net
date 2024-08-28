@@ -1,6 +1,6 @@
 namespace Cardboard.Drives;
 
-public interface IDriveFolder : IMisskeyEntity
+public interface IDriveFolder : IMisskeyEntity, IDeletable
 {
     /// <summary>
     /// When the folder was created

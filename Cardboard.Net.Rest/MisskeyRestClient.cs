@@ -1,4 +1,5 @@
 using Cardboard.Rest;
+using Cardboard.Rest.Drives;
 
 namespace Cardboard.Net.Rest;
 
@@ -13,10 +14,7 @@ public class MisskeyRestClient : BaseMisskeyClient
         
     }
 
-    internal MisskeyRestClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client)
-    {
-        
-    }
+    internal MisskeyRestClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client) { }
 
     internal override async Task OnLoginAsync(string token, Uri baseUrl)
     {
@@ -32,4 +30,14 @@ public class MisskeyRestClient : BaseMisskeyClient
 
     public async Task ReportUserAsync(string userId, string comment)
         => await ApiClient.ReportUserAsync(userId, comment);
+    
+    public async Task UploadFileAsync(Uri url, string? folderId = null, string? comment = null, string? marker = null,
+        bool? isSensitive = false, bool force = false)
+        => await ApiClient.UploadFileUriAsync(url, folderId, comment, marker, isSensitive, force);
+    
+    public async Task<RestDriveFile> GetFileAsync(string fileId)
+        => await ClientHelper.GetDriveFileAsync(this, fileId);
+
+    public async Task<RestDriveFile> GetFileAsync(Uri url)
+        => await ClientHelper.GetDriveFileAsync(this, url);
 }
