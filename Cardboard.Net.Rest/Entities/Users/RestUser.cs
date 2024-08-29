@@ -142,9 +142,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public bool SecurityKeys { get; private set; }
     public string? Memo { get; private set; }
     public string ModerationNote { get; private set; }
-    
     public Relation Relation { get; private set; }
-    
     public NotifyType Notify { get; private set; }
     public bool WithReplies { get; private set; }
 

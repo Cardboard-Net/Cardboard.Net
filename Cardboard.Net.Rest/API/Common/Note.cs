@@ -102,3 +102,18 @@ internal class Note
     [JsonProperty("myReaction")]
     public string? MyReaction { get; set; }
 }
+
+internal class Poll
+{
+    [JsonProperty("choices")]
+    public string[] Choices { get; set; }
+    
+    [JsonProperty("multiple")]
+    public bool MultipleChoice { get; set; }
+    
+    [JsonProperty("expiresAt")]
+    public ulong ExpiresAt { get; set; }
+    
+    [JsonProperty("expiredAfter")]
+    public ulong ExpiresAfter { get; set; }
+}

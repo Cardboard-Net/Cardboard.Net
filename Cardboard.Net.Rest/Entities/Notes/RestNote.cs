@@ -26,4 +26,28 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     {
         throw new NotImplementedException();
     }
+    
+    public async Task MuteThreadAsync() 
+        => throw new NotImplementedException();
+    
+    public async Task UnmuteThreadAsync()
+        => throw new NotImplementedException();
+    
+    // TODO: Figure out what type to return
+    public async Task GetRenotesAsync()
+        => throw new NotImplementedException();
+    
+    // TODO: Figure out what type to return
+    public async Task GetRepliesAsync() 
+        => throw new NotImplementedException();
+    
+    public async Task RenoteAsync()
+        => throw new NotImplementedException();
+    
+    public async Task UnRenoteAsync()
+        => throw new NotImplementedException();
+    
+    public async Task ModifyAsync()
+        => throw new NotImplementedException();
+    
 }
