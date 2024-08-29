@@ -275,4 +275,9 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     /// </summary>
     Task UnfollowAsync()
         => throw new NotImplementedException();
+
+    public Task DeleteAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

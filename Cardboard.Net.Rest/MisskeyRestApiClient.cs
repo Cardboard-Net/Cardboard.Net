@@ -96,6 +96,10 @@ internal class MisskeyRestApiClient : IDisposable
         => throw new NotImplementedException();
     
     // TODO: CreateFolderAsync
+
+    // saving this one for kyla, i want to teach her a basic request
+    public async Task<DriveFolder> CreateFolderAsync(string name, string? parentId = null)
+        => throw new NotImplementedException();
     
     public async Task<DriveFile> ModifyDriveFileAsync(string fileId, ModifyFileParams args)
     {

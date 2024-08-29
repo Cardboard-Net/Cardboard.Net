@@ -2,7 +2,7 @@ using Cardboard.Users;
 
 namespace Cardboard.Notes;
 
-public interface INote : IMisskeyEntity
+public interface INote : IMisskeyEntity, IDeletable
 {
     DateTime CreatedAt { get; }
     DateTime? DeletedAt { get; }
@@ -13,5 +13,6 @@ public interface INote : IMisskeyEntity
     INote? Renote { get; }
     bool IsHidden { get; }
     VisibilityType Visibility { get; }
+    
     // TODO: Mentions, visible user ids
 }
