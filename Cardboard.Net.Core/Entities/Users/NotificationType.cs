@@ -1,43 +1,95 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Cardboard.Users;
 
 /// <summary>
 /// Notification type
 /// </summary>
-[JsonConverter(typeof(StringEnumConverter))]
 public enum NotificationType
 {
     /// <summary>
-    /// All notifications
+    /// Notification for note
     /// </summary>
-    [EnumMember(Value = "all")]
-    All,
+    [EnumMember(Value = "note")] 
+    Note,
     /// <summary>
-    /// Only from users you're following
+    /// Notification for incoming follow
     /// </summary>
-    [EnumMember(Value = "following")]
-    Following,
+    [EnumMember(Value = "follow")]
+    Follow,
     /// <summary>
-    /// Only from users who follow you
+    /// Notification for mention
     /// </summary>
-    [EnumMember(Value = "follower")]
-    Follower,
+    [EnumMember(Value = "mention")]
+    Mention,
     /// <summary>
-    /// Only from mutuals
+    /// Notification for reply
     /// </summary>
-    [EnumMember(Value = "mutualFollow")]
-    MutualFollow,
+    [EnumMember(Value = "reply")]
+    Reply,
     /// <summary>
-    /// Only from users you follow, or who follow you
+    /// Notification for renote
     /// </summary>
-    [EnumMember(Value = "followingOrFollower")]
-    FollowingOrFollower,
+    [EnumMember(Value = "renote")]
+    Renote,
     /// <summary>
-    /// Never
+    /// Notification for quote
     /// </summary>
-    [EnumMember(Value = "never")]
-    Never
+    [EnumMember(Value = "quote")]
+    Quote,
+    /// <summary>
+    /// Notification for reaction
+    /// </summary>
+    [EnumMember(Value = "reaction")]
+    Reaction,
+    /// <summary>
+    /// Notification for poll ended
+    /// </summary>
+    [EnumMember(Value = "pollEnded")]
+    PollEnded,
+    /// <summary>
+    /// Notification for edited
+    /// </summary>
+    [EnumMember(Value = "edited")]
+    Edited,
+    /// <summary>
+    /// Notification for receive follow request
+    /// </summary>
+    [EnumMember(Value = "receiveFollowRequest")]
+    ReceiveFollowRequest,
+    /// <summary>
+    /// Notification for follow request accepted
+    /// </summary>
+    [EnumMember(Value = "followRequestAccepted")]
+    AcceptedFollowRequest,
+    /// <summary>
+    /// Notification for role assigned
+    /// </summary>
+    [EnumMember(Value = "roleAssigned")]
+    RoleAssigned,
+    /// <summary>
+    /// Notification for achievement earned
+    /// </summary>
+    [EnumMember(Value = "achievementEarned")]
+    AchievementEarned,
+    /// <summary>
+    /// Notification for app
+    /// </summary>
+    [EnumMember(Value = "app")]
+    App,
+    /// <summary>
+    /// Notification for test
+    /// </summary>
+    [EnumMember(Value = "test")]
+    Test,
+    /// <summary>
+    /// Notification for poll vote (Idk if this is used?)
+    /// </summary>
+    [EnumMember(Value = "pollVote")]
+    PollVote,
+    /// <summary>
+    /// Notification for group invite (Idk if this is used?)
+    /// </summary>
+    [EnumMember(Value = "groupInvited")]
+    GroupInvited
 }

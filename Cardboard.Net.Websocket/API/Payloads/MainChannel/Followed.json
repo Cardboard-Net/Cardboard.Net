@@ -1,0 +1,37 @@
+{
+  "type": "channel",
+  "body": {
+    "id": "1",
+    "type": "followed",
+    "body": {
+      "id": "9w8l0ovpxgmi0050",
+      "name": "Wrenched Amber",
+      "username": "puppygirlhornypost",
+      "host": "wrench.baby",
+      "avatarUrl": "https://transfem.social/proxy/avatar.webp?url=https%3A%2F%2Fpuppygirlsale-cdn.s3.eu-central-2.wasabisys.com%2Fsk%2F7619f005-650a-415a-8f82-aedce466d72b.webp&avatar=1",
+      "avatarBlurhash": "eNH_iLkC9Gn,%M9bS2=|soba0LR*Dis:4oI;jbITfi%M.ms:VsR*%M",
+      "description": null,
+      "createdAt": "2024-07-28T03:45:45.205Z",
+      "avatarDecorations": [],
+      "isBot": false,
+      "isCat": false,
+      "noindex": false,
+      "isSilenced": false,
+      "speakAsCat": true,
+      "approved": true,
+      "instance": {
+        "name": "When a Neocat meets a Wrench it loves very much...",
+        "softwareName": "sharkey",
+        "softwareVersion": "2024.6.0-dev",
+        "iconUrl": "https://puppygirlsale-cdn.s3.eu-central-2.wasabisys.com/sk/96b925ba-c8d4-43bb-ac16-0d880505e60f.webp",
+        "faviconUrl": "https://puppygirlsale-cdn.s3.eu-central-2.wasabisys.com/sk/96b925ba-c8d4-43bb-ac16-0d880505e60f.webp",
+        "themeColor": "#86b300"
+      },
+      "followersCount": 0,
+      "followingCount": 0,
+      "notesCount": 34,
+      "emojis": {},
+      "onlineStatus": "unknown"
+    }
+  }
+}

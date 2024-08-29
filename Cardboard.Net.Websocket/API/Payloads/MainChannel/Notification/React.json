@@ -1,0 +1,105 @@
+{
+  "type": "channel",
+  "body": {
+    "id": "1",
+    "type": "notification",
+    "body": {
+      "id": "9xj0f1kuk8zu5x4c",
+      "createdAt": "2024-08-29T15:34:13.182Z",
+      "type": "reaction",
+      "userId": "9w8l0ovpxgmi0050",
+      "user": {
+        "id": "9w8l0ovpxgmi0050",
+        "name": "Wrenched Amber",
+        "username": "puppygirlhornypost",
+        "host": "wrench.baby",
+        "avatarUrl": "https://transfem.social/proxy/avatar.webp?url=https%3A%2F%2Fpuppygirlsale-cdn.s3.eu-central-2.wasabisys.com%2Fsk%2F7619f005-650a-415a-8f82-aedce466d72b.webp&avatar=1",
+        "avatarBlurhash": "eNH_iLkC9Gn,%M9bS2=|soba0LR*Dis:4oI;jbITfi%M.ms:VsR*%M",
+        "description": null,
+        "createdAt": "2024-07-28T03:45:45.205Z",
+        "avatarDecorations": [],
+        "isBot": false,
+        "isCat": false,
+        "noindex": false,
+        "isSilenced": false,
+        "speakAsCat": true,
+        "approved": true,
+        "instance": {
+          "name": "When a Neocat meets a Wrench it loves very much...",
+          "softwareName": "sharkey",
+          "softwareVersion": "2024.6.0-dev",
+          "iconUrl": "https://puppygirlsale-cdn.s3.eu-central-2.wasabisys.com/sk/96b925ba-c8d4-43bb-ac16-0d880505e60f.webp",
+          "faviconUrl": "https://puppygirlsale-cdn.s3.eu-central-2.wasabisys.com/sk/96b925ba-c8d4-43bb-ac16-0d880505e60f.webp",
+          "themeColor": "#86b300"
+        },
+        "followersCount": 0,
+        "followingCount": 0,
+        "notesCount": 33,
+        "emojis": {},
+        "onlineStatus": "unknown"
+      },
+      "note": {
+        "id": "9xj00ihxfgi000bn",
+        "createdAt": "2024-08-29T15:22:55.269Z",
+        "userId": "9py50pj1e9wy0033",
+        "user": {
+          "id": "9py50pj1e9wy0033",
+          "name": "Amber",
+          "username": "puppygirlhornypost",
+          "host": null,
+          "avatarUrl": "https://transfem.social/proxy/avatar.webp?url=https%3A%2F%2Fcdn.transfem.social%2Ffiles%2Fwebpublic-64ed294c-b14d-444e-9d0a-46cc9cff3e28.png&avatar=1",
+          "avatarBlurhash": "eNQ,L1xu?b%MWBofM{j[ofRj~qxuD%RjWB%Mjtof%MofWBRjt7xuWB",
+          "description": "Tech Janitor; Administrator of Transfem.social, Woem.men, Lewd.lgbt, ice.puppygirl.sale, Kitsunes.club, Kitsunes.gay\n\nFedi Accounts: \n@puppygirlhornypost@transfem.social\n@puppygirlhornypost@woem.men\n@puppygirlhornypost@lewd.lgbt\n@puppygirlhornypost@ice.puppygirl.sale \n@puppygirlhornypost@kitsunes.club\n@puppygirlhornypost@kitsunes.gay\n\n* If contacting for moderation purposes please use my account local to the instance it is in regards to, I cannot see woem.men specific reports on transfem.social and vice versa. I do not and will never apply punishments made on one moderation team to the other. \n\nRetrospring\nhttps://retrospring.net/@pupgirlhornypost",
+          "createdAt": "2024-02-20T16:21:56.413Z",
+          "avatarDecorations": [],
+          "isBot": false,
+          "isCat": true,
+          "noindex": false,
+          "isSilenced": false,
+          "speakAsCat": false,
+          "approved": true,
+          "followersCount": 0,
+          "followingCount": 0,
+          "notesCount": 27901,
+          "emojis": {},
+          "onlineStatus": "unknown",
+          "badgeRoles": [
+            {
+              "name": "Administrator",
+              "iconUrl": "https://cdn.transfem.social/files/5a1e9a25-cc77-4512-a4da-2f267aceaed7.webp",
+              "displayOrder": 100
+            },
+            {
+              "name": "Staff",
+              "iconUrl": "https://cdn.transfem.social/files/334f77b8-4637-45b7-ad9a-8c02f1a66117.png",
+              "displayOrder": 90
+            },
+            {
+              "name": "Active User",
+              "iconUrl": "https://transfem.social/emoji/verifiedtrans.webp",
+              "displayOrder": 0
+            }
+          ]
+        },
+        "text": "wee",
+        "cw": null,
+        "visibility": "public",
+        "localOnly": false,
+        "reactionAcceptance": "nonSensitiveOnly",
+        "renoteCount": 1,
+        "repliesCount": 0,
+        "reactionCount": 3,
+        "reactions": {
+          "â¤": 3
+        },
+        "reactionEmojis": {},
+        "fileIds": [],
+        "files": [],
+        "replyId": null,
+        "renoteId": null,
+        "clippedCount": 0
+      },
+      "reaction": "â¤"
+    }
+  }
+}
