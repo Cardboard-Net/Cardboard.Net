@@ -112,6 +112,55 @@ internal class MisskeyRestApiClient : IDisposable
         return response.Data?.Note;
     }
     
+    public async Task<Note?> CreateDmNoteAsync
+    (
+        string? text,
+        string[] dmRecipients,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        string? replyId = null,
+        string? renoteId = null,
+        Poll? poll = null
+    )
+    {
+        CreateNoteParams note = new CreateNoteParams()
+        {
+            Text = text,
+            VisibleUserIds = dmRecipients,
+            ContentWarning = contentWarning,
+            LocalOnly = localOnly,
+            ReactionAcceptance = acceptanceType,
+            NoExtractMentions = noExtractMentions,
+            NoExtractHashtags = noExtractHashtags,
+            NoExtractEmojis = noExtractEmojis,
+            ReplyId = replyId,
+            RenoteId = renoteId,
+            Visibility = VisibilityType.Specified,
+            Poll = poll is null ? null : new PollParams()
+            {
+                Choices = poll.Choices.Select(x => x.Text).ToArray(),
+                MultipleChoice = poll.MultipleChoice,
+                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
+                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
+            }
+        };
+        RestRequest request = new RestRequest
+        {
+            Resource = "/api/notes/create"
+        };
+        request.AddJsonBody(JsonConvert.SerializeObject(note, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<CreatedNote> response = await RestClient.ExecutePostAsync<CreatedNote>(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error creating note");
+        }
+        return response.Data?.Note;
+    }
+    
     public async Task MuteNoteAsync(string id)
     {
         RestResponse response = await SendWrappedRequestAsync("/api/notes/thread-muting-create", JsonConvert.SerializeObject(new {noteId = id}));

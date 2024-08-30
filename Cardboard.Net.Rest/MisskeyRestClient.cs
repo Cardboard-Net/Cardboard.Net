@@ -2,6 +2,7 @@ using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Drives;
 using Cardboard.Rest.Notes;
+using Cardboard.Users;
 
 namespace Cardboard.Net.Rest;
 
@@ -56,6 +57,64 @@ public class MisskeyRestClient : BaseMisskeyClient
             noExtractHashtags: noExtractHashtags,
             noExtractEmojis: noExtractEmojis,
             visibilityType: visibilityType,
+            poll: poll
+        );
+
+        if (note == null)
+            throw new InvalidOperationException("unable to create note");
+
+        return note;
+    }
+
+    public async Task<RestNote> CreateDmNoteAsync
+    (
+        string text,
+        IUser[] dmRecipients,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        Poll? poll = null
+    )
+        => await CreateDmNoteAsync
+            (
+                text, 
+                dmRecipients.Select(x => x.Id).ToArray(), 
+                contentWarning, 
+                localOnly, 
+                acceptanceType, 
+                noExtractMentions, 
+                noExtractHashtags,
+                noExtractEmojis, 
+                poll
+            );
+    
+    public async Task<RestNote> CreateDmNoteAsync
+    (
+        string text,
+        string[] dmRecipients,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        Poll? poll = null
+    )
+    {
+        RestNote? note = await NoteHelper.CreateDmNoteAsync
+        (
+            this,
+            text: text,
+            dmRecipients: dmRecipients,
+            contentWarning: contentWarning, 
+            localOnly: localOnly,
+            acceptanceType: acceptanceType,
+            noExtractMentions: noExtractMentions,
+            noExtractHashtags: noExtractHashtags,
+            noExtractEmojis: noExtractEmojis,
             poll: poll
         );
 
