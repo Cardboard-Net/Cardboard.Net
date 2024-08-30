@@ -1,10 +1,12 @@
 using System.Net;
 using Cardboard.Drives;
 using Cardboard.Net.Rest.API;
+using Cardboard.Notes;
 using Cardboard.Rest.Drives;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
+using Poll = Cardboard.Notes.Poll;
 
 namespace Cardboard;
 
@@ -59,8 +61,92 @@ internal class MisskeyRestApiClient : IDisposable
     
     #region Notes
 
-    public async Task<Note> GetNoteAsync(string id)
+    public async Task<Note?> GetNoteAsync(string id)
         => await SendRequestAsync<Note>("/api/notes/show", JsonConvert.SerializeObject(new { noteId = id }));
+
+    public async Task<Note?> CreateNoteAsync
+    (
+        string? text,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        string? replyId = null,
+        string? renoteId = null,
+        VisibilityType? visibilityType = null,
+        Poll? poll = null
+    )
+    {
+        CreateNoteParams note = new CreateNoteParams()
+        {
+            Text = text,
+            ContentWarning = contentWarning,
+            LocalOnly = localOnly,
+            ReactionAcceptance = acceptanceType,
+            NoExtractMentions = noExtractMentions,
+            NoExtractHashtags = noExtractHashtags,
+            NoExtractEmojis = noExtractEmojis,
+            ReplyId = replyId,
+            RenoteId = renoteId,
+            Visibility = visibilityType,
+            Poll = poll is null ? null : new PollParams()
+            {
+                Choices = poll.Choices.Select(x => x.Text).ToArray(),
+                MultipleChoice = poll.MultipleChoice,
+                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
+                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
+            }
+        };
+        RestRequest request = new RestRequest
+        {
+            Resource = "/api/notes/create"
+        };
+        request.AddJsonBody(JsonConvert.SerializeObject(note, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<CreatedNote> response = await RestClient.ExecutePostAsync<CreatedNote>(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error creating note");
+        }
+        return response.Data?.Note;
+    }
+    
+    public async Task MuteNoteAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/notes/thread-muting-create", JsonConvert.SerializeObject(new {noteId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to mute note");
+        }
+    }
+    
+    public async Task UnmuteNoteAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/notes/thread-muting-delete", JsonConvert.SerializeObject(new {noteId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to unmute note");
+        }
+    }
+    
+    public async Task FavoriteNoteAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/notes/favorites/create", JsonConvert.SerializeObject(new {noteId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to favorite note");
+        }
+    }
+    
+    public async Task UnfavoriteNoteAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/notes/favorites/delete", JsonConvert.SerializeObject(new {noteId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to unfavorite note");
+        }
+    }
     
     public async Task DeleteNoteAsync(string id)
     {
