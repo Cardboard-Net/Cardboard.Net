@@ -11,7 +11,7 @@ public class PollBuilder
         get => this.expiresAt;
         set
         {
-            if (value != null && this.expiresAfter is not null)
+            if (value != null && this.expiresAfter != null)
             {
                 throw new ArgumentException("Cannot set expires at and expires after");
             }
@@ -26,7 +26,7 @@ public class PollBuilder
         get => this.expiresAfter;
         set
         {
-            if (value != null && this.expiresAt is not null)
+            if (value != null && this.expiresAt != null)
             {
                 throw new ArgumentException("Cannot set expires after and expires at");
             }

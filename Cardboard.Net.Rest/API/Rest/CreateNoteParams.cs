@@ -9,8 +9,8 @@ internal class CreateNoteParams
     [JsonProperty("visibility")]
     public VisibilityType? Visibility { get; set; }
     
-    [JsonProperty("visibileUserIds")]
-    public string[]? VisibileUserIds { get; set; }
+    [JsonProperty("visibleUserIds")]
+    public string[]? VisibleUserIds { get; set; }
 
     [JsonProperty("cw")]
     public string? ContentWarning { get; set; }

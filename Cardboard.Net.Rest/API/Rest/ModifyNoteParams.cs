@@ -5,29 +5,32 @@ namespace Cardboard.Net.Rest.API;
 
 internal class ModifyNoteParams
 {
-    [JsonProperty("visibility")]
-    public VisibilityType Visibility { get; set; }
+    [JsonProperty("editId")]
+    public required string Id { get; set; }
     
-    [JsonProperty("visibileUserIds")]
-    public string[] VisibileUserIds { get; set; }
+    [JsonProperty("visibility")]
+    public VisibilityType? Visibility { get; set; }
+    
+    [JsonProperty("visibleUserIds")]
+    public string[]? VisibleUserIds { get; set; }
 
     [JsonProperty("cw")]
-    public string ContentWarning { get; set; }
+    public string? ContentWarning { get; set; }
     
     [JsonProperty("localOnly")]
-    public bool LocalOnly { get; set; }
+    public bool? LocalOnly { get; set; }
     
     [JsonProperty("reactionAcceptance")]
-    public AcceptanceType ReactionAcceptance { get; set; }
+    public AcceptanceType? ReactionAcceptance { get; set; }
     
     [JsonProperty("noExtractMentions")]
-    public bool NoExtractMentions { get; set; }
+    public bool? NoExtractMentions { get; set; }
     
     [JsonProperty("noExtractHashtags")]
-    public string NoExtractHashtags { get; set; }
+    public bool? NoExtractHashtags { get; set; }
     
     [JsonProperty("noExtractEmojis")]
-    public string NoExtractEmojis { get; set; }
+    public bool? NoExtractEmojis { get; set; }
     
     [JsonProperty("replyId")]
     public string? ReplyId { get; set; }
@@ -39,13 +42,14 @@ internal class ModifyNoteParams
     public string? ChannelId { get; set; }
     
     [JsonProperty("text")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
     
     [JsonProperty("fileIds")]
-    public string[] FileIds { get; set; }
+    public string[]? FileIds { get; set; }
     
     [JsonProperty("mediaIds")]
-    public string[] MediaIds { get; set; }
+    public string[]? MediaIds { get; set; }
 
-    // TODO: Poll
+    [JsonProperty("poll")]
+    public PollParams? Poll { get; set; }
 }

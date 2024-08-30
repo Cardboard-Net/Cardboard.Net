@@ -16,15 +16,41 @@ public class DriveFileProperties
     /// <remarks>
     ///     If the parent object is set, this cannot be set.
     /// </remarks>
-    public string? ParentId { get; set; }
-    
+    public string? ParentId 
+    { 
+        get => this.parentId;
+        set
+        {
+            if (value != null && this.parent != null)
+            {
+                throw new ArgumentException("Cannot set parentId and parent");
+            }
+
+            this.parentId = value;
+        } 
+    }
+    private string? parentId;
+
     /// <summary>
-    ///     Gets or sets the parent object of the file
+    ///     Gets or sets the parent folder of the file
     /// </summary>
     /// <remarks>
     ///     If the parent id is set, this cannot be set.
     /// </remarks>
-    public IDriveFolder? Parent{ get; set; }
+    public IDriveFolder? Parent
+    {
+        get => this.parent;
+        set
+        {
+            if (value != null && this.parentId != null)
+            {
+                throw new ArgumentException("Cannot set parentId and parent");
+            }
+
+            this.parent = value;
+        }
+    }
+    private IDriveFolder? parent;
     
     /// <summary>
     /// Gets or sets whether the file is sensitive

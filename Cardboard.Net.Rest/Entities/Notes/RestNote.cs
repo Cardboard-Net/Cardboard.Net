@@ -115,9 +115,23 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     public async Task UpdateAsync()
     {
         var model = await Misskey.ApiClient.GetNoteAsync(Id);
+
+        if (model == null)
+            return;
+        
         Update(model);
     }
 
+    public async Task ModifyAsync(Action<NoteProperties> args)
+    {
+        var model = await NoteHelper.ModifyNoteAsync(this, Misskey, args);
+
+        if (model == null)
+            return;
+        
+        Update(model);
+    }
+    
     public async Task DeleteAsync()
         => await Misskey.ApiClient.DeleteNoteAsync(Id);
 

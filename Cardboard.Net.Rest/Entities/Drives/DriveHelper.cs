@@ -49,11 +49,6 @@ internal static class DriveHelper
     {
         DriveFolderProperties args = new DriveFolderProperties();
         func(args);
-
-        if (args is { ParentId: not null, Parent: not null })
-        {
-            throw new InvalidOperationException("cannot modify folder when both parent id and parent are set");
-        }
         
         ModifyFolderParams modifyParams = new ModifyFolderParams()
         {

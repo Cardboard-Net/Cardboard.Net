@@ -4,7 +4,7 @@ using Model = Cardboard.Net.Rest.API.UserLite;
 
 namespace Cardboard.Rest;
 
-public class RestUserLite : RestEntity<string>, IUserLite, IUpdateable
+public class RestUserLite : RestEntity<string>, IUserLite
 {
     public string? Name { get; private set; }
     public string Username { get; private set; }
@@ -36,17 +36,16 @@ public class RestUserLite : RestEntity<string>, IUserLite, IUpdateable
         Username = model.Username;
         Host = model.Host;
         AvatarUrl = model.AvatarUrl;
-    }
-    
-    public Task UpdateAsync()
-    {
-        throw new NotImplementedException();
+        IsAdmin = model.IsAdmin;
+        IsSilenced = model.IsSilenced;
+        NoIndex = model.NoIndex;
+        IsBot = model.IsBot;
+        IsCat = model.IsCat;
+        SpeakAsCat = model.SpeakAsCat;
     }
     
     public Task DeleteAsync()
     {
         throw new NotImplementedException();
     }
-    
-    
 }
