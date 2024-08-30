@@ -34,6 +34,27 @@ internal static class NoteHelper
         
         return model != null ? RestNote.Create(client, model) : null;
     }
+    
+    public static async Task<RestNote?> CreateDmNoteAsync
+    (
+        BaseMisskeyClient client,
+        string[] dmRecipients,
+        string? text = null,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        string? replyId = null,
+        string? renoteId = null,
+        Poll? poll = null
+    )
+    {
+        var model = await client.ApiClient.CreateDmNoteAsync(text, dmRecipients ,contentWarning, localOnly, acceptanceType, noExtractMentions, noExtractHashtags, noExtractEmojis, replyId, renoteId, poll).ConfigureAwait(false);
+        
+        return model != null ? RestNote.Create(client, model) : null;
+    }
 
     public static async Task<Note?> ModifyNoteAsync(INote note, BaseMisskeyClient client, Action<NoteProperties> func)
         => await ModifyNoteAsync(note.Id, client, func);

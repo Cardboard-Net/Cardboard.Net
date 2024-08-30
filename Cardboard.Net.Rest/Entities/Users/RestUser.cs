@@ -1,4 +1,6 @@
+using Cardboard.Notes;
 using Cardboard.Rest;
+using Cardboard.Rest.Notes;
 using Cardboard.Roles;
 using Cardboard.Users;
 
@@ -246,8 +248,39 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
      *
      * TODO:
      */
+    
+    public async Task<RestNote> CreateDmNoteAsync
+    (
+        string text,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        Poll? poll = null
+    )
+    {
+        RestNote? note = await NoteHelper.CreateDmNoteAsync
+        (
+            Misskey,
+            text: text,
+            dmRecipients: new string[]{ Id },
+            contentWarning: contentWarning, 
+            localOnly: localOnly,
+            acceptanceType: acceptanceType,
+            noExtractMentions: noExtractMentions,
+            noExtractHashtags: noExtractHashtags,
+            noExtractEmojis: noExtractEmojis,
+            poll: poll
+        );
 
+        if (note == null)
+            throw new InvalidOperationException("unable to create note");
 
+        return note;
+    }
+    
     /// <summary>
     /// Accept the follow request from the user, allowing them to follow you.
     /// </summary>
