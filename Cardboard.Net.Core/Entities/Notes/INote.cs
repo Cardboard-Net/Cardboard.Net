@@ -61,7 +61,7 @@ public interface INote : IMisskeyEntity, IDeletable
     
     // TODO: emojis
  
-    // TODO: poll
+    Poll? Poll { get; }
     
     //public Channel Channel { get; set; }
     

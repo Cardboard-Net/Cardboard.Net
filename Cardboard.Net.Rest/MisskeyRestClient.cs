@@ -1,3 +1,4 @@
+using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Drives;
 using Cardboard.Rest.Notes;
@@ -28,8 +29,34 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     #region Notes
 
-    public async Task<RestNote> GetNoteAsync(string noteId)
+    public async Task<RestNote?> GetNoteAsync(string noteId)
         => await NoteHelper.GetNoteAsync(this, noteId);
+
+    public async Task<RestNote?> CreateNoteAsync
+    (
+        string text,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        VisibilityType? visibilityType = null,
+        Poll? poll = null
+    )
+        => await NoteHelper.CreateNoteAsync
+            (
+                this, 
+                text: text, 
+                contentWarning: contentWarning, 
+                localOnly: localOnly,
+                acceptanceType: acceptanceType,
+                noExtractMentions: noExtractMentions,
+                noExtractHashtags: noExtractHashtags,
+                noExtractEmojis: noExtractEmojis,
+                visibilityType: visibilityType,
+                poll: poll
+            );
     
     #endregion
     

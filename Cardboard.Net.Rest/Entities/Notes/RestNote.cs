@@ -15,9 +15,13 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     private ImmutableArray<string> _visibleUserIds;
     private ImmutableArray<string> _tags;
     
+    ///<inheritdoc/>
     public DateTime CreatedAt { get; private set; }
+    ///<inheritdoc/>
     public DateTime? DeletedAt { get; private set; }
+    ///<inheritdoc/>
     public string? Text { get; private set; }
+    ///<inheritdoc/>
     public string? ContentWarning { get; private set; }
     public RestUserLite? Author { get; private set; }
     public RestNote? Reply { get; private set; }
@@ -27,6 +31,7 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     public IReadOnlyCollection<string> Mentions => _mentions;
     public IReadOnlyCollection<string> VisibleUserIds => _visibleUserIds;
     public IReadOnlyCollection<string> Tags => _tags;
+    public Poll? Poll { get; private set; }
     public IReadOnlyCollection<RestDriveFile> Files => _files.ToReadOnlyCollection();
     public bool LocalOnly { get; private set; }
     public AcceptanceType? ReactionAcceptance { get; set; }
@@ -75,6 +80,23 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
             foreach (var t in model.Files)
                 files[t.Id] = RestDriveFile.Create(Misskey, t);
         }
+
+        if (model.Poll is not null)
+        {
+            TimeSpan? expiresAfter = null;
+            
+            if (model.Poll.ExpiresAfter.HasValue)
+            {
+                expiresAfter = TimeSpan.FromMilliseconds(model.Poll.ExpiresAfter.Value);
+            }
+
+            var choices = ImmutableArray.CreateBuilder<PollChoice>();
+            
+            foreach (var t in model.Poll.Choices)
+                choices.Add(new PollChoice(t.Text, t.Votes, t.IsVoted));
+
+            Poll = new Poll(model.Poll.MultipleChoice, choices.ToImmutable(), model.Poll.ExpiresAt, expiresAfter);
+        }
         
         _files = files.ToImmutable();
         IsHidden = model.IsHidden;
@@ -98,23 +120,61 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
 
     public async Task DeleteAsync()
         => await Misskey.ApiClient.DeleteNoteAsync(Id);
-    
-    public async Task MuteThreadAsync() 
-        => throw new NotImplementedException();
-    
+
+    public async Task MuteThreadAsync()
+        => await Misskey.ApiClient.MuteNoteAsync(Id);
+
     public async Task UnmuteThreadAsync()
-        => throw new NotImplementedException();
+        => await Misskey.ApiClient.UnmuteNoteAsync(Id);
+
+    public async Task FavoriteAsync()
+        => await Misskey.ApiClient.FavoriteNoteAsync(Id);
+
+    public async Task UnfavoriteAsync()
+        => await Misskey.ApiClient.UnfavoriteNoteAsync(Id);
     
     public async Task<IReadOnlyCollection<RestNote>> GetRenotesAsync()
         => throw new NotImplementedException();
     
     public async Task<IReadOnlyCollection<RestNote>> GetRepliesAsync() 
         => throw new NotImplementedException();
+
+    public async Task<RestNote?> BoostAsync()
+        => await RenoteAsync();
+
+    public async Task<RestNote?> RenoteAsync()
+        => await NoteHelper.CreateNoteAsync(Misskey, renoteId:Id);
+
+    public async Task<RestNote?> ReplyAsync
+    (
+        string text,
+        string? contentWarning = null,
+        bool? localOnly = null,
+        AcceptanceType? acceptanceType = null,
+        bool? noExtractMentions = null,
+        bool? noExtractHashtags = null,
+        bool? noExtractEmojis = null,
+        string? replyId = null,
+        VisibilityType? visibilityType = null,
+        Poll? poll = null
+    )
+        => await NoteHelper.CreateNoteAsync
+        (
+            Misskey, 
+            text: text, 
+            contentWarning: 
+            contentWarning, 
+            localOnly: localOnly,
+            acceptanceType: acceptanceType,
+            noExtractMentions: noExtractMentions, 
+            noExtractHashtags: noExtractHashtags, 
+            noExtractEmojis: noExtractEmojis, 
+            replyId: Id,
+            visibilityType: visibilityType,
+            poll: poll
+        );
     
-    public async Task RenoteAsync()
-        => throw new NotImplementedException();
-    
-    public async Task UnRenoteAsync()
+    public async Task UnrenoteAsync()
         => throw new NotImplementedException();
     
     public async Task ModifyAsync()

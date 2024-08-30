@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace Cardboard.Notes;
 
 public interface IPoll
@@ -8,14 +10,9 @@ public interface IPoll
     DateTime? ExpiresAt { get; }
     
     /// <summary>
-    ///     Optional amount of time until the poll expires
-    /// </summary>
-    TimeSpan? ExpiresAfter { get; }
-    
-    /// <summary>
     ///     A list containing the poll choices
     /// </summary>
-    IReadOnlyList<string> Choices { get; }
+    ImmutableArray<PollChoice> Choices { get; }
     
     /// <summary>
     ///     Whether the poll allows multiple choices to be voted for
