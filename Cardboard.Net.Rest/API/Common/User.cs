@@ -113,7 +113,7 @@ internal class User : UserLite
     public string? Lang { get; set; }
     
     [JsonProperty("fields")]
-    public UserFields[] Fields { get; set; }
+    public UserFields[]? Fields { get; set; }
     
     // TODO: verified links
     

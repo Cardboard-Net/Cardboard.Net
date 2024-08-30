@@ -70,7 +70,7 @@ public interface IUser : IUserLite
 
     public string? Lang { get; }
 
-    public IReadOnlyList<IUserField> Fields { get; }
+    public IReadOnlyCollection<UserField> Fields { get; }
 
     // TODO: verified links
 

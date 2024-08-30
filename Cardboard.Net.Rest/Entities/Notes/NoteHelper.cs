@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Cardboard.Net.Rest.API;
 using Cardboard.Notes;
 using Newtonsoft.Json;
@@ -30,7 +31,28 @@ internal static class NoteHelper
         Poll? poll = null
     )
     {
-        var model = await client.ApiClient.CreateNoteAsync(text, contentWarning, localOnly, acceptanceType, noExtractMentions, noExtractHashtags, noExtractEmojis, replyId, renoteId, visibilityType, poll).ConfigureAwait(false);
+        CreateNoteParams note = new CreateNoteParams()
+        {
+            Text = text,
+            ContentWarning = contentWarning,
+            LocalOnly = localOnly,
+            ReactionAcceptance = acceptanceType,
+            NoExtractMentions = noExtractMentions,
+            NoExtractHashtags = noExtractHashtags,
+            NoExtractEmojis = noExtractEmojis,
+            ReplyId = replyId,
+            RenoteId = renoteId,
+            Visibility = visibilityType,
+            Poll = poll is null ? null : new PollParams()
+            {
+                Choices = poll.Choices.Select(x => x.Text).ToArray(),
+                MultipleChoice = poll.MultipleChoice,
+                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
+                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
+            }
+        };
+        
+        var model = await client.ApiClient.CreateNoteAsync(note).ConfigureAwait(false);
         
         return model != null ? RestNote.Create(client, model) : null;
     }
@@ -51,11 +73,97 @@ internal static class NoteHelper
         Poll? poll = null
     )
     {
-        var model = await client.ApiClient.CreateDmNoteAsync(text, dmRecipients ,contentWarning, localOnly, acceptanceType, noExtractMentions, noExtractHashtags, noExtractEmojis, replyId, renoteId, poll).ConfigureAwait(false);
+        CreateNoteParams note = new CreateNoteParams()
+        {
+            Text = text,
+            VisibleUserIds = dmRecipients,
+            ContentWarning = contentWarning,
+            LocalOnly = localOnly,
+            ReactionAcceptance = acceptanceType,
+            NoExtractMentions = noExtractMentions,
+            NoExtractHashtags = noExtractHashtags,
+            NoExtractEmojis = noExtractEmojis,
+            ReplyId = replyId,
+            RenoteId = renoteId,
+            Visibility = VisibilityType.Specified,
+            Poll = poll is null ? null : new PollParams()
+            {
+                Choices = poll.Choices.Select(x => x.Text).ToArray(),
+                MultipleChoice = poll.MultipleChoice,
+                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
+                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
+            }
+        };
+        
+        var model = await client.ApiClient.CreateNoteAsync(note).ConfigureAwait(false);
         
         return model != null ? RestNote.Create(client, model) : null;
     }
 
+    public static async Task<ImmutableArray<RestNote>> GetRenotesAsync
+    (
+        BaseMisskeyClient client,
+        string noteId,
+        string? userId = null,
+        int? limit = null,
+        string? sinceId = null,
+        string? untilId = null,
+        bool? withQuotes = null
+    )
+    {
+        GetRenotesParam arg = new GetRenotesParam()
+        {
+            Id = noteId,
+            UserId = userId,
+            Limit = limit,
+            SinceId = sinceId,
+            UntilId = untilId,
+            WithQuotes = withQuotes
+        };
+
+        Note[]? models = await client.ApiClient.GetRenotesAsync(arg).ConfigureAwait(false);
+
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestNote>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestNote>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestNote.Create(client, m));
+
+        return _models.ToImmutable();
+    }
+
+    public static async Task<ImmutableArray<RestNote>> GetRepliesAsync
+    (
+        BaseMisskeyClient client,
+        string noteId,
+        int? limit = null,
+        string? sinceId = null,
+        string? untilId = null
+    )
+    {
+        GetRepliesParam arg = new GetRepliesParam()
+        {
+            Id = noteId,
+            Limit = limit,
+            SinceId = sinceId,
+            UntilId = untilId
+        };
+        
+        Note[]? models = await client.ApiClient.GetRepliesAsync(arg).ConfigureAwait(false);
+        
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestNote>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestNote>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestNote.Create(client, m));
+
+        return _models.ToImmutable();
+    }
+    
     public static async Task<Note?> ModifyNoteAsync(INote note, BaseMisskeyClient client, Action<NoteProperties> func)
         => await ModifyNoteAsync(note.Id, client, func);
     

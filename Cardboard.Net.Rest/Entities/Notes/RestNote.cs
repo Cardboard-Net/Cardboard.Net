@@ -26,11 +26,17 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     public RestUserLite? Author { get; private set; }
     public RestNote? Reply { get; private set; }
     public RestNote? Renote { get; private set; }
+    ///<inheritdoc/>
     public bool IsHidden { get; private set; }
+    ///<inheritdoc/>
     public VisibilityType Visibility { get; private set; }
+    ///<inheritdoc/>
     public IReadOnlyCollection<string> Mentions => _mentions;
+    ///<inheritdoc/>
     public IReadOnlyCollection<string> VisibleUserIds => _visibleUserIds;
+    ///<inheritdoc/>
     public IReadOnlyCollection<string> Tags => _tags;
+    ///<inheritdoc/>
     public Poll? Poll { get; private set; }
     public IReadOnlyCollection<RestDriveFile> Files => _files.ToReadOnlyCollection();
     public bool LocalOnly { get; private set; }
@@ -90,7 +96,7 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
                 expiresAfter = TimeSpan.FromMilliseconds(model.Poll.ExpiresAfter.Value);
             }
 
-            var choices = ImmutableArray.CreateBuilder<PollChoice>();
+            var choices = ImmutableArray.CreateBuilder<PollChoice>(model.Poll.Choices.Length);
             
             foreach (var t in model.Poll.Choices)
                 choices.Add(new PollChoice(t.Text, t.Votes, t.IsVoted));
@@ -146,12 +152,20 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
 
     public async Task UnfavoriteAsync()
         => await Misskey.ApiClient.UnfavoriteNoteAsync(Id);
-    
-    public async Task<IReadOnlyCollection<RestNote>> GetRenotesAsync()
-        => throw new NotImplementedException();
-    
-    public async Task<IReadOnlyCollection<RestNote>> GetRepliesAsync() 
-        => throw new NotImplementedException();
+
+    public async Task<IReadOnlyCollection<RestNote>> GetRenotesAsync
+    (
+        string? userId = null,
+        int? limit = null,
+        string? sinceId = null,
+        string? untilId = null,
+        bool? withQuotes = null
+    )
+        => await NoteHelper.GetRenotesAsync(Misskey, Id, userId, limit, sinceId, untilId, withQuotes);
+
+    public async Task<IReadOnlyCollection<RestNote>> GetRepliesAsync(int? limit = null, string? sinceId = null,
+        string? untilId = null)
+        => await NoteHelper.GetRepliesAsync(Misskey, Id, limit, sinceId, untilId);
 
     public async Task<RestNote?> BoostAsync()
         => await RenoteAsync();
@@ -189,9 +203,6 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
         );
     
     public async Task UnrenoteAsync()
-        => throw new NotImplementedException();
-    
-    public async Task ModifyAsync()
         => throw new NotImplementedException();
     
     INote INote.Reply => Reply;
