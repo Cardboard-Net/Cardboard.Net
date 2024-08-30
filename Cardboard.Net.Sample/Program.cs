@@ -12,9 +12,9 @@ RestUser user = await client.GetUserAsync("9q2zjh6ygage07bk");
 Console.WriteLine(user.Username);
 
 PollBuilder poll = new PollBuilder();
-poll.AddChoice("Red");
-poll.AddChoice("Green");
-poll.AddChoice("Blue");
-poll.AddChoice("Other");
+poll.AddChoice("Red")
+    .AddChoice("Green")
+    .AddChoice("Blue")
+    .AddChoice("Other");
 poll.ExpiresAfter = TimeSpan.FromDays(7);
 RestNote? hello = await client.CreateNoteAsync("What's your favorite color?", poll: poll.Build());

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Notes;
@@ -77,6 +78,7 @@ public class Relation
 public class RestUser : RestEntity<string>, IUser, IUpdateable
 {
     private UserFlags _userFlags = UserFlags.None;
+    private ImmutableArray<UserField> _fields;
     
     public bool IsAdmin 
         => _userFlags.HasFlag(UserFlags.Admin);
@@ -133,7 +135,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public string? Birthday { get; private set; }
     public string? ListenBrainz { get; private set; }
     public string? Lang { get; private set; }
-    public IReadOnlyList<IUserField> Fields { get; private set; }
+    public IReadOnlyCollection<UserField> Fields => _fields;
     public int FollowersCount { get; private set; }
     public int FollowingCount { get; private set; }
     public int NotesCount { get; private set; }
@@ -192,8 +194,19 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         this.Birthday = model.Birthday;
         this.ListenBrainz = model.ListenBrainz;
         this.Lang = model.Lang;
-        // TODO: Populate
-        this.Fields = [];
+        
+        if (model.Fields != null)
+        {
+            var fields = ImmutableArray.CreateBuilder<UserField>(model.Fields.Length);
+            
+            foreach (var f in model.Fields)
+                fields.Add(new UserField(f.Name, f.Description));
+        }
+        else
+        {
+            this._fields = ImmutableArray<UserField>.Empty;
+        }
+        
         this.FollowersCount = model.FollowersCount;
         this.FollowingCount = model.FollowingCount;
         this.NotesCount = model.NotesCount;

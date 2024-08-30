@@ -60,8 +60,6 @@ internal class Note
     public string[]? Tags { get; set; }
     
     // TODO: emojis
- 
-    // TODO: poll
     
     [JsonProperty("channelId")]
     public string ChannelId { get; set; }

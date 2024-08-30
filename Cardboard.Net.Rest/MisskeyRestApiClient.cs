@@ -64,95 +64,25 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task<Note?> GetNoteAsync(string id)
         => await SendRequestAsync<Note>("/api/notes/show", JsonConvert.SerializeObject(new { noteId = id }));
 
-    public async Task<Note?> CreateNoteAsync
-    (
-        string? text,
-        string? contentWarning = null,
-        bool? localOnly = null,
-        AcceptanceType? acceptanceType = null,
-        bool? noExtractMentions = null,
-        bool? noExtractHashtags = null,
-        bool? noExtractEmojis = null,
-        string? replyId = null,
-        string? renoteId = null,
-        VisibilityType? visibilityType = null,
-        Poll? poll = null
-    )
+    public async Task<Note[]?> GetRenotesAsync(GetRenotesParam args)
     {
-        CreateNoteParams note = new CreateNoteParams()
-        {
-            Text = text,
-            ContentWarning = contentWarning,
-            LocalOnly = localOnly,
-            ReactionAcceptance = acceptanceType,
-            NoExtractMentions = noExtractMentions,
-            NoExtractHashtags = noExtractHashtags,
-            NoExtractEmojis = noExtractEmojis,
-            ReplyId = replyId,
-            RenoteId = renoteId,
-            Visibility = visibilityType,
-            Poll = poll is null ? null : new PollParams()
-            {
-                Choices = poll.Choices.Select(x => x.Text).ToArray(),
-                MultipleChoice = poll.MultipleChoice,
-                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
-                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
-            }
-        };
-        RestRequest request = new RestRequest
-        {
-            Resource = "/api/notes/create"
-        };
-        request.AddJsonBody(JsonConvert.SerializeObject(note, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
-        RestResponse<CreatedNote> response = await RestClient.ExecutePostAsync<CreatedNote>(request);
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-            throw new InvalidOperationException("error creating note");
-        }
-        return response.Data?.Note;
+        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/notes/renotes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return response.Data;
     }
     
-    public async Task<Note?> CreateDmNoteAsync
-    (
-        string? text,
-        string[] dmRecipients,
-        string? contentWarning = null,
-        bool? localOnly = null,
-        AcceptanceType? acceptanceType = null,
-        bool? noExtractMentions = null,
-        bool? noExtractHashtags = null,
-        bool? noExtractEmojis = null,
-        string? replyId = null,
-        string? renoteId = null,
-        Poll? poll = null
-    )
+    public async Task<Note[]?> GetRepliesAsync(GetRepliesParam args)
     {
-        CreateNoteParams note = new CreateNoteParams()
-        {
-            Text = text,
-            VisibleUserIds = dmRecipients,
-            ContentWarning = contentWarning,
-            LocalOnly = localOnly,
-            ReactionAcceptance = acceptanceType,
-            NoExtractMentions = noExtractMentions,
-            NoExtractHashtags = noExtractHashtags,
-            NoExtractEmojis = noExtractEmojis,
-            ReplyId = replyId,
-            RenoteId = renoteId,
-            Visibility = VisibilityType.Specified,
-            Poll = poll is null ? null : new PollParams()
-            {
-                Choices = poll.Choices.Select(x => x.Text).ToArray(),
-                MultipleChoice = poll.MultipleChoice,
-                ExpiresAfter = (long?)poll.ExpiresAfter?.TotalMilliseconds,
-                ExpiresAt = poll.ExpiresAt.HasValue ? ((DateTimeOffset)poll.ExpiresAt.Value.ToUniversalTime()).ToUnixTimeMilliseconds() : null
-            }
-        };
+        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/notes/replies", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return response.Data;
+    }
+
+    public async Task<Note?> CreateNoteAsync(CreateNoteParams args)
+    {
         RestRequest request = new RestRequest
         {
             Resource = "/api/notes/create"
         };
-        request.AddJsonBody(JsonConvert.SerializeObject(note, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        request.AddJsonBody(JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         RestResponse<CreatedNote> response = await RestClient.ExecutePostAsync<CreatedNote>(request);
         if (response.StatusCode != HttpStatusCode.OK)
         {
