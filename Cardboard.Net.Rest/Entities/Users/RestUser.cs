@@ -240,20 +240,63 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
      *
      * TODO: admin/operation/admin___announcements___create (I want to populate userId with this.Id)
      * Task<Announcement> CreateAnnouncementAsync()
-     * TODO: admin/operation/admin___delete-all-files-of-a-user
-     * Task DeleteAllFilesAsync();
-     * TODO: admin/operation/admin___unset-user-avatar
-     * Task UnsetAvatarAsync();
-     * TODO: admin/operation/admin___unset-user-banner
-     * Task UnsetBannerAsync();
      * TODO: admin/operation/admin___get-user-ips
      * Task<IReadOnlyList<UserIp>> GetIpsAsync();
      * TODO: admin/operation/admin___show-user
-     * TODO: admin/operation/admin___silence-user
-     * Task SilenceAsync();
      *
      * TODO:
      */
+
+
+    /// <summary>
+    /// Accept the follow request from the user, allowing them to follow you.
+    /// </summary>
+    /// <returns></returns>
+    public async Task AcceptFollowRequestAsync()
+        => await Misskey.ApiClient.AcceptFollowRequestFromUserAsync(this.Id);
+
+    /// <summary>
+    /// Reject a follow request, preventing the user from following you.
+    /// </summary>
+    /// <returns></returns>
+    public async Task RejectFollowRequestAsync()
+        => await Misskey.ApiClient.RejectFollowRequestFromUserAsync(this.Id);
+
+    /// <summary>
+    /// Cancel a follow request. (What does this do??)
+    /// </summary>
+    /// <returns></returns>
+    public async Task CancelFollowRequestAsync()
+        => await Misskey.ApiClient.CancelFollowRequestFromUserAsync(this.Id);
+
+
+    /// <summary>
+    /// Silence the user - preventing them from showing up normally on feeds.
+    /// </summary>
+    /// <returns></returns>
+    public async Task SilenceAsync()
+        => await Misskey.ApiClient.SilenceUserAsync(this.Id);
+
+    /// <summary>
+    /// Delete all drive files. Highly invasive. Tread with Caution.
+    /// </summary>
+    /// <returns></returns>
+    public async Task DeleteAllFilesAsync()
+        => await Misskey.ApiClient.DeleteAllFilesOfUserAsync(this.Id);
+
+    /// <summary>
+    /// Unset the avatar on the user profile.
+    /// </summary>
+    /// <returns></returns>
+    public async Task UnsetAvatarAsync()
+        => await Misskey.ApiClient.UnsetUserAvatarAsync(this.Id);
+
+    /// <summary>
+    /// Unset the banner from the user profile.
+    /// </summary>
+    /// <returns>void</returns>
+    public async Task UnsetBannerAsync()
+        => await Misskey.ApiClient.UnsetUserBannerAsync(this.Id);
 
     /// <summary>
     /// Reports the user to your home instance

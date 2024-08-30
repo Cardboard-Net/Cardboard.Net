@@ -144,7 +144,16 @@ internal class MisskeyRestApiClient : IDisposable
     }
     
     #endregion
+
+    #region Roles
+
+    public async Task<Role?> GetRoleAsync(string id)
+    {
+        return await SendRequestAsync<Role>($"/api/roles/show", JsonConvert.SerializeObject(new { roleId = id}));
+    }
     
+    #endregion
+
     #region Users
     
     public async Task<SelfUser> GetSelfUserAsync()
@@ -160,6 +169,29 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task ReportUserAsync(string id, string comment)
         => await SendRequestAsync("/api/users/report-abuse", JsonConvert.SerializeObject(new { userId = id, comment = comment}));
     
+    public async Task AcceptFollowRequestFromUserAsync(string id)
+        => await SendRequestAsync("/api/following/requests/accept", JsonConvert.SerializeObject(new { userId = id }));
+
+    public async Task RejectFollowRequestFromUserAsync(string id)
+        => await SendRequestAsync("/api/following/requests/reject", JsonConvert.SerializeObject(new { userId = id }));
+
+    public async Task CancelFollowRequestFromUserAsync(string id)
+        => await SendRequestAsync("/api/following/requests/cancel", JsonConvert.SerializeObject(new { userId = id }));
+
+
+    public async Task SilenceUserAsync(string id)
+        => await SendRequestAsync("/api/admin/silence-user", JsonConvert.SerializeObject(new { userId = id}));
+
+    public async Task DeleteAllFilesOfUserAsync(string id)
+        => await SendRequestAsync("/api/admin/admin/delete-all-files-of-a-user", JsonConvert.SerializeObject(new { userId = id}));
+
+    public async Task UnsetUserAvatarAsync(string id)
+        => await SendRequestAsync("/api/admin/unset-user-avatar", JsonConvert.SerializeObject(new {userId = id}));
+
+    public async Task UnsetUserBannerAsync(string id)
+        => await SendRequestAsync("/api/admin/unset-user-banner", JsonConvert.SerializeObject(new {userId = id}));
+
+
     #endregion
     
     internal async Task<T?> SendRequestAsync<T>(string endpoint, string body = "{}")
