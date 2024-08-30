@@ -32,7 +32,7 @@ public class MisskeyRestClient : BaseMisskeyClient
     public async Task<RestNote?> GetNoteAsync(string noteId)
         => await NoteHelper.GetNoteAsync(this, noteId);
 
-    public async Task<RestNote?> CreateNoteAsync
+    public async Task<RestNote> CreateNoteAsync
     (
         string text,
         string? contentWarning = null,
@@ -44,19 +44,26 @@ public class MisskeyRestClient : BaseMisskeyClient
         VisibilityType? visibilityType = null,
         Poll? poll = null
     )
-        => await NoteHelper.CreateNoteAsync
-            (
-                this, 
-                text: text, 
-                contentWarning: contentWarning, 
-                localOnly: localOnly,
-                acceptanceType: acceptanceType,
-                noExtractMentions: noExtractMentions,
-                noExtractHashtags: noExtractHashtags,
-                noExtractEmojis: noExtractEmojis,
-                visibilityType: visibilityType,
-                poll: poll
-            );
+    {
+        RestNote? note = await NoteHelper.CreateNoteAsync
+        (
+            this, 
+            text: text, 
+            contentWarning: contentWarning, 
+            localOnly: localOnly,
+            acceptanceType: acceptanceType,
+            noExtractMentions: noExtractMentions,
+            noExtractHashtags: noExtractHashtags,
+            noExtractEmojis: noExtractEmojis,
+            visibilityType: visibilityType,
+            poll: poll
+        );
+
+        if (note == null)
+            throw new InvalidOperationException("unable to create note");
+
+        return note;
+    }
     
     #endregion
     

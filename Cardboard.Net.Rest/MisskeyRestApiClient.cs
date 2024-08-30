@@ -148,6 +148,17 @@ internal class MisskeyRestApiClient : IDisposable
         }
     }
     
+    public async Task<Note?> ModifyNoteAsync(string fileId, ModifyNoteParams args)
+    {
+        RestResponse<CreatedNote> response = await SendWrappedRequestAsync<CreatedNote>("/api/notes/edit", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error modifying the note");
+        }
+        
+        return response.Data?.Note;
+    }
+    
     public async Task DeleteNoteAsync(string id)
     {
         RestResponse response = await SendWrappedRequestAsync("/api/notes/delete", JsonConvert.SerializeObject(new {noteId = id}));
