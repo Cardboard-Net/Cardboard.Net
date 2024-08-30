@@ -1,5 +1,6 @@
 using Cardboard.Rest;
 using Cardboard.Rest.Drives;
+using Cardboard.Rest.Notes;
 
 namespace Cardboard.Net.Rest;
 
@@ -25,11 +26,24 @@ public class MisskeyRestClient : BaseMisskeyClient
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
         => new MisskeyRestApiClient(MisskeyConfig.UserAgent);
     
+    #region Notes
+
+    public async Task<RestNote> GetNoteAsync(string noteId)
+        => await NoteHelper.GetNoteAsync(this, noteId);
+    
+    #endregion
+    
+    #region Users
+    
     public async Task<RestUser> GetUserAsync(string userId)
         => await ClientHelper.GetUserAsync(this, userId);
-
+    
     public async Task ReportUserAsync(string userId, string comment)
         => await ApiClient.ReportUserAsync(userId, comment);
+    
+    #endregion
+    
+    #region Files
     
     public async Task UploadFileAsync(Uri url, string? folderId = null, string? comment = null, string? marker = null,
         bool? isSensitive = false, bool force = false)
@@ -40,4 +54,6 @@ public class MisskeyRestClient : BaseMisskeyClient
 
     public async Task<RestDriveFile> GetFileAsync(Uri url)
         => await ClientHelper.GetDriveFileAsync(this, url);
+    
+    #endregion
 }

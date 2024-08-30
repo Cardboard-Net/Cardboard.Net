@@ -24,19 +24,19 @@ internal class Note
     public string UserId { get; set; }
     
     [JsonProperty("user")]
-    public UserLite User { get; set; }
+    public UserLite? User { get; set; }
     
     [JsonProperty("replyId")]
     public string? ReplyId { get; set; }
     
     [JsonProperty("reply")]
-    public Note Reply { get; set; }
+    public Note? Reply { get; set; }
     
     [JsonProperty("renoteId")]
     public string? RenoteId { get; set; }
     
     [JsonProperty("renote")]
-    public Note Renote { get; set; }
+    public Note? Renote { get; set; }
     
     [JsonProperty("isHidden")]
     public bool IsHidden { get; set; }
@@ -45,19 +45,19 @@ internal class Note
     public VisibilityType Visibility { get; set; }
     
     [JsonProperty("mentions")]
-    public string[] Mentions { get; set; }
+    public string[]? Mentions { get; set; }
     
     [JsonProperty("visibleUserIds")]
-    public string[] VisibleUserIds { get; set; }
+    public string[]? VisibleUserIds { get; set; }
     
     [JsonProperty("fileIds")]
-    public string[] FileIds { get; set; }
+    public string[]? FileIds { get; set; }
     
     [JsonProperty("files")]
-    public DriveFile[] Files { get; set; }
+    public DriveFile[]? Files { get; set; }
     
     [JsonProperty("tags")]
-    public string[] Tags { get; set; }
+    public string[]? Tags { get; set; }
     
     // TODO: emojis
  

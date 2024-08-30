@@ -57,6 +57,22 @@ internal class MisskeyRestApiClient : IDisposable
         finally { _stateLock.Release(); }
     }
     
+    #region Notes
+
+    public async Task<Note> GetNoteAsync(string id)
+        => await SendRequestAsync<Note>("/api/notes/show", JsonConvert.SerializeObject(new { noteId = id }));
+    
+    public async Task DeleteNoteAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/notes/delete", JsonConvert.SerializeObject(new {noteId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to delete note");
+        }
+    }
+    
+    #endregion
+    
     #region Drive
 
     public async Task<DriveFile> GetFileAsync(string id)
