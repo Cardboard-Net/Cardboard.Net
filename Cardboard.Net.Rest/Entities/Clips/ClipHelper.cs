@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Cardboard.Clips;
 using Cardboard.Net.Rest.API;
+using Cardboard.Rest.Notes;
 
 namespace Cardboard.Rest.Clips;
 
@@ -67,4 +68,34 @@ internal static class ClipHelper
 
         return await client.ApiClient.ModifyClipAsync(modifyClipParams);
     }
+
+    public static async Task<ImmutableArray<RestNote>> GetClipNotesAsync
+    (
+        BaseMisskeyClient client,
+        string clipId,
+        int? limit = null, // Range [1..10]
+        string? sinceId = null,
+        string? untilId = null
+    ) {
+        GetClipNotesParams args = new GetClipNotesParams()
+        {
+            Id = clipId,
+            Limit = limit,
+            SinceId = sinceId,
+            UntilId = untilId
+        };
+
+        var rawNotes = await client.ApiClient.GetClipNotesAsync(args).ConfigureAwait(false);
+
+        if (rawNotes == null || rawNotes.Length == 0)
+            return ImmutableArray<RestNote>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestNote>(rawNotes.Length);
+
+        foreach (var Note in rawNotes)
+            _models.Add(RestNote.Create(client, Note));
+
+        return _models.ToImmutable();
+    }
+
 }
