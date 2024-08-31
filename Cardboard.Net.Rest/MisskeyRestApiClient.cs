@@ -133,6 +133,12 @@ internal class MisskeyRestApiClient : IDisposable
         return chart!;
     }
     
+    public async Task<DriveChart> GetDriveChartAsync(GetChartParams args)
+    {
+        DriveChart? chart = await SendRequestAsync<DriveChart>("/api/charts/drive", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return chart!;
+    }
+    
     #endregion
     
     #region Notes

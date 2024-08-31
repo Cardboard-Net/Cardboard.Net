@@ -4,6 +4,8 @@ using Cardboard.Net.Rest.API;
 using Cardboard.Rest.Drives;
 using ActiveUserChart = Cardboard.Charts.ActiveUserChart;
 using ApRequestChart = Cardboard.Charts.ApRequestChart;
+using DriveChart = Cardboard.Charts.DriveChart;
+using GenericDriveChart = Cardboard.Charts.GenericDriveChart;
 
 namespace Cardboard.Rest;
 
@@ -79,7 +81,6 @@ internal static class ClientHelper
         return chart;
     }
     
-    
     public static async Task<ApRequestChart> GetApRequestChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null, int? offset = null)
     {
         GetChartParams chartParams = new GetChartParams()
@@ -103,6 +104,55 @@ internal static class ClientHelper
             InboxReceived = model.InboxReceived.Length == 0
                 ? ImmutableArray<int>.Empty 
                 : ImmutableArray.Create<int>(model.InboxReceived) 
+        };
+        
+        return chart;
+    }
+    
+    public static async Task<DriveChart> GetDriveChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null, int? offset = null)
+    {
+        GetChartParams chartParams = new GetChartParams()
+        {
+            Span = span,
+            Limit = limit,
+            Offset = offset
+        };
+
+        var model = await client.ApiClient.GetDriveChartAsync(chartParams).ConfigureAwait(false);
+
+        DriveChart chart = new DriveChart()
+        {
+            Type = span,
+            Local = new GenericDriveChart()
+            {
+                IncreaseCount = model.Local.IncreaseCount.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.IncreaseCount),
+                DecreaseCount = model.Local.DecreaseCount.Length == 0
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.DecreaseCount),
+                IncreaseSize = model.Local.IncreaseSize.Length == 0
+                    ? ImmutableArray<ulong>.Empty
+                    : ImmutableArray.Create<ulong>(model.Local.IncreaseSize),
+                DecreaseSize = model.Local.DecreaseSize.Length == 0
+                    ? ImmutableArray<ulong>.Empty 
+                    : ImmutableArray.Create<ulong>(model.Local.DecreaseSize)
+            },
+            Remote = new GenericDriveChart()
+            {
+                IncreaseCount = model.Remote.IncreaseCount.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Remote.IncreaseCount),
+                DecreaseCount = model.Remote.DecreaseCount.Length == 0
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Remote.DecreaseCount),
+                IncreaseSize = model.Remote.IncreaseSize.Length == 0
+                    ? ImmutableArray<ulong>.Empty
+                    : ImmutableArray.Create<ulong>(model.Remote.IncreaseSize),
+                DecreaseSize = model.Remote.DecreaseSize.Length == 0
+                    ? ImmutableArray<ulong>.Empty 
+                    : ImmutableArray.Create<ulong>(model.Remote.DecreaseSize)
+            }
         };
         
         return chart;
