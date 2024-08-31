@@ -160,8 +160,7 @@ internal static class ClientHelper
         
         return chart;
     }
-
-
+    
     public static async Task<UsersChart> GetUsersChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null,
         int? offset = null)
     {
@@ -205,6 +204,6 @@ internal static class ClientHelper
 
         return chart;
     }
-
+    
     #endregion
 }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Cardboard.Net.Core.Entities.Roles;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Notes;
@@ -120,7 +121,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public IUserInstance Instance { get; private set; }
     public StatusType OnlineStatus { get; private set; }
     
-    public IReadOnlyList<IBadgeRole> BadgeRoles { get; private set; }
+    public IReadOnlyCollection<BadgeRole> BadgeRoles { get; private set; }
     public Uri? Url { get; private set; }
     public Uri? Uri { get; private set; }
     public DateTime CreatedAt { get; private set; }
