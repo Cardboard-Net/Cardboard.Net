@@ -5,14 +5,14 @@ namespace Cardboard.Rest.Announcements;
 
 internal static class AnnouncementHelper
 {
-    public static async Task<RestAnnouncement?> GetAnnouncementAsync(BaseMisskeyClient client, string id)
+    public static async Task<RestUserAnnouncement?> GetAnnouncementAsync(BaseMisskeyClient client, string id)
     {
         var model = await client.ApiClient.GetAnnouncementAsync(id).ConfigureAwait(false);
         
-        return model != null ? RestAnnouncement.Create(client, model) : null;
+        return model != null ? RestUserAnnouncement.Create(client, model) : null;
     }
 
-    public static async Task<ImmutableArray<RestAnnouncement>> GetAnnouncementsAsync
+    public static async Task<ImmutableArray<RestUserAnnouncement>> GetAnnouncementsAsync
     (
         BaseMisskeyClient client,
         int? limit = null,
@@ -32,12 +32,12 @@ internal static class AnnouncementHelper
         var models = await client.ApiClient.GetAnnouncementsAsync(arg).ConfigureAwait(false);
 
         if (models == null || models.Length == 0)
-            return ImmutableArray<RestAnnouncement>.Empty;
+            return ImmutableArray<RestUserAnnouncement>.Empty;
 
-        var announcements = ImmutableArray.CreateBuilder<RestAnnouncement>(models.Length);
+        var announcements = ImmutableArray.CreateBuilder<RestUserAnnouncement>(models.Length);
         
         foreach (var m in models)
-            announcements.Add(RestAnnouncement.Create(client, m));
+            announcements.Add(RestUserAnnouncement.Create(client, m));
 
         return announcements.ToImmutable();
     }

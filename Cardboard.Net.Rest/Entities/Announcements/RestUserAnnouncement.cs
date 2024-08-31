@@ -4,7 +4,7 @@ using Model = Cardboard.Net.Rest.API.Announcement;
 
 namespace Cardboard.Rest.Announcements;
 
-public class RestAnnouncement : RestEntity<string>, IAnnouncement, IUpdateable
+public class RestUserAnnouncement : RestEntity<string>, IAnnouncement, IUpdateable
 {
     /// <inheritdoc/>
     public DateTime CreatedAt { get; private set; }
@@ -39,11 +39,11 @@ public class RestAnnouncement : RestEntity<string>, IAnnouncement, IUpdateable
     /// <inheritdoc/>
     public bool IsRead { get; private set; }
     
-    public RestAnnouncement(BaseMisskeyClient misskey, string id) : base(misskey, id) { }
+    public RestUserAnnouncement(BaseMisskeyClient misskey, string id) : base(misskey, id) { }
 
-    internal static RestAnnouncement Create(BaseMisskeyClient misskey, Model model)
+    internal static RestUserAnnouncement Create(BaseMisskeyClient misskey, Model model)
     {
-        RestAnnouncement entity = new RestAnnouncement(misskey, model.Id);
+        RestUserAnnouncement entity = new RestUserAnnouncement(misskey, model.Id);
         entity.Update(model);
         return entity;
     }
