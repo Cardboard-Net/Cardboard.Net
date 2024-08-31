@@ -112,7 +112,10 @@ internal class MisskeyRestApiClient : IDisposable
             throw new InvalidOperationException("unable to unfavorite clip");
         }
     }
-    
+
+    public async Task<Note[]?> GetClipNotesAsync(GetClipNotesParams args)
+        => await SendRequestAsync<Note[]>("/api/clips/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+
     public async Task<Clip?> ModifyClipAsync(ModifyClipParams args)
     {
         RestResponse<Clip> response = await SendWrappedRequestAsync<Clip>("/api/clips/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
