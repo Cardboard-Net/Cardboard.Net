@@ -1,3 +1,4 @@
+using Cardboard.Charts;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Drives;
@@ -12,10 +13,7 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     public MisskeyRestClient() : this(new MisskeyConfig()) { }
     
-    public MisskeyRestClient(MisskeyConfig config) : base(config, CreateApiClient(config))
-    {
-        
-    }
+    public MisskeyRestClient(MisskeyConfig config) : base(config, CreateApiClient(config)) { }
 
     internal MisskeyRestClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client) { }
 
@@ -27,6 +25,13 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
         => new MisskeyRestApiClient(MisskeyConfig.UserAgent);
+    
+    #region Charts
+
+    public async Task<ActiveUserChart> GetUserChartAsync(ChartType span, int? limit = null, int? offset = null)
+        => await ClientHelper.GetActiveUserChartAsync(this, span, limit, offset);
+    
+    #endregion
     
     #region Notes
 
