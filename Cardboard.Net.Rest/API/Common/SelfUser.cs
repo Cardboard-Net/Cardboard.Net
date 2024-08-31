@@ -6,6 +6,18 @@ namespace Cardboard.Net.Rest.API;
 // TODO: finish later
 internal class SelfUser : User
 {
+    [JsonProperty("hasUnreadSpecifiedNotes")]
+    public bool HasUnreadSpecifiedNotes { get; set; }
+    
+    [JsonProperty("hasUnreadMentions")]
+    public bool HasUnreadMentions { get; set; }
+    
+    [JsonProperty("hasUnreadAnnouncement")]
+    public bool HasUnreadAnnouncement { get; set; }
+    
+    [JsonProperty("unreadAnnouncements")]
+    public Announcement[]? UnreadAnnouncements { get; set; }
+    
     [JsonProperty("hasUnreadNotifications")]
     public bool HasUnreadNotifications { get; set; }
     
@@ -31,7 +43,7 @@ internal class SelfUser : User
     public bool? EmailVerified { get; set; }
     
     [JsonProperty("securityKeysList")]
-    public SecurityKey[] SecurityKeys { get; set; }
+    public SecurityKey[]? SecurityKeys { get; set; }
 }
 
 internal class SecurityKey

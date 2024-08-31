@@ -56,7 +56,7 @@ internal class UserLite
     public StatusType OnlineStatus { get; set; }
     
     [JsonProperty("badgeRoles")]
-    public BadgeRole[] BadgeRoles { get; set; }
+    public BadgeRole[]? BadgeRoles { get; set; }
 }
 
 internal class User : UserLite
