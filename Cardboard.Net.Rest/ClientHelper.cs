@@ -5,6 +5,7 @@ using Cardboard.Rest.Drives;
 using ActiveUserChart = Cardboard.Charts.ActiveUserChart;
 using ApRequestChart = Cardboard.Charts.ApRequestChart;
 using DriveChart = Cardboard.Charts.DriveChart;
+using GenericChart = Cardboard.Charts.GenericChart;
 using GenericDriveChart = Cardboard.Charts.GenericDriveChart;
 
 namespace Cardboard.Rest;
@@ -35,6 +36,8 @@ internal static class ClientHelper
         return null;
     }
 
+    #region Charts
+    
     public static async Task<ActiveUserChart> GetActiveUserChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null, int? offset = null)
     {
         GetChartParams chartParams = new GetChartParams()
@@ -157,4 +160,51 @@ internal static class ClientHelper
         
         return chart;
     }
+
+
+    public static async Task<UsersChart> GetUsersChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null,
+        int? offset = null)
+    {
+        GetChartParams chartParams = new GetChartParams()
+        {
+            Span = span,
+            Limit = limit,
+            Offset = offset
+        };
+        
+        var model = await client.ApiClient.GetUsersChartAsync(chartParams).ConfigureAwait(false);
+
+        UsersChart chart = new UsersChart()
+        {
+            Type = span,
+            Local = new GenericChart()
+            {
+                Total = model.Local.Total.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Total),
+                Increase = model.Local.Increase.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Increase),
+                Decrease = model.Local.Decrease.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Decrease)
+            },
+            Remote = new GenericChart()
+            {
+                Total = model.Remote.Total.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Total),
+                Increase = model.Remote.Increase.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Increase),
+                Decrease = model.Remote.Decrease.Length == 0 
+                    ? ImmutableArray<int>.Empty 
+                    : ImmutableArray.Create<int>(model.Local.Decrease)
+            }
+        };
+
+        return chart;
+    }
+
+    #endregion
 }
