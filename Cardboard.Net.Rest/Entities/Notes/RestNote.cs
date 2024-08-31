@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Cardboard.Drives;
 using Cardboard.Extensions;
 using Cardboard.Notes;
+using Cardboard.Rest.Clips;
 using Cardboard.Rest.Drives;
 using Cardboard.Users;
 using Model = Cardboard.Net.Rest.API.Note;
@@ -153,6 +154,9 @@ public class RestNote : RestEntity<string>, INote, IUpdateable
     public async Task UnfavoriteAsync()
         => await Misskey.ApiClient.UnfavoriteNoteAsync(Id);
 
+    public async Task<IReadOnlyCollection<RestClip>> GetClipsAsync()
+        => await NoteHelper.GetClipsAsync(Misskey, Id);
+    
     public async Task<IReadOnlyCollection<RestNote>> GetRenotesAsync
     (
         string? userId = null,
