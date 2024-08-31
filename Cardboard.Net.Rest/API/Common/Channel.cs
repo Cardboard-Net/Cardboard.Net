@@ -10,7 +10,7 @@ internal class Channel
     [JsonProperty("createdAt")]
     public DateTime CreatedAt { get; set; }
     
-    [JsonProperty("lastNoteAt")]
+    [JsonProperty("lastNotedAt")]
     public DateTime? LastNoteAt { get; set; }
     
     [JsonProperty("name")]
@@ -29,7 +29,7 @@ internal class Channel
     public string[] PinnedNoteIds { get; set; }
     
     [JsonProperty("pinnedNotes")]
-    public Note[] PinnedNotes { get; set; }
+    public Note[]? PinnedNotes { get; set; }
     
     [JsonProperty("color")]
     public string Color { get; set; }
@@ -47,7 +47,7 @@ internal class Channel
     public bool IsSensitive { get; set; }
     
     [JsonProperty("allowRenoteToExternal")]
-    public bool AllowExternalRenote { get; set; }
+    public bool AllowExternalRenotes { get; set; }
     
     [JsonProperty("isFollowing")]
     public bool IsFollowing { get; set; }

@@ -47,7 +47,7 @@ internal static class ClipHelper
 
         return RestClip.Create(client, model);
     }
-
+    
     public static async Task<Clip?> ModifyClipAsync(IClip clip, BaseMisskeyClient client, Action<ClipProperties> func)
         => await ModifyClipAsync(clip.Id, clip.Name, client, func);
 

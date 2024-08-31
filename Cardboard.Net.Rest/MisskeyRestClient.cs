@@ -29,10 +29,10 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     #region Announcements
 
-    public async Task<RestAnnouncement?> GetAnnouncementAsync(string announcementId)
+    public async Task<RestUserAnnouncement?> GetAnnouncementAsync(string announcementId)
         => await AnnouncementHelper.GetAnnouncementAsync(this, announcementId);
 
-    public async Task<IReadOnlyCollection<RestAnnouncement>> GetAnnouncementsAsync()
+    public async Task<IReadOnlyCollection<RestUserAnnouncement>> GetAnnouncementsAsync()
         => await AnnouncementHelper.GetAnnouncementsAsync(this);
     
     #endregion
