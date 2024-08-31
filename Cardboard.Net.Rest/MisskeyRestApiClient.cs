@@ -59,6 +59,22 @@ internal class MisskeyRestApiClient : IDisposable
         finally { _stateLock.Release(); }
     }
     
+    #region Announcements
+
+    public async Task<Announcement?> GetAnnouncementAsync(string id)
+        => await SendRequestAsync<Announcement>("/api/announcements/show",
+            JsonConvert.SerializeObject(new { announcementId = id }));
+
+    public async Task<Announcement[]?> GetAnnouncementsAsync(GetAnnouncementsParam args)
+        => await SendRequestAsync<Announcement[]>("/api/announcements",
+            JsonConvert.SerializeObject(args,
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+    
+    public async Task ReadAnnouncementAsync(string id)
+        => await SendRequestAsync("/api/i/read-announcement", JsonConvert.SerializeObject(new { announcementId = id }));
+    
+    #endregion
+    
     #region Clips
 
     public async Task<Clip?> GetClipAsync(string id)
@@ -136,6 +152,12 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task<DriveChart> GetDriveChartAsync(GetChartParams args)
     {
         DriveChart? chart = await SendRequestAsync<DriveChart>("/api/charts/drive", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return chart!;
+    }
+    
+    public async Task<FederationChart> GetFederationChartAsyncc(GetChartParams args)
+    {
+        FederationChart? chart = await SendRequestAsync<FederationChart>("/api/charts/federation", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     

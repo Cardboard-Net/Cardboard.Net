@@ -9,24 +9,52 @@ using Model = Cardboard.Net.Rest.API.Role;
 
 public class RestRole : RestEntity<string>, IRole, IUpdateable
 {
+    /// <inheritdoc/>
     public string Name { get; private set; }
+    
+    /// <inheritdoc/>
     public Uri? IconUrl { get; private set; }
+    
+    /// <inheritdoc/>
     public int DisplayOrder { get; private set; }
-
+    
+    /// <inheritdoc/>
     public DateTime CreatedAt { get; private set; }
+    
+    /// <inheritdoc/>
     public DateTime? UpdatedAt { get; private set; }
+    
     // TODO: target
+    
     // TODO: condFormula
+    
+    /// <inheritdoc/>
     public bool IsPublic { get; private set; }
+    
+    /// <inheritdoc/>
     public bool IsExplorable { get; private set; }
+    
+    /// <inheritdoc/>
     public bool AsBadge { get; private set; }
+    
+    /// <inheritdoc/>
     public bool ModEditUsers { get; private set; }
+    
     // TODO: policies
+    
+    /// <inheritdoc/>
     public int UsersCount { get; private set; }
 
+    /// <inheritdoc/>
     public string? Color { get; private set; }
+    
+    /// <inheritdoc/>
     public string Description { get; private set; }
+    
+    /// <inheritdoc/>
     public bool IsModerator { get; private set; }
+    
+    /// <inheritdoc/>
     public bool IsAdministrator { get; private set; }
 
     public RestRole(BaseMisskeyClient misskey, string id) : base(misskey, id) {}

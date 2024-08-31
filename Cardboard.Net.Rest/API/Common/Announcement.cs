@@ -9,10 +9,10 @@ internal class Announcement
     public required string Id { get; init; }
     
     [JsonProperty("createdAt")]
-    public DateTime CreatedAt { get; init; }
+    public required DateTime CreatedAt { get; init; }
     
     [JsonProperty("updatedAt")]
-    public DateTime? UpdatedAt { get; init; }
+    public required DateTime? UpdatedAt { get; init; }
     
     [JsonProperty("text")]
     public required string Text { get; init; }
@@ -21,23 +21,23 @@ internal class Announcement
     public required string Title { get; init; }
     
     [JsonProperty("imageUrl")]
-    public Uri? ImageUrl { get; init; }
+    public required Uri? ImageUrl { get; init; }
     
     [JsonProperty("icon")]
-    public IconType Icon { get; init; }
+    public required IconType Icon { get; init; }
     
     [JsonProperty("display")]
-    public DisplayType Display { get; init; }
+    public required DisplayType Display { get; init; }
     
     [JsonProperty("needConfirmationToRead")]
-    public bool ReadConfirmation { get; init; }
+    public required bool ReadConfirmation { get; init; }
     
     [JsonProperty("silence")]
-    public bool Silence { get; init; }
+    public required bool Silence { get; init; }
     
     [JsonProperty("forYou")]
-    public bool ForYou { get; init; }
+    public required bool ForYou { get; init; }
     
     [JsonProperty("isRead")] 
-    public bool IsRead { get; init; }
+    public required bool IsRead { get; init; }
 }

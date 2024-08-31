@@ -50,4 +50,7 @@ internal class Achievement
 {
     [JsonProperty("name")]
     public AchievementType AchievementType { get; set; }
+    
+    [JsonProperty("unlockedAt")]
+    public ulong UnlockedAt { get; set; }
 }

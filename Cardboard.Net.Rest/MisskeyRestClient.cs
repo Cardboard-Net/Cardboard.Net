@@ -1,6 +1,7 @@
 using Cardboard.Charts;
 using Cardboard.Notes;
 using Cardboard.Rest;
+using Cardboard.Rest.Announcements;
 using Cardboard.Rest.Drives;
 using Cardboard.Rest.Notes;
 using Cardboard.Users;
@@ -25,6 +26,16 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
         => new MisskeyRestApiClient(MisskeyConfig.UserAgent);
+    
+    #region Announcements
+
+    public async Task<RestAnnouncement?> GetAnnouncementAsync(string announcementId)
+        => await AnnouncementHelper.GetAnnouncementAsync(this, announcementId);
+
+    public async Task<IReadOnlyCollection<RestAnnouncement>> GetAnnouncementsAsync()
+        => await AnnouncementHelper.GetAnnouncementsAsync(this);
+    
+    #endregion
     
     #region Charts
 
