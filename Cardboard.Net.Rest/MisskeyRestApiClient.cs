@@ -59,6 +59,66 @@ internal class MisskeyRestApiClient : IDisposable
         finally { _stateLock.Release(); }
     }
     
+    #region Clips
+
+    public async Task<Clip?> GetClipAsync(string id)
+        => await SendRequestAsync<Clip>("/api/clips/show", JsonConvert.SerializeObject(new { clipId = id }));
+
+    public async Task<Clip> CreateClipAsync(CreateClipParams args)
+    {
+        RestRequest request = new RestRequest
+        {
+            Resource = "/api/clips/create"
+        };
+        request.AddJsonBody(JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Clip> response = await RestClient.ExecutePostAsync<Clip>(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error creating clip");
+        }
+        return response.Data!;
+    }
+    
+    public async Task FavoriteClipAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/clips/favorite", JsonConvert.SerializeObject(new { clipId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to favorite clip");
+        }
+    }
+    
+    public async Task UnfavoriteClipAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/clips/unfavorite", JsonConvert.SerializeObject(new { clipId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to unfavorite clip");
+        }
+    }
+    
+    public async Task<Clip?> ModifyClipAsync(ModifyClipParams args)
+    {
+        RestResponse<Clip> response = await SendWrappedRequestAsync<Clip>("/api/clips/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error modifying the clip");
+        }
+        
+        return response.Data;
+    }
+    
+    public async Task DeleteClipAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/clips/delete", JsonConvert.SerializeObject(new { clipId = id }));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to delete clip");
+        }
+    }
+    
+    #endregion
+    
     #region Notes
 
     public async Task<Note?> GetNoteAsync(string id)
@@ -73,6 +133,19 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task<Note[]?> GetRepliesAsync(GetRepliesParam args)
     {
         RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/notes/replies", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return response.Data;
+    }
+
+    public async Task<Clip[]?> GetClipsAsync()
+    {
+        RestResponse<Clip[]> response = await SendWrappedRequestAsync<Clip[]>("/api//clips/list");
+        return response.Data;
+    }
+    
+    public async Task<Clip[]?> GetClipsAsync(string id)
+    {
+        RestResponse<Clip[]> response =
+            await SendWrappedRequestAsync<Clip[]>("/api/notes/clips", JsonConvert.SerializeObject(new { noteId = id }));
         return response.Data;
     }
 
@@ -127,7 +200,7 @@ internal class MisskeyRestApiClient : IDisposable
         }
     }
     
-    public async Task<Note?> ModifyNoteAsync(string fileId, ModifyNoteParams args)
+    public async Task<Note?> ModifyNoteAsync(ModifyNoteParams args)
     {
         RestResponse<CreatedNote> response = await SendWrappedRequestAsync<CreatedNote>("/api/notes/edit", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)

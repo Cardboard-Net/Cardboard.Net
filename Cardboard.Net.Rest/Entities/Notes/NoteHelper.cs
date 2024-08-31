@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Cardboard.Net.Rest.API;
 using Cardboard.Notes;
+using Cardboard.Rest.Clips;
 using Newtonsoft.Json;
 using Poll = Cardboard.Notes.Poll;
 
@@ -163,6 +164,21 @@ internal static class NoteHelper
 
         return _models.ToImmutable();
     }
+
+    public static async Task<ImmutableArray<RestClip>> GetClipsAsync(BaseMisskeyClient client, string noteId)
+    {
+        Clip[]? models = await client.ApiClient.GetClipsAsync(noteId).ConfigureAwait(false);
+        
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestClip>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestClip>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestClip.Create(client, m));
+
+        return _models.ToImmutable();
+    }
     
     public static async Task<Note?> ModifyNoteAsync(INote note, BaseMisskeyClient client, Action<NoteProperties> func)
         => await ModifyNoteAsync(note.Id, client, func);
@@ -198,6 +214,6 @@ internal static class NoteHelper
             ReplyId = args.ReplyId ?? args.Reply?.Id
         };
 
-        return await client.ApiClient.ModifyNoteAsync(noteId, modifyNoteParams);
+        return await client.ApiClient.ModifyNoteAsync(modifyNoteParams);
     }
 }
