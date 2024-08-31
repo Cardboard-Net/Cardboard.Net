@@ -8,16 +8,16 @@ internal class InstanceChart
     public required InstanceChartRequests Requests { get; set; }
     
     [JsonProperty("notes")]
-    public required InstanceChartNotes Notes { get; set; }
+    public required GenericChartNotes Notes { get; set; }
     
     [JsonProperty("users")]
-    public required InstanceChartGeneric Users { get; set; }
+    public required GenericChart Users { get; set; }
     
     [JsonProperty("following")]
-    public required InstanceChartGeneric Following { get; set; }
+    public required GenericChart Following { get; set; }
     
     [JsonProperty("followers")]
-    public required InstanceChartGeneric Followers { get; set; }
+    public required GenericChart Followers { get; set; }
     
     [JsonProperty("drive")]
     public required InstanceChartDrive Drive { get; set; }
@@ -35,40 +35,7 @@ internal class InstanceChartRequests
     public required int[] Received { get; set; }
 }
 
-internal class InstanceChartGeneric
-{
-    [JsonProperty("total")]
-    public virtual required int[] Total { get; set; }
-    
-    [JsonProperty("inc")]
-    public virtual required int[] Increase { get; set; }
-    
-    [JsonProperty("dec")]
-    public virtual required int[] Decrease { get; set; }
-}
-
-internal class InstanceChartNotes : InstanceChartGeneric
-{
-    [JsonProperty("diffs")]
-    public required InstanceChartNotesDiffs Diffs { get; set; }
-}
-
-internal class InstanceChartNotesDiffs
-{
-    [JsonProperty("normal")]
-    public required int[] Normal { get; set; }
-    
-    [JsonProperty("reply")]
-    public required int[] Reply { get; set; }
-    
-    [JsonProperty("renote")]
-    public required int[] Renote { get; set; }
-    
-    [JsonProperty("withFile")]
-    public required int[] WithFile { get; set; }
-}
-
-internal class InstanceChartDrive : InstanceChartGeneric
+internal class InstanceChartDrive : GenericChart
 {
     [JsonProperty("totalFiles")]
     public override required int[] Total { get; set; }
