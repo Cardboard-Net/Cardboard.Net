@@ -80,6 +80,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
 {
     private UserFlags _userFlags = UserFlags.None;
     private ImmutableArray<UserField> _fields;
+    private ImmutableArray<BadgeRole> _badgeRoles;
     
     public bool IsAdmin 
         => _userFlags.HasFlag(UserFlags.Admin);
@@ -107,7 +108,9 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
 
     public bool IsSuspended 
         => _userFlags.HasFlag(UserFlags.Suspended);
-    
+
+    public IReadOnlyCollection<INote> PinnedNotes { get; }
+
     public bool PublicReactions 
         => _userFlags.HasFlag(UserFlags.PublicReactions);
     
@@ -120,8 +123,8 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     
     public IUserInstance Instance { get; private set; }
     public StatusType OnlineStatus { get; private set; }
-    
-    public IReadOnlyCollection<BadgeRole> BadgeRoles { get; private set; }
+
+    public IReadOnlyCollection<BadgeRole> BadgeRoles => _badgeRoles;
     public Uri? Url { get; private set; }
     public Uri? Uri { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -160,7 +163,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         return entity;
     }
     
-    internal virtual void Update(Model model)
+    internal void Update(Model model)
     {
         // Set appropriate flags
         if (model.IsAdmin) _userFlags |= UserFlags.Admin;
@@ -182,6 +185,21 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         // TODO: Populate
         this.AvatarDecorations = [];
         this.OnlineStatus = model.OnlineStatus;
+
+        if (model.BadgeRoles != null)
+        {
+            var roles = ImmutableArray.CreateBuilder<BadgeRole>(model.BadgeRoles.Length);
+            
+            foreach (var b in model.BadgeRoles)
+                roles.Add(new BadgeRole(){DisplayOrder = b.DisplayOrder, Name = b.Name, IconUrl = b.IconUrl});
+
+            _badgeRoles = roles.ToImmutable();
+        }
+        else
+        {
+            this._badgeRoles = ImmutableArray<BadgeRole>.Empty;
+        }
+        
         this.Url = model.Url;
         this.Uri = model.Uri;
         this.CreatedAt = model.CreatedAt;
@@ -202,6 +220,8 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
             
             foreach (var f in model.Fields)
                 fields.Add(new UserField(f.Name, f.Description));
+
+            _fields = fields.ToImmutable();
         }
         else
         {
