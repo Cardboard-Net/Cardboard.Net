@@ -127,6 +127,12 @@ internal class MisskeyRestApiClient : IDisposable
         return chart!;
     }
     
+    public async Task<ApRequestChart> GetApRequestChartAsync(GetChartParams args)
+    {
+        ApRequestChart? chart = await SendRequestAsync<ApRequestChart>("/api/charts/ap-request", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return chart!;
+    }
+    
     #endregion
     
     #region Notes

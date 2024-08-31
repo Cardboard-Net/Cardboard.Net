@@ -3,6 +3,7 @@ using Cardboard.Charts;
 using Cardboard.Net.Rest.API;
 using Cardboard.Rest.Drives;
 using ActiveUserChart = Cardboard.Charts.ActiveUserChart;
+using ApRequestChart = Cardboard.Charts.ApRequestChart;
 
 namespace Cardboard.Rest;
 
@@ -73,6 +74,35 @@ internal static class ClientHelper
             RegisteredBeforeYear = model.RegisteredBeforeYear.Length == 0
                 ? ImmutableArray<int>.Empty 
                 : ImmutableArray.Create<int>(model.RegisteredBeforeYear) 
+        };
+        
+        return chart;
+    }
+    
+    
+    public static async Task<ApRequestChart> GetApRequestChartAsync(BaseMisskeyClient client, ChartType span, int? limit = null, int? offset = null)
+    {
+        GetChartParams chartParams = new GetChartParams()
+        {
+            Span = span,
+            Limit = limit,
+            Offset = offset
+        };
+
+        var model = await client.ApiClient.GetApRequestChartAsync(chartParams).ConfigureAwait(false);
+
+        ApRequestChart chart = new ApRequestChart()
+        {
+            Type = span,
+            DeliverFailed = model.DeliverFailed.Length == 0
+                ? ImmutableArray<int>.Empty 
+                : ImmutableArray.Create<int>(model.DeliverFailed),
+            DeliveredSucceeded = model.DeliverSucceeded.Length == 0
+                ? ImmutableArray<int>.Empty 
+                : ImmutableArray.Create<int>(model.DeliverSucceeded),
+            InboxReceived = model.InboxReceived.Length == 0
+                ? ImmutableArray<int>.Empty 
+                : ImmutableArray.Create<int>(model.InboxReceived) 
         };
         
         return chart;
