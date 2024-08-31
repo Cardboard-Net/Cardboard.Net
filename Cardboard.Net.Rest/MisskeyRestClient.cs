@@ -33,6 +33,12 @@ public class MisskeyRestClient : BaseMisskeyClient
 
     public async Task<ApRequestChart> GetApRequestChartAsync(ChartType span, int? limit = null, int? offset = null)
         => await ClientHelper.GetApRequestChartAsync(this, span, limit, offset);
+
+    public async Task<DriveChart> GetDriveChartAsync(ChartType span, int? limit = null, int? offset = null)
+        => await ClientHelper.GetDriveChartAsync(this, span, limit, offset);
+
+    public async Task<UsersChart> GetUsersChart(ChartType span, int? limit = null, int? offset = null)
+        => await ClientHelper.GetUsersChartAsync(this, span, limit, offset);
     
     #endregion
     
