@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="API\Streaming\Notification\" />
     <Folder Include="Entities\Notes\" />
+    <Folder Include="Entities\Notifications\" />
   </ItemGroup>
 
   <ItemGroup>
