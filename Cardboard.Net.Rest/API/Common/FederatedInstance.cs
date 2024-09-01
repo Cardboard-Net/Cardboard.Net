@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
 
-internal class FederationInstance
+internal class FederatedInstance
 {
     [JsonProperty("id")]
     public string Id { get; set; }
@@ -12,7 +12,7 @@ internal class FederationInstance
     public DateTime FirstRetrievedAt { get; set; }
     
     [JsonProperty("host")]
-    public string Host { get; set; }
+    public Uri Host { get; set; }
     
     [JsonProperty("usersCount")]
     public int UsersCount { get; set; }

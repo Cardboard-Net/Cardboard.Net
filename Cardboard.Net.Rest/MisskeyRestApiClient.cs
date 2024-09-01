@@ -399,6 +399,51 @@ internal class MisskeyRestApiClient : IDisposable
     
     #endregion
 
+    #region Instances
+
+    public async Task<FederatedInstance?> GetFederatedInstanceAsync(string host)
+        => await SendRequestAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
+
+    public async Task RefreshFederatedInstanceAsync(string host)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/refresh-remote-instance-metadata", JsonConvert.SerializeObject(new {host = host}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("you do not have permission to refresh instance metadata");
+        }
+    }
+    
+    public async Task DeleteFederatedInstanceFilesAsync(string host)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/delete-all-files", JsonConvert.SerializeObject(new {host = host}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("you do not have permission to delete all remote instance's files cached locally");
+        }
+    }
+    
+    public async Task RemoveFederatedInstanceFollowingAsync(string host)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/remove-all-following", JsonConvert.SerializeObject(new {host = host}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("you do not have permission to destroy remote instance's relation");
+        }
+    }
+    
+    public async Task<bool> ModifyFederatedInstanceAsync(ModifyFederatedInstanceParams args)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/update-instance", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to update instance");
+        }
+
+        return true;
+    }
+    
+    #endregion
+    
     #region Relays
     
     public async Task<Relay[]?> GetRelaysAsync()

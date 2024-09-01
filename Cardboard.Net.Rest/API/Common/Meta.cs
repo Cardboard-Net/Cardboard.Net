@@ -29,7 +29,7 @@ internal class Meta
     public string? Description { get; set; }
 
     [JsonProperty("langs")] 
-    public string[] Langs { get; set; }
+    public string[]? Langs { get; set; }
 
     [JsonProperty("tosUrl")] 
     public Uri? TosUrl { get; set; }
@@ -119,7 +119,7 @@ internal class Meta
     public Ad[] Ads { get; set; }
     
     [JsonProperty("notesPerOneAd")]
-    public ulong NotesPerAd { get; set; }
+    public int NotesPerAd { get; set; }
     
     [JsonProperty("enableEmail")]
     public bool EnableEmail { get; set; }
@@ -152,7 +152,7 @@ internal class Meta
     public Uri? InquiryUrl { get; set; }
     
     [JsonProperty("serverRules")]
-    public string[] Rules { get; set; }
+    public string[]? Rules { get; set; }
     
     [JsonProperty("themeColor")]
     public string? ThemeColor { get; set; }

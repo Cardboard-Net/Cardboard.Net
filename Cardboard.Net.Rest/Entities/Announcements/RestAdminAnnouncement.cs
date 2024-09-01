@@ -59,10 +59,10 @@ public class RestAdminAnnouncement : RestEntity<string>, IAdminAnnouncement
     }
 
     public async Task ActivateAsync()
-        => await AnnouncementHelper.ModifyAdminAnnouncementAsync(this, Misskey, new AnnouncementProperties() { IsActive = true });
+        => await ModifyAsync(x => x.IsActive = true);
 
     public async Task DeactivateAsync()
-        => await AnnouncementHelper.ModifyAdminAnnouncementAsync(this, Misskey, new AnnouncementProperties() { IsActive = false });
+        => await ModifyAsync(x => x.IsActive = false);
 
     public async Task DeleteAsync()
         => await Misskey.ApiClient.DeleteAnnouncementAsync(Id);
