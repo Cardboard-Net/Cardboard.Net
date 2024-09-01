@@ -11,7 +11,7 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
 {
     public RestInstanceActor InstanceActor { get; private set; }
     public Meta Meta { get; private set; }
-    public AdminMeta AdminMeta { get; private set; }
+    public AdminMeta? AdminMeta { get; private set; }
     
     public RestSelfInstance(BaseMisskeyClient misskey, string id) : base(misskey, id) { }
 
@@ -147,6 +147,38 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         AdminMeta = meta;
     }
     
+    public async Task UpdateAsync()
+    {
+        var model = await Misskey.ApiClient.GetMetaAsync();
+
+        if (model == null)
+            return;
+        
+        Update(model);
+    }
+
+    public async Task ModifyAsync(Action<InstanceProperties> func)
+    {
+        bool success = await InstanceHelper.ModifyMetaAsync(Misskey, func);
+
+        if (!success)
+            return;
+
+        await UpdateAsync();
+        await GetAdminMetaAsync();
+    }
+
+    public async Task<AdminMeta> GetAdminMetaAsync()
+    {
+        var model = await Misskey.ApiClient.GetAdminMetaAsync();
+
+        if (model == null)
+            throw new InvalidOperationException("You are not authorized to fetch admin meta");
+        
+        Update(model);
+        return AdminMeta!;
+    }
+    
     public Task GetOnlineUsersCountAsync()
     {
         throw new NotImplementedException();
@@ -163,11 +195,6 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
     }
 
     public Task PingAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync()
     {
         throw new NotImplementedException();
     }

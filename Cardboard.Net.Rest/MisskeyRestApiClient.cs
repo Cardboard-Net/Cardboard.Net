@@ -401,6 +401,20 @@ internal class MisskeyRestApiClient : IDisposable
 
     #region Instances
 
+    public async Task<Meta?> GetMetaAsync()
+        => await SendRequestAsync<Meta>("/api/meta");
+    
+    public async Task<AdminMeta?> GetAdminMetaAsync()
+    {
+        RestResponse<AdminMeta> response = await SendWrappedRequestAsync<AdminMeta>("/api/admin/meta");
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("you do not have permission to get admin meta");
+        }
+
+        return response.Data;
+    }
+    
     public async Task<FederatedInstance?> GetFederatedInstanceAsync(string host)
         => await SendRequestAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
 
@@ -437,6 +451,17 @@ internal class MisskeyRestApiClient : IDisposable
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to update instance");
+        }
+
+        return true;
+    }
+    
+    public async Task<bool> ModifyMetaAsync(ModifyMetaParams args)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/update-meta", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to update instance meta");
         }
 
         return true;
