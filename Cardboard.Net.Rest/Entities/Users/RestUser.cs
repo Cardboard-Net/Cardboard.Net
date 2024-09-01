@@ -319,29 +319,28 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     /// Accept the follow request from the user, allowing them to follow you.
     /// </summary>
     /// <returns></returns>
-    public async Task AcceptFollowRequestAsync()
+    public virtual async Task AcceptFollowRequestAsync()
         => await Misskey.ApiClient.AcceptFollowRequestFromUserAsync(this.Id);
 
     /// <summary>
     /// Reject a follow request, preventing the user from following you.
     /// </summary>
     /// <returns></returns>
-    public async Task RejectFollowRequestAsync()
+    public virtual async Task RejectFollowRequestAsync()
         => await Misskey.ApiClient.RejectFollowRequestFromUserAsync(this.Id);
 
     /// <summary>
     /// Cancel a follow request. (What does this do??)
     /// </summary>
     /// <returns></returns>
-    public async Task CancelFollowRequestAsync()
+    public virtual async Task CancelFollowRequestAsync()
         => await Misskey.ApiClient.CancelFollowRequestFromUserAsync(this.Id);
-
-
+    
     /// <summary>
     /// Silence the user - preventing them from showing up normally on feeds.
     /// </summary>
     /// <returns></returns>
-    public async Task SilenceAsync()
+    public virtual async Task SilenceAsync()
         => await Misskey.ApiClient.SilenceUserAsync(this.Id);
 
     /// <summary>

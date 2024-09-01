@@ -5,10 +5,10 @@ namespace Cardboard.Net.Rest.API;
 internal class FederationStats
 {
     [JsonProperty("topSubInstances")]
-    public FederationInstance[] TopSubInstances { get; set; }
+    public FederatedInstance[] TopSubInstances { get; set; }
     
     [JsonProperty("topPubInstances")]
-    public FederationInstance[] TopPubInstances { get; set; }
+    public FederatedInstance[] TopPubInstances { get; set; }
     
     [JsonProperty("otherFollowersCount")]
     public int OtherFollowersCount { get; set; }
