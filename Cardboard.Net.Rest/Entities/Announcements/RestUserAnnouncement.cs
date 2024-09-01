@@ -1,10 +1,9 @@
 using Cardboard.Announcements;
-
-using Model = Cardboard.Net.Rest.API.Announcement;
+using Cardboard.Net.Rest.API;
 
 namespace Cardboard.Rest.Announcements;
 
-public class RestUserAnnouncement : RestEntity<string>, IAnnouncement, IUpdateable
+public class RestUserAnnouncement : RestEntity<string>, IUserAnnouncement, IUpdateable
 {
     /// <inheritdoc/>
     public DateTime CreatedAt { get; private set; }
@@ -41,14 +40,14 @@ public class RestUserAnnouncement : RestEntity<string>, IAnnouncement, IUpdateab
     
     public RestUserAnnouncement(BaseMisskeyClient misskey, string id) : base(misskey, id) { }
 
-    internal static RestUserAnnouncement Create(BaseMisskeyClient misskey, Model model)
+    internal static RestUserAnnouncement Create(BaseMisskeyClient misskey, UserAnnouncement model)
     {
         RestUserAnnouncement entity = new RestUserAnnouncement(misskey, model.Id);
         entity.Update(model);
         return entity;
     }
 
-    internal void Update(Model model)
+    internal void Update(UserAnnouncement model)
     {
         this.CreatedAt = model.CreatedAt;
         this.UpdatedAt = model.UpdatedAt;

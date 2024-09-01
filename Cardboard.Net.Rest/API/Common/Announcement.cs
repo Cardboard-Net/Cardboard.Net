@@ -22,7 +22,10 @@ internal class Announcement
     
     [JsonProperty("imageUrl")]
     public required Uri? ImageUrl { get; init; }
-    
+}
+
+internal class UserAnnouncement : Announcement
+{
     [JsonProperty("icon")]
     public required IconType Icon { get; init; }
     
@@ -40,4 +43,10 @@ internal class Announcement
     
     [JsonProperty("isRead")] 
     public required bool IsRead { get; init; }
+}
+
+internal class AdminAnnouncement : Announcement
+{
+    [JsonProperty("reads")] 
+    public required int Reads { get; set; } = 0;
 }

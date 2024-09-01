@@ -1,64 +1,32 @@
 namespace Cardboard.Announcements;
 
+/// <summary>
+///     Base for all announcements
+/// </summary>
 public interface IAnnouncement : IMisskeyEntity
 {
     /// <summary>
-    ///     When the announcement was created
+    ///     When this announcement was created
     /// </summary>
     DateTime CreatedAt { get; }
     
     /// <summary>
-    ///     When the announcement was last updated (if ever)
+    ///     When this announcement was last updated
     /// </summary>
     DateTime? UpdatedAt { get; }
     
     /// <summary>
-    ///     The text of the announcement
-    /// </summary>
-    string Text { get; }
-    
-    /// <summary>
-    ///     The announcement title
+    ///     The title of this announcement
     /// </summary>
     string Title { get; }
     
     /// <summary>
-    ///     The image url
+    ///     The text/description of this announcement
+    /// </summary>
+    string Text { get; }
+    
+    /// <summary>
+    ///     The optional image url of this announcement
     /// </summary>
     Uri? ImageUrl { get; }
-    
-    /// <summary>
-    ///     The icon of the announcement
-    /// </summary>
-    IconType Icon { get; }
-    
-    /// <summary>
-    ///     The display type of the announcement
-    /// </summary>
-    DisplayType Display { get; }
-    
-    /// <summary>
-    ///     Whether the announcement needs a read confirmation
-    /// </summary>
-    bool ReadConfirmation { get; }
-    
-    /// <summary>
-    ///     Whether the announcement is silenced
-    /// </summary>
-    bool Silence { get; }
-    
-    /// <summary>
-    ///     Whether the announcement is only for you, or is instance wide
-    /// </summary>
-    bool ForYou { get; }
-    
-    /// <summary>
-    ///     Whether you have marked the announcement as read
-    /// </summary>
-    bool IsRead { get; }
-
-    /// <summary>
-    ///     Marks the announcement as read
-    /// </summary>
-    Task ReadAsync();
 }
