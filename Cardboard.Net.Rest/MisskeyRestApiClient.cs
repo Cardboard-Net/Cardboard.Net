@@ -61,17 +61,53 @@ internal class MisskeyRestApiClient : IDisposable
     
     #region Announcements
 
-    public async Task<Announcement?> GetAnnouncementAsync(string id)
-        => await SendRequestAsync<Announcement>("/api/announcements/show",
+    public async Task<UserAnnouncement?> GetAnnouncementAsync(string id)
+        => await SendRequestAsync<UserAnnouncement>("/api/announcements/show",
             JsonConvert.SerializeObject(new { announcementId = id }));
 
-    public async Task<Announcement[]?> GetAnnouncementsAsync(GetAnnouncementsParam args)
-        => await SendRequestAsync<Announcement[]>("/api/announcements",
+    public async Task<UserAnnouncement[]?> GetAnnouncementsAsync(GetAnnouncementsParam args)
+        => await SendRequestAsync<UserAnnouncement[]>("/api/announcements",
             JsonConvert.SerializeObject(args,
                 new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
     public async Task ReadAnnouncementAsync(string id)
         => await SendRequestAsync("/api/i/read-announcement", JsonConvert.SerializeObject(new { announcementId = id }));
+
+    public async Task<AdminAnnouncement> CreateAnnouncementAsync(CreateAnnouncementParams args)
+    {
+        RestRequest request = new RestRequest
+        {
+            Resource = "/api/admin/announcements/create"
+        };
+        request.AddJsonBody(JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<AdminAnnouncement> response = await RestClient.ExecutePostAsync<AdminAnnouncement>(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error creating announcement");
+        }
+        return response.Data!;
+    }
+    
+    public async Task<bool> ModifyAnnouncementAsync(ModifyAnnouncementParams args)
+    {
+        RestResponse response =
+            await SendWrappedRequestAsync("/api/admin/announcements/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to update announcement");
+        }
+
+        return true;
+    }
+
+    public async Task DeleteAnnouncementAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/announcements/delete", JsonConvert.SerializeObject(new { id = id }));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to delete announcement");
+        }
+    }
     
     #endregion
     

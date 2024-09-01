@@ -22,7 +22,7 @@ public interface ISelfUser : IUser
     /// <summary>
     ///     A list of unread announcements
     /// </summary>
-    IReadOnlyCollection<IAnnouncement> UnreadAnnouncements { get; }
+    IReadOnlyCollection<IUserAnnouncement> UnreadAnnouncements { get; }
     
     int UnreadNotificationsCount { get; }
     int LoggedInDays { get; }

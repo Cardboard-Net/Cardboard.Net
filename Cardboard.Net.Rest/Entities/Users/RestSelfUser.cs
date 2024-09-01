@@ -66,7 +66,7 @@ public class RestSelfUser : RestEntity<string>, ISelfUser
     public bool HasUnreadAnnouncement { get; private set; }
     
     /// <inheritdoc/>
-    public IReadOnlyCollection<IAnnouncement> UnreadAnnouncements { get; }
+    public IReadOnlyCollection<IUserAnnouncement> UnreadAnnouncements { get; }
     
     /// <inheritdoc/>
     public int UnreadNotificationsCount { get; private set; }
