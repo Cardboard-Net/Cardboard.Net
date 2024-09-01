@@ -399,6 +399,43 @@ internal class MisskeyRestApiClient : IDisposable
     
     #endregion
 
+    #region Relays
+    
+    public async Task<Relay[]?> GetRelaysAsync()
+    {
+        RestResponse<Relay[]> response = await SendWrappedRequestAsync<Relay[]>("/api/admin/relays/list");
+        
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            throw new InvalidOperationException("you do not have permission to view relays");
+        }
+        
+        return response.Data;
+    }
+
+    public async Task<Relay> CreateRelayAsync(Uri inbox)
+    {
+        RestResponse<Relay> response = await SendWrappedRequestAsync<Relay>("/api/admin/relays/add", JsonConvert.SerializeObject(new { inbox = inbox }));
+        
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("unable to add relay");
+        }
+
+        return response.Data!;
+    }
+    
+    public async Task DeleteRelayAsync(Uri inbox)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/admin/relays/delete", JsonConvert.SerializeObject(new { inbox = inbox }));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to delete relay");
+        }
+    }
+    
+    #endregion
+    
     #region Roles
 
     public async Task<Role?> GetRoleAsync(string id)
