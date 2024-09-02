@@ -51,12 +51,12 @@ public class AdminMeta : IMeta
     public IReadOnlyList<string> BannedEmailDomains => bannedEmailDomains;
     
     /// <summary>
-    /// 
+    ///     A read only list of the instance's preserved usernames
     /// </summary>
     public IReadOnlyList<string> PreservedUsernames => preservedUsernames;
     
     /// <summary>
-    /// 
+    ///     A read only list of the instances in the local instance's bubble
     /// </summary>
     public IReadOnlyList<string> BubbleInstances => bubbleInstances;
     
@@ -115,7 +115,6 @@ public class AdminMeta : IMeta
     public bool CacheRemoteFiles { get; internal set; }
     public bool CacheRemoteSensitiveFiles { get; internal set; }
     
-
     ICaptchaProviders IMeta.CaptchaProviders => CaptchaProviders;
     IInstanceUrls IMeta.InstanceUrls => InstanceUrls;
 }
