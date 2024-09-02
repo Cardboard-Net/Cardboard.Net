@@ -27,14 +27,16 @@ public class RestSelfUser : RestUser, ISelfUser
     /// <inheritdoc/>
     public int LoggedInDays { get; private set; }
 
-    public RestSelfUser(BaseMisskeyClient misskey, string id) : base(misskey, id)
-    {
-    }
+    public RestSelfUser(BaseMisskeyClient misskey, string id) : base(misskey, id) { }
 
-    internal void Update(Model model)
+    internal static RestSelfUser Create(BaseMisskeyClient misskey, Model model)
     {
-
+        RestSelfUser entity = new RestSelfUser(misskey, model.Id);
+        entity.Update(model);
+        return entity;
     }
+    
+    internal void Update(Model model) { }
 
     public override Task AcceptFollowRequestAsync()
         => throw new InvalidOperationException("You cannot accept a follow request from yourself");

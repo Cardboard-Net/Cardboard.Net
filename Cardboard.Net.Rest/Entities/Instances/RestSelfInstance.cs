@@ -95,6 +95,33 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
     {
         AdminMeta meta = new AdminMeta()
         {
+            silencedHosts = (model.SilencedHosts != null && model.SilencedHosts.Length != 0) 
+                ? ImmutableArray.Create<string>(model.SilencedHosts)
+                : ImmutableArray<string>.Empty,
+            pinnedUsers = (model.PinnedUsers != null && model.PinnedUsers.Length != 0) 
+                ? ImmutableArray.Create<string>(model.PinnedUsers)
+                : ImmutableArray<string>.Empty,
+            hiddenTags = (model.HiddenTags != null && model.HiddenTags.Length != 0) 
+                ? ImmutableArray.Create<string>(model.HiddenTags)
+                : ImmutableArray<string>.Empty,
+            blockedHosts = (model.BlockedHosts != null && model.BlockedHosts.Length != 0) 
+                ? ImmutableArray.Create<string>(model.BlockedHosts)
+                : ImmutableArray<string>.Empty,
+            sensitiveWords = (model.SensitiveWords != null && model.SensitiveWords.Length != 0) 
+                ? ImmutableArray.Create<string>(model.SensitiveWords)
+                : ImmutableArray<string>.Empty,
+            prohibitedWords = (model.ProhibitedWords != null && model.ProhibitedWords.Length != 0) 
+                ? ImmutableArray.Create<string>(model.ProhibitedWords)
+                : ImmutableArray<string>.Empty,
+            bannedEmailDomains = (model.BannedEmailDomains != null && model.BannedEmailDomains.Length != 0) 
+                ? ImmutableArray.Create<string>(model.BannedEmailDomains)
+                : ImmutableArray<string>.Empty,
+            preservedUsernames = (model.PreservedUsernames != null && model.PreservedUsernames.Length != 0) 
+                ? ImmutableArray.Create<string>(model.PreservedUsernames)
+                : ImmutableArray<string>.Empty,
+            bubbleInstances = (model.BubbleInstances != null && model.BubbleInstances.Length != 0) 
+                ? ImmutableArray.Create<string>(model.BubbleInstances)
+                : ImmutableArray<string>.Empty,
             MaintainerName = model.MaintainerName,
             MaintainerEmail = model.MaintainerEmail,
             Version = model.Version,
@@ -177,6 +204,32 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         
         Update(model);
         return AdminMeta!;
+    }
+
+    public async Task SilenceInstanceAsync(IFederatedInstance instance)
+        => await SilenceInstanceAsync(instance.Host.Host);
+
+    public async Task SilenceInstanceAsync(string host)
+    {
+        await GetAdminMetaAsync();
+
+        if (AdminMeta!.SilencedHosts.Contains(host))
+            throw new InvalidOperationException("Can't silence an already silenced instance");
+        
+        await ModifyAsync(x => x.SilencedHosts = AdminMeta!.SilencedHosts.Append(host).ToArray());
+    }
+
+    public async Task UnsilenceInstanceAsync(IFederatedInstance instance)
+        => await UnsilenceInstanceAsync(instance.Host.Host);
+    
+    public async Task UnsilenceInstanceAsync(string host)
+    {
+        await GetAdminMetaAsync();
+
+        if (!AdminMeta!.SilencedHosts.Contains(host))
+            throw new InvalidOperationException("Can't unsilence an already unsilenced instance");
+        
+        await ModifyAsync(x => x.SilencedHosts = AdminMeta!.SilencedHosts.Where(x => x != host).ToArray());
     }
     
     public Task GetOnlineUsersCountAsync()

@@ -5,6 +5,61 @@ namespace Cardboard.Instances;
 // TODO: Force kio to finish this.
 public class AdminMeta : IMeta
 {
+    internal ImmutableArray<string> silencedHosts;
+    internal ImmutableArray<string> pinnedUsers;
+    internal ImmutableArray<string> hiddenTags;
+    internal ImmutableArray<string> blockedHosts;
+    internal ImmutableArray<string> sensitiveWords;
+    internal ImmutableArray<string> prohibitedWords;
+    internal ImmutableArray<string> bannedEmailDomains;
+    internal ImmutableArray<string> preservedUsernames;
+    internal ImmutableArray<string> bubbleInstances;
+
+    /// <summary>
+    ///     A read only list of the instance's silenced hosts
+    /// </summary>
+    public IReadOnlyList<string> SilencedHosts => silencedHosts;
+    
+    /// <summary>
+    ///     A read only list of the instance's pinned users
+    /// </summary>
+    public IReadOnlyList<string> PinnedUsers => pinnedUsers;
+    
+    /// <summary>
+    ///     A read only list of the instance's hidden tags
+    /// </summary>
+    public IReadOnlyList<string> HiddenTags => hiddenTags;
+    
+    /// <summary>
+    ///     A read only list of the instance's blocked hosts
+    /// </summary>
+    public IReadOnlyList<string> BlockedHosts => blockedHosts;
+    
+    /// <summary>
+    ///     A read only list of the instance's sensitive words
+    /// </summary>
+    public IReadOnlyList<string> SensitiveWords => sensitiveWords;
+    
+    /// <summary>
+    ///     A read only list of the instance's prohibited words
+    /// </summary>
+    public IReadOnlyList<string> ProhibitedWords => prohibitedWords;
+    
+    /// <summary>
+    ///     A read only list of the instance's banned email domains
+    /// </summary>
+    public IReadOnlyList<string> BannedEmailDomains => bannedEmailDomains;
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public IReadOnlyList<string> PreservedUsernames => preservedUsernames;
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public IReadOnlyList<string> BubbleInstances => bubbleInstances;
+    
     /// <inheritdoc/>
     public string? MaintainerName { get; internal set; }
     
@@ -56,6 +111,10 @@ public class AdminMeta : IMeta
     
     /// <inheritdoc/>
     public string? ThemeColor { get; internal set; }
+    
+    public bool CacheRemoteFiles { get; internal set; }
+    public bool CacheRemoteSensitiveFiles { get; internal set; }
+    
 
     ICaptchaProviders IMeta.CaptchaProviders => CaptchaProviders;
     IInstanceUrls IMeta.InstanceUrls => InstanceUrls;
@@ -116,6 +175,9 @@ public class AdminCaptchaProviders : ICaptchaProviders
 /// </summary>
 public class AdminInstanceUrls : IInstanceUrls
 {
+    public Uri? App192IConUrl { get; internal set; }
+    public Uri? App512IconUrl { get; internal set; }
+    
     /// <inheritdoc/>
     public Uri? TosUrl { get; internal set; }
     

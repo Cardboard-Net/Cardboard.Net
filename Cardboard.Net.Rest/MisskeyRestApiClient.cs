@@ -20,6 +20,8 @@ internal class MisskeyRestApiClient : IDisposable
     internal string AuthToken { get; private set; }
     internal RestClient RestClient { get; private set; }
 
+    internal SelfUser FirstLoginUser { get; private set; }
+    
     public string UserAgent { get; }
     
     public MisskeyRestApiClient(string userAgent, JsonSerializerSettings? serializerSettings = null)
@@ -49,12 +51,14 @@ internal class MisskeyRestApiClient : IDisposable
             RestRequest request = new RestRequest();
             request.Resource = "/api/i";
             request.AddJsonBody("{}");
-            RestResponse response = await RestClient.ExecutePostAsync(request);
+            RestResponse<SelfUser> response = await RestClient.ExecutePostAsync<SelfUser>(request);
 
             if (response.StatusCode == HttpStatusCode.Forbidden)
             {
                 throw new InvalidOperationException("token is invalid");
             }
+
+            FirstLoginUser = response.Data!;
         }
         finally { _stateLock.Release(); }
     }
@@ -525,6 +529,11 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task<User?> GetUserAsync(string id)
     {
         return await SendRequestAsync<User>($"/api/users/show", JsonConvert.SerializeObject(new { userId = id}));
+    }
+    
+    public async Task<User?> GetUserAsync(string username, Uri? host)
+    {
+        return await SendRequestAsync<User>($"/api/users/show", JsonConvert.SerializeObject(new { username = username, host = host?.Host}));
     }
     
     public async Task ReportUserAsync(string id, string comment)

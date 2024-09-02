@@ -1,3 +1,4 @@
+using Cardboard.Instances;
 using Cardboard.Users;
 
 namespace Cardboard;
@@ -7,8 +8,9 @@ public abstract class BaseMisskeyClient : IMisskeyClient
     internal MisskeyRestApiClient ApiClient { get; }
     private readonly SemaphoreSlim _stateLock;
     private bool _IsDisposed;
-    
+
     public ISelfUser CurrentUser { get; protected set; }
+    public ISelfInstance CurrentInstance { get; protected set; }
     
     internal BaseMisskeyClient(MisskeyConfig config, MisskeyRestApiClient client)
     {

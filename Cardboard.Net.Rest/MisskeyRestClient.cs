@@ -3,6 +3,7 @@ using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Announcements;
 using Cardboard.Rest.Drives;
+using Cardboard.Rest.Instances;
 using Cardboard.Rest.Notes;
 using Cardboard.Users;
 
@@ -11,7 +12,8 @@ namespace Cardboard.Net.Rest;
 public class MisskeyRestClient : BaseMisskeyClient
 {
     public new RestSelfUser CurrentUser { get => base.CurrentUser as RestSelfUser; internal set => base.CurrentUser = value; }
-    
+    public new RestSelfInstance CurrentInstance{ get => base.CurrentInstance as RestSelfInstance; internal set => base.CurrentInstance = value; }
+
     public MisskeyRestClient() : this(new MisskeyConfig()) { }
     
     public MisskeyRestClient(MisskeyConfig config) : base(config, CreateApiClient(config)) { }
@@ -20,8 +22,15 @@ public class MisskeyRestClient : BaseMisskeyClient
 
     internal override async Task OnLoginAsync(string token, Uri baseUrl)
     {
-        var user = await ApiClient.GetSelfUserAsync().ConfigureAwait(false);
-        Console.WriteLine(user.Name); 
+        CurrentUser = RestSelfUser.Create(this, ApiClient.FirstLoginUser);
+
+        var meta = await ApiClient.GetMetaAsync();
+        var model = await ApiClient.GetUserAsync("instance.actor", null);
+
+        if (model == null || meta == null)
+            return;
+        
+        CurrentInstance = RestSelfInstance.Create(this, meta, RestInstanceActor.Create(this, model));
     }
     
     private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
@@ -153,8 +162,11 @@ public class MisskeyRestClient : BaseMisskeyClient
     
     #region Users
     
-    public async Task<RestUser> GetUserAsync(string userId)
+    public async Task<RestUser?> GetUserAsync(string userId)
         => await ClientHelper.GetUserAsync(this, userId);
+
+    public async Task<RestUser?> GetUserAsync(string username, Uri? host)
+        => await ClientHelper.GetUserAsync(this, username, host);
     
     public async Task ReportUserAsync(string userId, string comment)
         => await ApiClient.ReportUserAsync(userId, comment);

@@ -12,12 +12,16 @@ namespace Cardboard.Rest;
 
 internal static class ClientHelper
 {
-    public static async Task<RestUser> GetUserAsync(BaseMisskeyClient client, string id)
+    public static async Task<RestUser?> GetUserAsync(BaseMisskeyClient client, string id)
     {
         var model = await client.ApiClient.GetUserAsync(id).ConfigureAwait(false);
-        if (model != null)
-            return RestUser.Create(client, model);
-        return null;
+        return model != null ? RestUser.Create(client, model) : null;
+    }
+    
+    public static async Task<RestUser?> GetUserAsync(BaseMisskeyClient client, string username, Uri? host)
+    {
+        var model = await client.ApiClient.GetUserAsync(username, host).ConfigureAwait(false);
+        return model != null ? RestUser.Create(client, model) : null;
     }
 
     public static async Task<RestDriveFile> GetDriveFileAsync(BaseMisskeyClient client, string id)
