@@ -80,31 +80,31 @@ internal class AdminMeta
     public bool TranslatorAvailable {get; set;}
 
     [JsonProperty("silencedHosts")]
-    public string[] SilencedHosts {get; set;}
+    public string[]? SilencedHosts {get; set;}
 
     [JsonProperty("pinnedUsers")]
-    public string[] PinnedUsers {get; set;}
+    public string[]? PinnedUsers {get; set;}
 
     [JsonProperty("hiddenTags")]
-    public string[] HiddenTags {get; set;}
+    public string[]? HiddenTags {get; set;}
 
     [JsonProperty("blockedHosts")]
-    public string[] BlockedHosts {get; set;}
+    public string[]? BlockedHosts {get; set;}
 
     [JsonProperty("sensitiveWords")]
-    public string[] SensitiveWords {get; set;}
+    public string[]? SensitiveWords {get; set;}
 
     [JsonProperty("prohibitedWords")]
-    public string[] ProhibitedWords {get; set;}
+    public string[]? ProhibitedWords {get; set;}
     
     [JsonProperty("bannedEmailDomains")]
-    public string[] BannedEmailDomains {get; set;}
+    public string[]? BannedEmailDomains {get; set;}
 
     [JsonProperty("preservedUsernames")]
-    public string[] PreservedUsernames {get; set;}
+    public string[]? PreservedUsernames {get; set;}
 
     [JsonProperty("bubbleInstances")]
-    public string[] BubbleInstances {get; set;}
+    public string[]? BubbleInstances {get; set;}
 
     [JsonProperty("hcaptchaSecretKey")]
     public string? HCaptchaSecretKey {get; set;}

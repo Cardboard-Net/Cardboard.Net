@@ -105,7 +105,7 @@ public class Meta : IMeta
     /// <summary>
     ///     A list of the rules
     /// </summary>
-    public IReadOnlyCollection<string> Rules => rules;
+    public IReadOnlyList<string> Rules => rules;
     
     /// <inheritdoc/>
     public string? ThemeColor { get; internal set; }

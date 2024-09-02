@@ -150,15 +150,13 @@ public class RestFederatedInstance : RestEntity<string>, IFederatedInstance, IUp
         await UpdateAsync();
     }
 
-    public Task SilenceAsync()
-    {
-        throw new NotImplementedException();
-    }
+    /// <inheritdoc/>
+    public async Task SilenceAsync()
+        => await (Misskey.CurrentInstance as RestSelfInstance)!.SilenceInstanceAsync(this);
 
-    public Task UnsilenceAsync()
-    {
-        throw new NotImplementedException();
-    }
+    /// <inheritdoc/>
+    public async Task UnsilenceAsync()
+        => await (Misskey.CurrentInstance as RestSelfInstance)!.UnsilenceInstanceAsync(this);
 
     /// <inheritdoc/>
     public async Task SuspendAsync()
