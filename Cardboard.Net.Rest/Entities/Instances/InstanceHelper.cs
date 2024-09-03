@@ -14,6 +14,66 @@ internal static class InstanceHelper
         return model != null ? RestFederatedInstance.Create(client, model) : null;
     }
 
+    public static async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowingRelationAsync
+    (
+        BaseMisskeyClient client,
+        string host,
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+    {
+        GetFederatedInstanceRelationParams args = new GetFederatedInstanceRelationParams()
+        {
+            Host = host,
+            SinceId = sinceId,
+            UntilId = untilId,
+            Limit = limit
+        };
+
+        FederatedInstanceRelation[]? models = await client.ApiClient.GetFederatedInstanceFollowingAsync(args).ConfigureAwait(false);
+        
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestFederatedInstanceRelation>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestFederatedInstanceRelation>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestFederatedInstanceRelation.Create(client, m));
+
+        return _models.ToImmutable();
+    }
+    
+    public static async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowerRelationAsync
+    (
+        BaseMisskeyClient client,
+        string host,
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+    {
+        GetFederatedInstanceRelationParams args = new GetFederatedInstanceRelationParams()
+        {
+            Host = host,
+            SinceId = sinceId,
+            UntilId = untilId,
+            Limit = limit
+        };
+
+        FederatedInstanceRelation[]? models = await client.ApiClient.GetFederatedInstanceFollowersAsync(args).ConfigureAwait(false);
+        
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestFederatedInstanceRelation>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestFederatedInstanceRelation>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestFederatedInstanceRelation.Create(client, m));
+
+        return _models.ToImmutable();
+    }
+    
     public static async Task<IReadOnlyList<RestFederatedInstance>> GetFederatedInstancesAsync
     (
         BaseMisskeyClient client,
@@ -76,7 +136,7 @@ internal static class InstanceHelper
             ModerationNote = args.ModerationNote
         };
 
-        return await client.ApiClient.ModifyFederatedInstanceAsync(modifyFederatedInstanceParams);
+        return await client.ApiClient.ModifyFederatedInstanceAsync(modifyFederatedInstanceParams).ConfigureAwait(false);
     }
 
     public static async Task<bool> ModifyMetaAsync(BaseMisskeyClient client, Action<InstanceProperties> func)
@@ -200,6 +260,6 @@ internal static class InstanceHelper
             UrlPreviewSummaryProxyUrl = args.UrlPreviewSummaryProxyUrl
         };
 
-        return await client.ApiClient.ModifyMetaAsync(modifyMetaParams);
+        return await client.ApiClient.ModifyMetaAsync(modifyMetaParams).ConfigureAwait(false);
     }
 }

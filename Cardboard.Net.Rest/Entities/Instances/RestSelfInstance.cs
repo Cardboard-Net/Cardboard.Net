@@ -205,6 +205,9 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         Update(model);
         return AdminMeta!;
     }
+    
+    public async Task<RestFederatedInstance?> GetFederatedInstanceAsync(string host)
+        => await InstanceHelper.GetFederatedInstanceAsync(Misskey, host);
 
     public async Task<IReadOnlyList<RestFederatedInstance>> GetFederatedInstancesAsync
     (
