@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using Cardboard.Antennas;
+using Cardboard.Lists;
 using Cardboard.Notes;
+using Cardboard.Rest.Lists;
 using Cardboard.Rest.Notes;
 using Cardboard.Users;
 
@@ -14,6 +16,7 @@ public class RestAntenna : RestEntity<string>, IAntenna, IUpdateable
     private ImmutableArray<string> keywords;
     private ImmutableArray<string> excludeKeywords;
     private ImmutableArray<string> userIdList;
+    private string? userListId;
     
     /// <inheritdoc/>
     public DateTime CreatedAt { get; private set; }
@@ -84,6 +87,7 @@ public class RestAntenna : RestEntity<string>, IAntenna, IUpdateable
         this.IsActive = model.IsActive;
         this.HasUnreadNote = model.HasUnreadNote;
         this.Notify = model.Notify;
+        this.userListId = model.UserListId;
     }
     
     public async Task UpdateAsync()
@@ -118,7 +122,10 @@ public class RestAntenna : RestEntity<string>, IAntenna, IUpdateable
         DateTime? untilDate = null
     )
         => await AntennaHelper.GetNotesAsync(Misskey, Id, limit, sinceId, untilId, sinceDate, untilDate);
-    
+
+    public async Task<RestList?> GetListAsync()
+        => userListId != null ? await ListHelper.GetListAsync(Misskey, this.Id).ConfigureAwait(false) : null;
+
     public async Task<IReadOnlyList<RestUser>> GetUsersAsync()
     {
         if (userIdList.IsEmpty)
@@ -126,6 +133,9 @@ public class RestAntenna : RestEntity<string>, IAntenna, IUpdateable
         
         return await UserHelper.GetUsersAsync(Misskey, userIdList.ToArray());
     }
+
+    async Task<IList?> IAntenna.GetListAsync()
+        => await this.GetListAsync().ConfigureAwait(false);
     
     async Task<IReadOnlyList<IUser>> IAntenna.GetUsersAsync() 
         => await this.GetUsersAsync().ConfigureAwait(false);

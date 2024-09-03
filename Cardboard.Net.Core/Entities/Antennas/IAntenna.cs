@@ -1,3 +1,4 @@
+using Cardboard.Lists;
 using Cardboard.Notes;
 using Cardboard.Users;
 
@@ -72,7 +73,14 @@ public interface IAntenna : IMisskeyEntity, IDeletable
     ///     Whether the antenna is set to notify you
     /// </summary>
     bool Notify { get; }
+
+    /// <summary>
+    ///     Gets the user list this antenna sources from
+    /// </summary>
+    Task<IList?> GetListAsync();
     
-    // TODO: GetListAsync()
+    /// <summary>
+    ///     Gets all users in this antenna
+    /// </summary>
     Task<IReadOnlyList<IUser>> GetUsersAsync();
 }
