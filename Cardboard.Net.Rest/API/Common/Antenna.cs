@@ -1,3 +1,4 @@
+using Cardboard.Antennas;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
@@ -5,7 +6,7 @@ namespace Cardboard.Net.Rest.API;
 internal class Antenna
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public required string Id { get; set; }
     
     [JsonProperty("createdAt")]
     public DateTime CreatedAt { get; set; }
@@ -14,21 +15,19 @@ internal class Antenna
     public string Name { get; set; }
     
     [JsonProperty("keywords")]
-    public string[] Keywords { get; set; }
+    public required string[] Keywords { get; set; }
     
     [JsonProperty("excludeKeywords")]
-    public string[] ExcludeKeywords { get; set; }
+    public required string[] ExcludeKeywords { get; set; }
     
     [JsonProperty("source")]
-    public string Source { get; set; }
+    public AntennaSourceType Source { get; set; }
     
-    // no idea what this is
     [JsonProperty("userListId")]
     public string? UserListId { get; set; }
     
-    // says "array of strings" wonder if it's an array of user ids? 
     [JsonProperty("users")]
-    public string[] Users { get; set; }
+    public required string[] Users { get; set; }
     
     [JsonProperty("caseSensitive")]
     public bool CaseSensitive { get; set; }
