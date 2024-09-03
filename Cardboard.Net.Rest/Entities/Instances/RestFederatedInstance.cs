@@ -150,11 +150,21 @@ public class RestFederatedInstance : RestEntity<string>, IFederatedInstance, IUp
         await UpdateAsync();
     }
 
-    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowingRelationAsync()
-        => throw new NotImplementedException();
-
-    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowerRelationAsync()
-        => throw new NotImplementedException();
+    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowingRelationAsync
+    (
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+        => await InstanceHelper.GetFollowingRelationAsync(Misskey, this.Host.Host, sinceId, untilId, limit);
+    
+    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowerRelationAsync
+    (
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+        => await InstanceHelper.GetFollowerRelationAsync(Misskey, this.Host.Host, sinceId, untilId, limit);
 
     /// <inheritdoc/>
     public async Task SilenceAsync()
