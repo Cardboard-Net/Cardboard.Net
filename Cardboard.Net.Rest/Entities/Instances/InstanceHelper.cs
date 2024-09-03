@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using Cardboard.Instances;
 using Cardboard.Net.Rest.API;
+using Cardboard.Rest.Notes;
 
 namespace Cardboard.Rest.Instances;
 
@@ -10,6 +12,54 @@ internal static class InstanceHelper
         var model = await client.ApiClient.GetFederatedInstanceAsync(host).ConfigureAwait(false);
 
         return model != null ? RestFederatedInstance.Create(client, model) : null;
+    }
+
+    public static async Task<IReadOnlyList<RestFederatedInstance>> GetFederatedInstancesAsync
+    (
+        BaseMisskeyClient client,
+        string? host = null,
+        bool? blocked = null,
+        bool? notResponding = null,
+        bool? suspended = null,
+        bool? silenced = null,
+        bool? federating = null,
+        bool? subscribing = null,
+        bool? publishing = null,
+        bool? nsfw = null,
+        bool? bubble = null,
+        int? limit = null,
+        int? offset = null,
+        InstanceSortType? sort = null
+    )
+    {
+        GetFederatedInstancesParams instancesParams = new GetFederatedInstancesParams()
+        {
+            Host = host,
+            Blocked = blocked,
+            NotResponding = notResponding,
+            Suspended = suspended,
+            Silenced = silenced,
+            Federating = federating,
+            Subscribing = subscribing,
+            Publishing = publishing,
+            Nsfw = nsfw,
+            Bubble = bubble,
+            Limit = limit,
+            Offset = offset,
+            Sort = sort
+        };
+        
+        FederatedInstance[]? models = await client.ApiClient.GetFederatedInstancesAsync(instancesParams).ConfigureAwait(false);
+
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestFederatedInstance>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestFederatedInstance>(models.Length);
+
+        foreach (var m in models)
+            _models.Add(RestFederatedInstance.Create(client, m));
+
+        return _models.ToImmutable();
     }
     
     public static async Task<bool> ModifyFederatedInstanceAsync(IFederatedInstance instance,

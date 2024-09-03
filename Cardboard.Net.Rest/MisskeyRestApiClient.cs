@@ -467,6 +467,9 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task<FederatedInstance?> GetFederatedInstanceAsync(string host)
         => await SendRequestAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
 
+    public async Task<FederatedInstance[]?> GetFederatedInstancesAsync(GetFederatedInstancesParams args)
+        => await SendRequestAsync<FederatedInstance[]>("/api/federation/instances", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+    
     public async Task RefreshFederatedInstanceAsync(string host)
     {
         RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/refresh-remote-instance-metadata", JsonConvert.SerializeObject(new {host = host}));

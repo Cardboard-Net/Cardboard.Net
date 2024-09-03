@@ -206,6 +206,24 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         return AdminMeta!;
     }
 
+    public async Task<IReadOnlyList<RestFederatedInstance>> GetFederatedInstancesAsync
+    (
+        string? host = null,
+        bool? blocked = null,
+        bool? notResponding = null,
+        bool? suspended = null,
+        bool? silenced = null,
+        bool? federating = null,
+        bool? subscribing = null,
+        bool? publishing = null,
+        bool? nsfw = null,
+        bool? bubble = null,
+        int? limit = null,
+        int? offset = null,
+        InstanceSortType? sort = null
+    )
+        => await InstanceHelper.GetFederatedInstancesAsync(Misskey, host, blocked, notResponding, suspended, silenced, federating, subscribing, publishing, nsfw, bubble, limit, offset, sort);
+
     public async Task SilenceInstanceAsync(IFederatedInstance instance)
         => await SilenceInstanceAsync(instance.Host.Host);
 
