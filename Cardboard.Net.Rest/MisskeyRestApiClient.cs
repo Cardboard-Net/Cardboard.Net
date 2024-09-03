@@ -518,6 +518,13 @@ internal class MisskeyRestApiClient : IDisposable
     
     #endregion
     
+    #region Lists
+
+    public async Task<Cardboard.Net.Rest.API.List?> GetListAsync(string id, bool forPublic = false)
+        => await SendRequestAsync<Cardboard.Net.Rest.API.List>("/api/antennas/show", JsonConvert.SerializeObject(new { listId = id, forPublic = forPublic }));
+    
+    #endregion
+    
     #region Relays
     
     public async Task<Relay[]?> GetRelaysAsync()

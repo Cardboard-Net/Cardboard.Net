@@ -14,7 +14,7 @@ internal class List
     public string Name { get; set; }
     
     [JsonProperty("userIds")]
-    public string[] UserIds { get; set; }
+    public string[]? UserIds { get; set; }
     
     [JsonProperty("isPublic")]
     public bool IsPublic { get; set; }
