@@ -214,6 +214,6 @@ internal static class NoteHelper
             ReplyId = args.ReplyId ?? args.Reply?.Id
         };
 
-        return await client.ApiClient.ModifyNoteAsync(modifyNoteParams);
+        return await client.ApiClient.ModifyNoteAsync(modifyNoteParams).ConfigureAwait(false);
     }
 }

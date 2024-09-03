@@ -115,6 +115,51 @@ internal class MisskeyRestApiClient : IDisposable
     
     #endregion
     
+    #region Antennas
+
+    public async Task<Antenna?> GetAntennaAsync(string id)
+        => await SendRequestAsync<Antenna>("/api/antennas/show", JsonConvert.SerializeObject(new { antennaId = id }));
+    
+    public async Task<Note[]?> GetAntennaNotesAsync(GetAntennaNotesParams args)
+    {
+        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/antennas/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        return response.Data;
+    }
+    
+    public async Task<Antenna?> CreateAntennaAsync(CreateAntennaParams args)
+    {
+        RestResponse<Antenna> response = await SendWrappedRequestAsync<Antenna>("/api/antennas/create",
+            JsonConvert.SerializeObject(args,
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error creating antenna");
+        }
+        return response.Data;
+    }
+    
+    public async Task<Antenna?> ModifyAntennaAsync(ModifyAntennaParams args)
+    {
+        RestResponse<Antenna> response = await SendWrappedRequestAsync<Antenna>("/api/antennas/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("error modifying the antenna");
+        }
+        
+        return response.Data;
+    }
+    
+    public async Task DeleteAntennaAsync(string id)
+    {
+        RestResponse response = await SendWrappedRequestAsync("/api/antennas/delete", JsonConvert.SerializeObject(new { antennaId = id}));
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            throw new InvalidOperationException("unable to delete antenna");
+        }
+    }
+    
+    #endregion
+    
     #region Clips
 
     public async Task<Clip?> GetClipAsync(string id)
@@ -535,6 +580,9 @@ internal class MisskeyRestApiClient : IDisposable
     {
         return await SendRequestAsync<User>($"/api/users/show", JsonConvert.SerializeObject(new { username = username, host = host?.Host}));
     }
+
+    public async Task<User[]?> GetUsersAsync(string[] userIds)
+        => await SendRequestAsync<User[]>("/api/users/show", JsonConvert.SerializeObject(new { userIds = userIds }));
     
     public async Task ReportUserAsync(string id, string comment)
         => await SendRequestAsync("/api/users/report-abuse", JsonConvert.SerializeObject(new { userId = id, comment = comment}));

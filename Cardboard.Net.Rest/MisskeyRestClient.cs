@@ -1,7 +1,9 @@
+using Cardboard.Antennas;
 using Cardboard.Charts;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Announcements;
+using Cardboard.Rest.Antennas;
 using Cardboard.Rest.Drives;
 using Cardboard.Rest.Instances;
 using Cardboard.Rest.Notes;
@@ -43,6 +45,50 @@ public class MisskeyRestClient : BaseMisskeyClient
 
     public async Task<IReadOnlyCollection<RestUserAnnouncement>> GetAnnouncementsAsync()
         => await AnnouncementHelper.GetAnnouncementsAsync(this);
+    
+    #endregion
+    
+    #region Antennas
+
+    public async Task<RestAntenna?> GetAntennaAsync(string antennaId)
+        => await AntennaHelper.GetAntennaAsync(this, antennaId);
+
+    public async Task<RestAntenna> CreateAntennaAsync
+    (
+        string name,
+        AntennaSourceType source,
+        string[] keywords,
+        string[]? userIds = null,
+        bool withReplies = false,
+        bool withFiles = false,
+        string? userListId = null,
+        string[]? excludeKeywords = null,
+        bool caseSensitive = false,
+        bool? localOnly = null,
+        bool? excludeBots = null
+    )
+    {
+        RestAntenna? antenna = await AntennaHelper.CreateAntennaAsync
+        (
+            this,
+            name,
+            source,
+            keywords, 
+            userIds, 
+            withReplies, 
+            withFiles, 
+            userListId, 
+            excludeKeywords, 
+            caseSensitive, 
+            localOnly, 
+            excludeBots
+        );
+        
+        if (antenna == null)
+            throw new InvalidOperationException("unable to create antenna");
+
+        return antenna;
+    }
     
     #endregion
     
