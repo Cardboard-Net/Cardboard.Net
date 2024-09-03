@@ -150,6 +150,12 @@ public class RestFederatedInstance : RestEntity<string>, IFederatedInstance, IUp
         await UpdateAsync();
     }
 
+    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowingRelationAsync()
+        => throw new NotImplementedException();
+
+    public async Task<IReadOnlyList<RestFederatedInstanceRelation>> GetFollowerRelationAsync()
+        => throw new NotImplementedException();
+
     /// <inheritdoc/>
     public async Task SilenceAsync()
         => await (Misskey.CurrentInstance as RestSelfInstance)!.SilenceInstanceAsync(this);
