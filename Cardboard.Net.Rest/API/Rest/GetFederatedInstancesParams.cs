@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
 
-internal class GetFederationInstancesParam
+internal class GetFederatedInstancesParams
 {
     [JsonProperty("host")]
     public string? Host { get; set; }
@@ -36,10 +36,10 @@ internal class GetFederationInstancesParam
     public bool? Bubble { get; set; }
     
     [JsonProperty("limit")]
-    public int Limit { get; set; }
+    public int? Limit { get; set; }
     
     [JsonProperty("offset")]
-    public int Offset { get; set; }
+    public int? Offset { get; set; }
     
     [JsonProperty("sort")]
     public InstanceSortType? Sort { get; set; }
