@@ -164,28 +164,28 @@ internal class User : UserLite
     public string ModerationNote { get; set; }
     
     [JsonProperty("hasPendingFollowRequestFromYou")]
-    public bool HasOutgoingFollowRequest { get; set; }
+    public bool? HasOutgoingFollowRequest { get; set; }
     
     [JsonProperty("hasPendingFollowRequestToYou")]
-    public bool HasIncomingFollowRequest { get; set; }
+    public bool? HasIncomingFollowRequest { get; set; }
     
     [JsonProperty("isFollowed")]
-    public bool IsFollowed { get; set; }
+    public bool? IsFollowed { get; set; }
     
     [JsonProperty("isFollowing")]
-    public bool IsFollowing { get; set; }
+    public bool? IsFollowing { get; set; }
     
     [JsonProperty("isBlocked")]
-    public bool IsBlocked { get; set; }
+    public bool? IsBlocked { get; set; }
     
     [JsonProperty("isBlocking")]
-    public bool IsBlocking { get; set; }
+    public bool? IsBlocking { get; set; }
     
     [JsonProperty("isMuted")]
-    public bool IsMuted { get; set; }
+    public bool? IsMuted { get; set; }
     
     [JsonProperty("isRenoteMuted")]
-    public bool IsRenoteMuted { get; set; }
+    public bool? IsRenoteMuted { get; set; }
     
     [JsonProperty("notify")]
     public NotifyType Notify { get; set; }

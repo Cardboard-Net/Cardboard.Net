@@ -14,8 +14,8 @@ public interface ISelfInstance : IMisskeyEntity
     
     IMeta Meta { get; }
     
-    Task GetOnlineUsersCountAsync();
+    Task<int> GetOnlineUsersCountAsync();
     Task GetServerInfoAsync();
     Task GetStatsAsync();
-    Task PingAsync();
+    Task<ulong> PingAsync();
 }

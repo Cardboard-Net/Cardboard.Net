@@ -166,6 +166,14 @@ public class RestFederatedInstance : RestEntity<string>, IFederatedInstance, IUp
     )
         => await InstanceHelper.GetFollowerRelationAsync(Misskey, this.Host.Host, sinceId, untilId, limit);
 
+    public async Task<IReadOnlyList<RestUser>> GetUsersAsync
+    (
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+        => await InstanceHelper.GetUsersAsync(Misskey, this.Host.Host, sinceId, untilId, limit);
+    
     /// <inheritdoc/>
     public async Task SilenceAsync()
         => await (Misskey.CurrentInstance as RestSelfInstance)!.SilenceInstanceAsync(this);

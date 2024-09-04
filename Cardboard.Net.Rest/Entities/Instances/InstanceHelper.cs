@@ -73,6 +73,36 @@ internal static class InstanceHelper
 
         return _models.ToImmutable();
     }
+
+    public static async Task<IReadOnlyList<RestUser>> GetUsersAsync
+    (
+        BaseMisskeyClient client,
+        string host,
+        string? sinceId = null,
+        string? untilId = null,
+        int? limit = null
+    )
+    {
+        GetFederatedInstanceUsersParams args = new GetFederatedInstanceUsersParams()
+        {
+            Host = host,
+            SinceId = sinceId,
+            UntilId = untilId,
+            Limit = limit
+        };
+
+        User[]? models = await client.ApiClient.GetFederatedInstanceUsersAsync(args).ConfigureAwait(false);
+        
+        if (models == null || models.Length == 0)
+            return ImmutableArray<RestUser>.Empty;
+
+        var _models = ImmutableArray.CreateBuilder<RestUser>(models.Length);
+        
+        foreach (var m in models)
+            _models.Add(RestUser.Create(client, m));
+
+        return _models.ToImmutable();
+    }
     
     public static async Task<IReadOnlyList<RestFederatedInstance>> GetFederatedInstancesAsync
     (

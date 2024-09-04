@@ -238,7 +238,7 @@ internal class AdminMeta
     public string ManifestJsonOverride {get; set;}
 
     [JsonProperty("policies")]
-    public object Policies {get; set;} 
+    public RolePolicy Policies {get; set;} 
     
     [JsonProperty("enableFanoutTimeline")]
     public bool EnableFanoutTimeline {get; set;}
@@ -341,5 +341,4 @@ internal class AdminMeta
 
     [JsonProperty("urlPreviewSummaryProxyUrl")]
     public Uri? UrlPreviewSummaryProxyUrl {get; set;}
-
 }

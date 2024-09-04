@@ -146,6 +146,8 @@ public interface IUser : IUserLite
     public string? Memo { get; }
 
     public string ModerationNote { get; }
+    
+    IUserRelation? Relation { get; }
 
     public NotifyType Notify { get; }
 

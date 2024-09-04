@@ -1,12 +1,13 @@
 using System.Collections.Immutable;
-using Cardboard.Net.Core.Entities.Roles;
+using Cardboard.Net.Rest.API;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Notes;
 using Cardboard.Roles;
 using Cardboard.Users;
-
+using BadgeRole = Cardboard.Net.Core.Entities.Roles.BadgeRole;
 using Model = Cardboard.Net.Rest.API.User;
+using Poll = Cardboard.Notes.Poll;
 
 namespace Cardboard.Rest;
 
@@ -36,58 +37,24 @@ internal enum UserFlags : int
     PublicReactions = 1 << 9,
 }
 
-[Flags]
-internal enum RelationFlags : int
-{
-    None = 0,
-    OutgoingFollowReq = 1 << 0,
-    IncomingFollowReq = 1 << 1,
-    Followed          = 1 << 2,
-    Following         = 1 << 3,
-    Blocked           = 1 << 4,
-    Blocking          = 1 << 5,
-    Muted             = 1 << 6,
-    RenoteMuted       = 1 << 7
-}
-
-public class Relation
-{
-    private RelationFlags _relationFlags = RelationFlags.None;
-    public bool HasOutgoingFollowRequest 
-        => _relationFlags.HasFlag(RelationFlags.OutgoingFollowReq);
-    public bool HasIncomingFollowRequest
-        => _relationFlags.HasFlag(RelationFlags.IncomingFollowReq);
-    public bool IsFollowed 
-        => _relationFlags.HasFlag(RelationFlags.Followed);
-    public bool IsFollowing
-        => _relationFlags.HasFlag(RelationFlags.Following);
-    public bool IsBlocked 
-        => _relationFlags.HasFlag(RelationFlags.Blocked);
-    public bool IsBlocking
-        => _relationFlags.HasFlag(RelationFlags.Blocking);
-    public bool IsMuted 
-        => _relationFlags.HasFlag(RelationFlags.Muted);
-    public bool IsRenoteMuted 
-        => _relationFlags.HasFlag(RelationFlags.RenoteMuted);
-
-    internal Relation(RelationFlags flags)
-    {
-        _relationFlags = flags;
-    }
-}
-
 public class RestUser : RestEntity<string>, IUser, IUpdateable
 {
     private UserFlags _userFlags = UserFlags.None;
     private ImmutableArray<UserField> _fields;
     private ImmutableArray<BadgeRole> _badgeRoles;
     
-    public bool IsAdmin 
-        => _userFlags.HasFlag(UserFlags.Admin);
-    
-    public bool IsModerator 
-        => _userFlags.HasFlag(UserFlags.Moderator);
-    
+    public bool IsAdmin
+    {
+        get => _userFlags.HasFlag(UserFlags.Admin);
+        internal set => _userFlags = value ? _userFlags | UserFlags.Admin : _userFlags & ~UserFlags.Admin;
+    }
+
+    public bool IsModerator
+    {
+        get => _userFlags.HasFlag(UserFlags.Moderator);
+        internal set => _userFlags = value ? _userFlags | UserFlags.Moderator : _userFlags & ~UserFlags.Moderator;
+    }
+
     public bool IsSilenced
         => _userFlags.HasFlag(UserFlags.Silenced);
 
@@ -150,7 +117,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public bool SecurityKeys { get; private set; }
     public string? Memo { get; private set; }
     public string ModerationNote { get; private set; }
-    public Relation Relation { get; private set; }
+    public RestUserRelation? Relation { get; private set; }
     public NotifyType Notify { get; private set; }
     public bool WithReplies { get; private set; }
 
@@ -165,8 +132,7 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     
     internal void Update(Model model)
     {
-        // Set appropriate flags
-        if (model.IsAdmin) _userFlags |= UserFlags.Admin;
+        IsAdmin = model.IsAdmin;
         if (model.IsModerator) _userFlags |= UserFlags.Moderator;
         if (model.IsSilenced) _userFlags |= UserFlags.Silenced;
         if (model.NoIndex) _userFlags |= UserFlags.NoIndex;
@@ -240,17 +206,37 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         this.ModerationNote = model.ModerationNote;
         
         RelationFlags relationFlags = RelationFlags.None;
-        
-        if (model.HasOutgoingFollowRequest) relationFlags |= RelationFlags.OutgoingFollowReq;
-        if (model.HasIncomingFollowRequest) relationFlags |= RelationFlags.IncomingFollowReq;
-        if (model.IsFollowed) relationFlags |= RelationFlags.Followed;
-        if (model.IsFollowing) relationFlags |= RelationFlags.Following;
-        if (model.IsBlocked) relationFlags |= RelationFlags.Blocked;
-        if (model.IsBlocking) relationFlags |= RelationFlags.Blocking;
-        if (model.IsMuted) relationFlags |= RelationFlags.Muted;
-        if (model.IsRenoteMuted) relationFlags |= RelationFlags.RenoteMuted;
 
-        Relation = new Relation(relationFlags);
+        /*
+         * So, let me explain this. We might not have the user relation given
+         * in the model. The thing is, I can be reasonably sure that if I have
+         * one part of the user relation fields then I have the others. I am
+         * not going to make a monolith of an if statement to ensure all values
+         * are not null. Another thing is that I originally had these separated
+         * out, I was going to have a separate RestUserRelation for grabbing the
+         * relation. The thing is, the only difference is user relation in the
+         * model does not have an id associated with it. My suspicion is that
+         * the user relation model id is the user id. This is why we go ahead and
+         * hack together a new user relation model as if it was returned by the
+         * api and shove it into this class.
+         */
+        if (model.HasOutgoingFollowRequest.HasValue)
+        {
+            UserRelation relation = new UserRelation()
+            {
+                Id = this.Id,
+                HasOutgoingFollowRequest = model.HasOutgoingFollowRequest.Value,
+                HasIncomingFollowRequest = model.HasIncomingFollowRequest!.Value,
+                IsFollowed = model.IsFollowed!.Value,
+                IsFollowing = model.IsFollowing!.Value,
+                IsBlocked = model.IsBlocked!.Value,
+                IsBlocking = model.IsBlocking!.Value,
+                IsMuted = model.IsMuted!.Value,
+                IsRenoteMuted = model.IsRenoteMuted!.Value
+            };
+
+            Relation = RestUserRelation.Create(Misskey, relation);
+        }
         
         this.Notify = model.Notify;
         this.WithReplies = model.WithReplies;
@@ -259,7 +245,20 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public virtual async Task UpdateAsync()
     {
         var model = await Misskey.ApiClient.GetUserAsync(Id);
+
+        if (model == null)
+            return;
+        
         Update(model);
+    }
+
+    public virtual async Task<RestUserRelation?> GetRelationAsync()
+    {
+        if (Relation != null)
+            await Relation.UpdateAsync();
+        
+        Relation ??= await UserHelper.GetRelationAsync(Misskey, Id);
+        return Relation;
     }
     
     /*
@@ -387,4 +386,6 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     {
         throw new NotImplementedException();
     }
+
+    IUserRelation IUser.Relation => Relation;
 }

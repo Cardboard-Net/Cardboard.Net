@@ -9,6 +9,8 @@ namespace Cardboard.Rest;
 
 public class RestSelfUser : RestUser, ISelfUser
 {
+    public new RestUserRelation? Relation = null;
+    
     /// <inheritdoc/>
     public bool HasUnreadDms { get; private set; }
 
@@ -38,6 +40,9 @@ public class RestSelfUser : RestUser, ISelfUser
     
     internal void Update(Model model) { }
 
+    public override Task<RestUserRelation?> GetRelationAsync()
+        => throw new InvalidOperationException("You cannot get a user relation for yourself");
+    
     public override Task AcceptFollowRequestAsync()
         => throw new InvalidOperationException("You cannot accept a follow request from yourself");
 

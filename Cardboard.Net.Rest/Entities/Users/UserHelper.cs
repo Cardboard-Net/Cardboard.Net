@@ -19,4 +19,11 @@ internal static class UserHelper
 
         return _models.ToImmutable();
     }
+
+    public static async Task<RestUserRelation?> GetRelationAsync(BaseMisskeyClient client, string userId)
+    {
+        UserRelation? model = await client.ApiClient.GetUserRelation(userId);
+
+        return model != null ? RestUserRelation.Create(client, model) : null;
+    }
 }

@@ -253,9 +253,10 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         await ModifyAsync(x => x.SilencedHosts = AdminMeta!.SilencedHosts.Where(x => x != host).ToArray());
     }
     
-    public Task GetOnlineUsersCountAsync()
+    public async Task<int> GetOnlineUsersCountAsync()
     {
-        throw new NotImplementedException();
+        var count = await Misskey.ApiClient.GetOnlineUsersAsync();
+        return count!.Count;
     }
 
     public Task GetServerInfoAsync()
@@ -268,9 +269,10 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         throw new NotImplementedException();
     }
 
-    public Task PingAsync()
+    public async Task<ulong> PingAsync()
     {
-        throw new NotImplementedException();
+        var ping = await Misskey.ApiClient.PingAsync();
+        return ping!.Pong;
     }
 
     IUser ISelfInstance.InstanceActor => InstanceActor;

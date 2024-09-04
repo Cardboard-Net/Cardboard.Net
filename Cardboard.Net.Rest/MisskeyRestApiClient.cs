@@ -469,7 +469,7 @@ internal class MisskeyRestApiClient : IDisposable
 
     public async Task<FederatedInstance[]?> GetFederatedInstancesAsync(GetFederatedInstancesParams args)
         => await SendRequestAsync<FederatedInstance[]>("/api/federation/instances", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
-
+    
     public async Task<FederatedInstanceRelation[]?> GetFederatedInstanceFollowingAsync(
         GetFederatedInstanceRelationParams args)
         => await SendRequestAsync<FederatedInstanceRelation[]>("/api/federation/following", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
@@ -478,6 +478,11 @@ internal class MisskeyRestApiClient : IDisposable
         GetFederatedInstanceRelationParams args)
         => await SendRequestAsync<FederatedInstanceRelation[]>("/api/federation/followers", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
 
+    public async Task<User[]?> GetFederatedInstanceUsersAsync(GetFederatedInstanceUsersParams args)
+        => await SendRequestAsync<User[]>("/api/federation/users",
+            JsonConvert.SerializeObject(args,
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+    
     public async Task RefreshFederatedInstanceAsync(string host)
     {
         RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/refresh-remote-instance-metadata", JsonConvert.SerializeObject(new {host = host}));
@@ -526,6 +531,12 @@ internal class MisskeyRestApiClient : IDisposable
 
         return true;
     }
+
+    public async Task<Ping?> PingAsync()
+        => await SendRequestAsync<Ping>("/api/ping");
+    
+    public async Task<OnlineUsersCount?> GetOnlineUsersAsync()
+        => await SendRequestAsync<OnlineUsersCount>("/api/get-online-users-count");
     
     #endregion
     
@@ -599,6 +610,10 @@ internal class MisskeyRestApiClient : IDisposable
         return await SendRequestAsync<User>($"/api/users/show", JsonConvert.SerializeObject(new { username = username, host = host?.Host}));
     }
 
+    public async Task<UserRelation?> GetUserRelation(string userId)
+        => await SendRequestAsync<UserRelation>("/api/users/relation",
+            JsonConvert.SerializeObject(new { userId = userId }));
+    
     public async Task<User[]?> GetUsersAsync(string[] userIds)
         => await SendRequestAsync<User[]>("/api/users/show", JsonConvert.SerializeObject(new { userIds = userIds }));
     
