@@ -223,6 +223,40 @@ internal class MisskeyRestApiClient : IDisposable
     
     #endregion
     
+    #region Channels
+    public async Task<Channel> CreateChannelAsync(CreateChannelParams args) {
+        RestRequest request = new RestRequest
+        {
+            Resource = "/api/channels/create"
+        };
+        request.AddJsonBody(JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Channel> response = await RestClient.ExecutePostAsync<Channel>(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("Something went wrong while creating the channel.");
+        }
+        return response.Data!;
+    }
+
+    public async Task<Channel> ModifyChannelAsync(ModifyChannelParams args)
+    {
+        RestResponse<Channel> response = await SendWrappedRequestAsync<Channel>("/api/channels/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException("Something went wrong while updating the channel.");
+        }
+        
+        return response.Data!;
+    }
+
+    public async Task ArchiveChannelAsync(
+        string ChannelId
+    ) {
+        await SendRequestAsync("/api/channels/update", JsonConvert.SerializeObject(new {channelId = ChannelId, isArchived = true}));
+    }
+
+    #endregion
+
     #region Charts
 
     public async Task<ActiveUserChart> GetActiveUserChartAsync(GetChartParams args)

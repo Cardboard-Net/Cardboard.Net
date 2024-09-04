@@ -2,7 +2,7 @@ using Cardboard.Notes;
 
 namespace Cardboard.Channels;
 
-public interface IChannel : IMisskeyEntity, IDeletable
+public interface IChannel : IMisskeyEntity
 {
     /// <summary>
     ///     When this channel was created

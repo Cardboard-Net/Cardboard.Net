@@ -105,10 +105,8 @@ public class RestChannel : RestEntity<string>, IChannel, IUpdateable
         throw new NotImplementedException();
     }
     
-    public Task DeleteAsync()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task ArchiveAsync()
+        => await this.Misskey.ApiClient.ArchiveChannelAsync(this.Id);
 
     IReadOnlyCollection<INote> IChannel.PinnedNotes => PinnedNotes;
 }
