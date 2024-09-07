@@ -29,7 +29,7 @@ internal class RolePolicy
     public int InviteLimitCycle { get; set; }
     
     [JsonProperty("inviteExpirationTime")]
-    public int InviteExpirationTime { get; set; }
+    public ulong InviteExpirationTime { get; set; }
     
     [JsonProperty("canManageCustomEmojis")]
     public bool ManageCustomEmojis { get; set; }

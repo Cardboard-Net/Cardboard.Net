@@ -19,7 +19,6 @@ internal class MisskeyRestApiClient : IDisposable
     
     internal string AuthToken { get; private set; }
     internal RestClient RestClient { get; private set; }
-
     internal SelfUser FirstLoginUser { get; private set; }
     
     public string UserAgent { get; }
