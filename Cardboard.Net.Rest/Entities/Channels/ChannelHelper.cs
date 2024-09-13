@@ -4,32 +4,36 @@ namespace Cardboard.Rest.Channels;
 
 internal static class ChannelHelper
 {
-    
-    public static async Task<RestChannel> ModifyChannelAsync(
+    public static async Task<RestChannel> ModifyChannelAsync
+    (
         string channelId,
         BaseMisskeyClient client,
         Action<ChannelProperties> modifications
-        ) {
-            // API: channels/update
-            ChannelProperties args = new();
-            modifications(args);
+    ) 
+    {
+        // API: channels/update
+        ChannelProperties args = new();
+        modifications(args);
 
-            ModifyChannelParams builtChannel = new() {
-                ChannelId = channelId,
-                Name = args.Name,
-                Description = args.Description,
-                BannerId = args.BannerId,
-                IsArchived = args.IsArchived,
-                Color = args.Color,
-                PinnedNoteIds = args.PinnedNoteIds,
-                IsSensitive = args.IsSensitive,
-                AllowRenoteToExternal = args.AllowRenoteToExternal
-            };
-            var channel = await client.ApiClient.ModifyChannelAsync(builtChannel);
-            return RestChannel.Create(client, channel);
-        }
+        ModifyChannelParams builtChannel = new()
+        {
+            ChannelId = channelId,
+            Name = args.Name,
+            Description = args.Description,
+            BannerId = args.BannerId,
+            IsArchived = args.IsArchived,
+            Color = args.Color,
+            PinnedNoteIds = args.PinnedNoteIds,
+            IsSensitive = args.IsSensitive,
+            AllowRenoteToExternal = args.AllowExternalRenote
+        };
+        var channel = await client.ApiClient.ModifyChannelAsync(builtChannel).ConfigureAwait(false);
+        
+        return RestChannel.Create(client, channel);
+    }
 
-    public static async Task<RestChannel> CreateChannelAsync(
+    public static async Task<RestChannel> CreateChannelAsync
+    (
         BaseMisskeyClient client,
         string name,
         string? description,
@@ -37,7 +41,8 @@ internal static class ChannelHelper
         string? color,
         bool? isSensitive,
         bool? allowRenoteToExternal
-        ) {
+    ) 
+    {
             // API: channels/create
             CreateChannelParams ChannelBuilder = new()
             {
@@ -53,11 +58,4 @@ internal static class ChannelHelper
             return RestChannel.Create(client, channel);
 
         }
-
-
-
-    /*
-        Tasks mommy wants kyla to write:
-        - 
-    */
 }

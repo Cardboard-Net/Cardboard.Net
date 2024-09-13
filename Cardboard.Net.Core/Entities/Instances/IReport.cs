@@ -30,17 +30,17 @@ public interface IReport : IMisskeyEntity
     /// <summary>
     ///     The user who reported
     /// </summary>
-    IUser Reporter { get; }
+    IUserLite Reporter { get; }
     
     /// <summary>
     ///     The user being reported
     /// </summary>
-    IUser Reportee { get; }
+    IUserLite Reportee { get; }
     
     /// <summary>
     ///     The optional assignee to handle the report
     /// </summary>
-    IUser? Assignee { get; }
+    IUserLite? Assignee { get; }
 
     Task ResolveAsync(bool forward = false);
 }

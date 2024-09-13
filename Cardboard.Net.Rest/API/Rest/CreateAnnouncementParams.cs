@@ -16,7 +16,7 @@ internal class CreateAnnouncementParams
      * handling here
      */
     [JsonProperty("imageUrl", NullValueHandling = NullValueHandling.Include)]
-    public Uri? ImageUrl { get; set; }
+    public Uri? ImageUrl { get; set; } = null;
     
     [JsonProperty("icon")]
     public IconType? Icon { get; set; }
