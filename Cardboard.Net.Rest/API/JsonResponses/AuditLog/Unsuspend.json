@@ -1,0 +1,12 @@
+{
+  "id": "9xwmnyeufpnp01gv",
+  "createdAt": "2024-09-08T04:18:00.822Z",
+  "type": "unsuspend",
+  "info": {
+    "userId": "",
+    "userHost": "example.local",
+    "userUsername": "example"
+  },
+  "userId": "",
+  "user": {}
+}

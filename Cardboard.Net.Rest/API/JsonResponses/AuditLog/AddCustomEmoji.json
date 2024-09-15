@@ -1,0 +1,26 @@
+{
+  "id": "9y4f6i922h5z0cnc",
+  "createdAt": "2024-09-13T15:10:38.822Z",
+  "type": "addCustomEmoji",
+  "info": {
+    "emoji": {
+      "id": "9y4f6i8w2h5z0cnb",
+      "uri": null,
+      "host": null,
+      "name": "ratstar",
+      "type": "image/webp",
+      "aliases": [],
+      "license": null,
+      "category": null,
+      "localOnly": false,
+      "publicUrl": "https://cdn.transfem.social/files/9ad69c4c-2a14-4915-9c87-b146a8c44b46.webp",
+      "updatedAt": "2024-09-13T15:10:38.816Z",
+      "isSensitive": false,
+      "originalUrl": "https://cdn.transfem.social/files/9ad69c4c-2a14-4915-9c87-b146a8c44b46.webp",
+      "roleIdsThatCanBeUsedThisEmojiAsReaction": []
+    },
+    "emojiId": "9y4f6i8w2h5z0cnb"
+  },
+  "userId": "",
+  "user": {}
+}

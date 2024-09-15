@@ -53,6 +53,11 @@ public enum AuditLogType
     [EnumMember(Value = "suspendRemoteInstance")]
     SuspendRemoteInstance,
     /// <summary>
+    ///     Recorded when a remote instance is unsuspended
+    /// </summary>
+    [EnumMember(Value = "unsuspendRemoteInstance")]
+    UnsuspendRemoteInstance,
+    /// <summary>
     ///     Recorded when a note is deleted
     /// </summary>
     [EnumMember(Value = "deleteNote")]

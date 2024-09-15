@@ -1,0 +1,15 @@
+{
+  "id": "9y0f7n5kspf506op",
+  "createdAt": "2024-09-10T20:00:27.128Z",
+  "type": "assignRole",
+  "info": {
+    "roleId": "9jz2hjuadyx1003r",
+    "userId": "9xs6gyidw28l018q",
+    "roleName": "Staff",
+    "userHost": null,
+    "expiresAt": null,
+    "userUsername": "disarray"
+  },
+  "userId": "",
+  "user": {}
+}

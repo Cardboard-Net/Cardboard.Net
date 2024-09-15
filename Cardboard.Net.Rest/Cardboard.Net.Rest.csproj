@@ -16,8 +16,4 @@
       <ProjectReference Include="..\Cardboard.Net.Core\Cardboard.Net.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="API\AuditLogs\" />
-    </ItemGroup>
-
 </Project>

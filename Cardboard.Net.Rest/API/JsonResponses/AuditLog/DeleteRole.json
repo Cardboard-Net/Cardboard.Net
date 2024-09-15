@@ -1,0 +1,168 @@
+{
+  "id": "9xs9gu9udm3s00c0",
+  "createdAt": "2024-09-05T02:57:29.154Z",
+  "type": "deleteRole",
+  "info": {
+    "role": {
+      "id": "9s98ue4ohjl800lj",
+      "name": "Empress",
+      "color": "#f6d32d",
+      "target": "manual",
+      "asBadge": true,
+      "iconUrl": "https://cdn.transfem.social/files/6dce12d4-d577-4987-83eb-4f56f178fd64.webp",
+      "isPublic": true,
+      "policies": {
+        "pinLimit": {
+          "value": 5,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canInvite": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "clipLimit": {
+          "value": 10,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canHideAds": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteLimit": {
+          "value": 0,
+          "priority": 0,
+          "useDefault": true
+        },
+        "antennaLimit": {
+          "value": 5,
+          "priority": 0,
+          "useDefault": true
+        },
+        "btlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "gtlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "ltlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "mentionLimit": {
+          "value": 20,
+          "priority": 0,
+          "useDefault": true
+        },
+        "webhookLimit": {
+          "value": 3,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canPublicNote": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "userListLimit": {
+          "value": 10,
+          "priority": 0,
+          "useDefault": true
+        },
+        "wordMuteLimit": {
+          "value": 2000,
+          "priority": 0,
+          "useDefault": true
+        },
+        "alwaysMarkNsfw": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canImportNotes": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canSearchNotes": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "driveCapacityMb": {
+          "value": 10000,
+          "priority": 0,
+          "useDefault": true
+        },
+        "rateLimitFactor": {
+          "value": 1,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canUseTranslator": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteLimitCycle": {
+          "value": 10080,
+          "priority": 0,
+          "useDefault": true
+        },
+        "noteEachClipsLimit": {
+          "value": 200,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteExpirationTime": {
+          "value": 0,
+          "priority": 0,
+          "useDefault": true
+        },
+        "avatarDecorationLimit": {
+          "value": 3,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canManageCustomEmojis": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "userEachUserListsLimit": {
+          "value": 50,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canManageAvatarDecorations": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        }
+      },
+      "updatedAt": "2024-04-18T20:17:49.713Z",
+      "lastUsedAt": "2024-04-18T20:14:14.980Z",
+      "condFormula": {
+        "id": "0762169a-46b3-4551-9d6d-afb16d4bc9d7",
+        "type": "isRemote"
+      },
+      "description": "The current sysadmin & owner of TransFem.social",
+      "isModerator": false,
+      "displayOrder": 101,
+      "isExplorable": true,
+      "isAdministrator": true,
+      "canEditMembersByModerator": false
+    },
+    "roleId": "9s98ue4ohjl800lj"
+  },
+  "userId": "",
+  "user": {}
+}

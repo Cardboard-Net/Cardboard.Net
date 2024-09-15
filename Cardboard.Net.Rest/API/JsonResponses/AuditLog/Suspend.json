@@ -1,0 +1,12 @@
+{
+  "id": "9y7fkoh4spf50hve",
+  "createdAt": "2024-09-15T17:44:58.600Z",
+  "type": "suspend",
+  "info": {
+    "userId": "",
+    "userHost": "example.local",
+    "userUsername": "example"
+  },
+  "userId": "",
+  "user": {}
+}

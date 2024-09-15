@@ -1,0 +1,168 @@
+{
+  "id": "9xuejiuwc39o00aa",
+  "createdAt": "2024-09-06T14:55:04.760Z",
+  "type": "createRole",
+  "info": {
+    "role": {
+      "id": "9xuejiukc39o00a9",
+      "name": "Member of Parliament",
+      "color": "#5e5c64",
+      "target": "manual",
+      "asBadge": false,
+      "iconUrl": null,
+      "isPublic": true,
+      "policies": {
+        "pinLimit": {
+          "value": 5,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canInvite": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "clipLimit": {
+          "value": 50,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canHideAds": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteLimit": {
+          "value": 0,
+          "priority": 0,
+          "useDefault": true
+        },
+        "antennaLimit": {
+          "value": 5,
+          "priority": 0,
+          "useDefault": true
+        },
+        "btlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "gtlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "ltlAvailable": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "mentionLimit": {
+          "value": 20,
+          "priority": 0,
+          "useDefault": true
+        },
+        "webhookLimit": {
+          "value": 3,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canPublicNote": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "userListLimit": {
+          "value": 10,
+          "priority": 0,
+          "useDefault": true
+        },
+        "wordMuteLimit": {
+          "value": 2000,
+          "priority": 0,
+          "useDefault": true
+        },
+        "alwaysMarkNsfw": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canImportNotes": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canSearchNotes": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "driveCapacityMb": {
+          "value": 10000,
+          "priority": 0,
+          "useDefault": true
+        },
+        "rateLimitFactor": {
+          "value": 1,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canUseTranslator": {
+          "value": true,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteLimitCycle": {
+          "value": 10080,
+          "priority": 0,
+          "useDefault": true
+        },
+        "noteEachClipsLimit": {
+          "value": 500,
+          "priority": 0,
+          "useDefault": true
+        },
+        "inviteExpirationTime": {
+          "value": 0,
+          "priority": 0,
+          "useDefault": true
+        },
+        "avatarDecorationLimit": {
+          "value": 3,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canManageCustomEmojis": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        },
+        "userEachUserListsLimit": {
+          "value": 50,
+          "priority": 0,
+          "useDefault": true
+        },
+        "canManageAvatarDecorations": {
+          "value": false,
+          "priority": 0,
+          "useDefault": true
+        }
+      },
+      "updatedAt": "2024-09-06T14:55:04.748Z",
+      "lastUsedAt": "2024-09-06T14:55:04.748Z",
+      "condFormula": {
+        "id": "18ef10ce-e562-4a02-827b-10f4793dc73d",
+        "type": "isRemote"
+      },
+      "description": "A tongue in cheek role for transfem parliament, member of parliament. Realistically is the same rank as Prime Minister. ",
+      "isModerator": false,
+      "displayOrder": 0,
+      "isExplorable": true,
+      "isAdministrator": false,
+      "canEditMembersByModerator": false
+    },
+    "roleId": "9xuejiukc39o00a9"
+  },
+  "userId": "",
+  "user": {}
+}
