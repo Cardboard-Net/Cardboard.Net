@@ -17,6 +17,9 @@ public class MisskeyConfig
     /// </summary>
     public JsonSerializerSettings SerializerSettings { get; } = new JsonSerializerSettings();
     
+    
+    public int ConnectionTimeout { get; set; } = 60;
+    
     /// <summary>
     ///     Returns the maximum amount of poll choices
     /// </summary>
