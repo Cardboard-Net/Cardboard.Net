@@ -37,8 +37,14 @@ public class RestSelfUser : RestUser, ISelfUser
         entity.Update(model);
         return entity;
     }
-    
-    internal void Update(Model model) { }
+
+    internal void Update(Model model)
+    {
+        Name = model.Name;
+        Username = model.Username;
+        Host = null;
+        AvatarUrl = model.AvatarUrl;
+    }
 
     public override Task<RestUserRelation?> GetRelationAsync()
         => throw new InvalidOperationException("You cannot get a user relation for yourself");

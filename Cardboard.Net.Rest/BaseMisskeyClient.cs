@@ -1,20 +1,22 @@
 using Cardboard.Instances;
 using Cardboard.Users;
+using Microsoft.Extensions.Logging;
 
 namespace Cardboard;
 
 public abstract class BaseMisskeyClient : IMisskeyClient
 {
-    internal MisskeyRestApiClient ApiClient { get; }
+    internal MisskeyRestApiClient ApiClient { get; init; }
     private readonly SemaphoreSlim _stateLock;
     private bool _IsDisposed;
 
+    public ILogger Logger { get; internal init; }
+    
     public ISelfUser CurrentUser { get; protected set; }
     public ISelfInstance CurrentInstance { get; protected set; }
     
-    internal BaseMisskeyClient(MisskeyConfig config, MisskeyRestApiClient client)
+    internal BaseMisskeyClient(MisskeyConfig config)
     {
-        ApiClient = client;
         _stateLock = new SemaphoreSlim(1, 1);
     }
 

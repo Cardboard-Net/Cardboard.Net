@@ -1,8 +1,12 @@
 using System.Net;
 using Cardboard.Drives;
+using Cardboard.Net.Rest;
 using Cardboard.Net.Rest.API;
+using Cardboard.Net.Rest.Interceptors;
 using Cardboard.Notes;
 using Cardboard.Rest.Drives;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
@@ -17,16 +21,24 @@ internal class MisskeyRestApiClient : IDisposable
     
     protected bool _isDisposed;
     
+    private ILogger Logger { get; }
     internal string AuthToken { get; private set; }
     internal RestClient RestClient { get; private set; }
+    internal RequestInterceptor RequestInterceptor { get; private set; }
     internal SelfUser FirstLoginUser { get; private set; }
     
     public string UserAgent { get; }
-    
-    public MisskeyRestApiClient(string userAgent, JsonSerializerSettings? serializerSettings = null)
+
+    public MisskeyRestApiClient(
+        IOptions<MisskeyConfig> options,
+        ILogger<MisskeyRestApiClient> logger,
+        RequestInterceptor requestInterceptor
+    )
     {
-        UserAgent = userAgent;
-        _serializerSettings = serializerSettings ?? new JsonSerializerSettings();
+        Logger = logger;
+        UserAgent = options.Value.UserAgent;
+        RequestInterceptor = requestInterceptor;
+        _serializerSettings = options.Value.SerializerSettings;
         _stateLock = new SemaphoreSlim(1, 1);
     }
 
@@ -35,6 +47,7 @@ internal class MisskeyRestApiClient : IDisposable
         RestClient?.Dispose();
         RestClientOptions clientOptions = new RestClientOptions(baseUrl);
         clientOptions.UserAgent = UserAgent;
+        clientOptions.Interceptors = [RequestInterceptor];
         this.RestClient = new RestClient(clientOptions, configureSerialization: s => s.UseNewtonsoftJson(_serializerSettings));
         this.RestClient.AddDefaultHeader("Authorization", $"Bearer {AuthToken}");
     }
@@ -52,12 +65,19 @@ internal class MisskeyRestApiClient : IDisposable
             request.AddJsonBody("{}");
             RestResponse<SelfUser> response = await RestClient.ExecutePostAsync<SelfUser>(request);
 
-            if (response.StatusCode == HttpStatusCode.Forbidden)
+            switch (response.StatusCode)
             {
-                throw new InvalidOperationException("token is invalid");
+                case HttpStatusCode.OK:
+                    break;
+                case HttpStatusCode.Forbidden:
+                    throw new InvalidOperationException("Token is invalid");
+                default:
+                    throw new InvalidOperationException("Server responded with an unknown error");
             }
-
+            
             FirstLoginUser = response.Data!;
+            
+            Logger.LogInformation("Authentication Success!");
         }
         finally { _stateLock.Release(); }
     }
@@ -630,6 +650,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<SelfUser> GetSelfUserAsync()
     {
+        
         return await SendRequestAsync<SelfUser>("/api/i");
     }
 

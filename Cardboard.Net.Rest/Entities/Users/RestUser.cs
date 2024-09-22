@@ -81,10 +81,10 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public bool PublicReactions 
         => _userFlags.HasFlag(UserFlags.PublicReactions);
     
-    public string? Name { get; private set; }
-    public string Username { get; private set; }
-    public string? Host { get; private set; }
-    public Uri? AvatarUrl { get; private set; }
+    public string? Name { get; internal set; }
+    public string Username { get; internal set; }
+    public string? Host { get; internal set; }
+    public Uri? AvatarUrl { get; internal set; }
     public string? AvatarBlurhash { get; private set; }
     public IReadOnlyList<IUserDecoration> AvatarDecorations { get; private set; }
     

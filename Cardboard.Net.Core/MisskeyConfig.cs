@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Cardboard;
 
 public class MisskeyConfig
@@ -8,7 +10,12 @@ public class MisskeyConfig
     /// <returns>
     ///     The user agent used in each request
     /// </returns>
-    public static string UserAgent { get; } = "MisskeyBot (https://github.com/Cardboard-Net/Cardboard.Net)";
+    public string UserAgent { get; } = "MisskeyBot (https://github.com/Cardboard-Net/Cardboard.Net)";
+
+    /// <summary>
+    ///     The settings for json serialization
+    /// </summary>
+    public JsonSerializerSettings SerializerSettings { get; } = new JsonSerializerSettings();
     
     /// <summary>
     ///     Returns the maximum amount of poll choices

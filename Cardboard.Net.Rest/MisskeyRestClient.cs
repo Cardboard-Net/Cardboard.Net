@@ -1,5 +1,7 @@
 using Cardboard.Antennas;
 using Cardboard.Charts;
+using Cardboard.Logging;
+using Cardboard.Net.Rest.Interceptors;
 using Cardboard.Notes;
 using Cardboard.Rest;
 using Cardboard.Rest.Announcements;
@@ -8,6 +10,8 @@ using Cardboard.Rest.Drives;
 using Cardboard.Rest.Instances;
 using Cardboard.Rest.Notes;
 using Cardboard.Users;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Cardboard.Net.Rest;
 
@@ -15,17 +19,38 @@ public class MisskeyRestClient : BaseMisskeyClient
 {
     public new RestSelfUser CurrentUser { get => base.CurrentUser as RestSelfUser; internal set => base.CurrentUser = value; }
     public new RestSelfInstance CurrentInstance{ get => base.CurrentInstance as RestSelfInstance; internal set => base.CurrentInstance = value; }
-
-    public MisskeyRestClient() : this(new MisskeyConfig()) { }
+    public IServiceProvider ServiceProvider { get; internal set; }
     
-    public MisskeyRestClient(MisskeyConfig config) : base(config, CreateApiClient(config)) { }
+    public MisskeyRestClient() : this(new MisskeyConfig()) { }
 
-    internal MisskeyRestClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config, client) { }
+    public MisskeyRestClient(MisskeyConfig config) : base(config)
+    {
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<MisskeyRestApiClient>().AddOptions<MisskeyConfig>();
+        serviceCollection.AddSingleton<RequestInterceptor>();
+        serviceCollection.AddLogging(builder => builder.AddProvider(new DefaultLoggerProvider()).SetMinimumLevel(LogLevel.Debug));
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+        this.Logger = ServiceProvider.GetRequiredService<ILogger<MisskeyRestClient>>();
+        this.ApiClient = ServiceProvider.GetRequiredService<MisskeyRestApiClient>();
+    }
+
+    internal MisskeyRestClient(MisskeyConfig config, MisskeyRestApiClient client) : base(config)
+    {
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<MisskeyRestApiClient>(client);
+        serviceCollection.AddSingleton<RequestInterceptor>();
+        serviceCollection.AddLogging(builder => builder.AddProvider(new DefaultLoggerProvider()).SetMinimumLevel(LogLevel.Debug));
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+        this.Logger = ServiceProvider.GetRequiredService<ILogger<MisskeyRestClient>>();
+        this.ApiClient = ServiceProvider.GetRequiredService<MisskeyRestApiClient>();
+    }
 
     internal override async Task OnLoginAsync(string token, Uri baseUrl)
     {
         CurrentUser = RestSelfUser.Create(this, ApiClient.FirstLoginUser);
-
+        
+        Logger.LogInformation($"Logged in as @{CurrentUser.Username} ({CurrentUser.Id})");
+        
         var meta = await ApiClient.GetMetaAsync();
         var model = await ApiClient.GetUserAsync("instance.actor", null);
 
@@ -33,10 +58,10 @@ public class MisskeyRestClient : BaseMisskeyClient
             return;
         
         CurrentInstance = RestSelfInstance.Create(this, meta, RestInstanceActor.Create(this, model));
+        
+        Logger.LogInformation($"Current instance is {CurrentInstance.Meta.Url}");
+        Logger.LogInformation($"Found @{CurrentInstance.InstanceActor.Username} ({CurrentInstance.Id})");
     }
-    
-    private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config)
-        => new MisskeyRestApiClient(MisskeyConfig.UserAgent);
     
     #region Announcements
 
