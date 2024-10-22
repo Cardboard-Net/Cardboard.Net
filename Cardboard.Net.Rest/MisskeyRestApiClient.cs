@@ -1,10 +1,6 @@
 using System.Net;
-using Cardboard.Drives;
-using Cardboard.Net.Rest;
 using Cardboard.Net.Rest.API;
 using Cardboard.Net.Rest.Interceptors;
-using Cardboard.Notes;
-using Cardboard.Rest.Drives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -35,11 +31,11 @@ internal class MisskeyRestApiClient : IDisposable
         RequestInterceptor requestInterceptor
     )
     {
-        Logger = logger;
-        UserAgent = options.Value.UserAgent;
-        RequestInterceptor = requestInterceptor;
-        _serializerSettings = options.Value.SerializerSettings;
-        _stateLock = new SemaphoreSlim(1, 1);
+        this.Logger = logger;
+        this.UserAgent = options.Value.UserAgent;
+        this.RequestInterceptor = requestInterceptor;
+        this._serializerSettings = options.Value.SerializerSettings;
+        this._stateLock = new SemaphoreSlim(1, 1);
     }
 
     internal void SetBaseUrl(Uri baseUrl)
@@ -47,18 +43,18 @@ internal class MisskeyRestApiClient : IDisposable
         this.RestClient?.Dispose();
         RestClientOptions clientOptions = new RestClientOptions(baseUrl)
         {
-            UserAgent = UserAgent,
-            Interceptors = [RequestInterceptor]
+            UserAgent = this.UserAgent,
+            Interceptors = [this.RequestInterceptor]
         };
-        this.RestClient = new RestClient(clientOptions, configureSerialization: s => s.UseNewtonsoftJson(_serializerSettings));
+        this.RestClient = new RestClient(clientOptions, configureSerialization: s => s.UseNewtonsoftJson(this._serializerSettings));
     }
     
     public async Task LoginAsync(string token, Uri baseUrl)
     {
-        await _stateLock.WaitAsync().ConfigureAwait(false);
+        await this._stateLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            AuthToken = token;
+            this.AuthToken = token;
             SetBaseUrl(baseUrl);
 
             RestResponse<SelfUser> response = await WrappedRequestAuthAsync<SelfUser>("/api/i");
@@ -66,8 +62,8 @@ internal class MisskeyRestApiClient : IDisposable
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    FirstLoginUser = response.Data!;
-                    Logger.LogInformation("Authentication Success!");
+                    this.FirstLoginUser = response.Data!;
+                    this.Logger.LogInformation("Authentication Success!");
                     break;
                 case HttpStatusCode.Forbidden:
                     throw new InvalidOperationException("Token is invalid");
@@ -75,7 +71,7 @@ internal class MisskeyRestApiClient : IDisposable
                     throw new InvalidOperationException("Server responded with an unknown error");
             }
         }
-        finally { _stateLock.Release(); }
+        finally { this._stateLock.Release(); }
     }
     
     #region Announcements
@@ -91,7 +87,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="id">id corresponding to the announcement</param>
     /// <returns>An instance of UserAnnouncement if found</returns>
     public async Task<UserAnnouncement?> GetAnnouncementAsync(string id)
-        => await RequestAsync<UserAnnouncement>("/api/announcements/show",
+        => await this.RequestAsync<UserAnnouncement>("/api/announcements/show",
             JsonConvert.SerializeObject(new { announcementId = id }));
     
     /// <summary>
@@ -105,7 +101,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="args">The DTO containing request arguments to serialize into json</param>
     /// <returns>An array of UserAnnouncement objects</returns>
     public async Task<UserAnnouncement[]?> GetAnnouncementsAsync(GetAnnouncementsParam args)
-        => await RequestAsync<UserAnnouncement[]>("/api/announcements",
+        => await this.RequestAsync<UserAnnouncement[]>("/api/announcements",
             JsonConvert.SerializeObject(args,
                 new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
@@ -119,7 +115,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// </remarks>
     /// <param name="id"></param>
     public async Task ReadAnnouncementAsync(string id)
-        => await RequestAuthAsync("/api/i/read-announcement", JsonConvert.SerializeObject(new { announcementId = id }));
+        => await this.RequestAuthAsync("/api/i/read-announcement", JsonConvert.SerializeObject(new { announcementId = id }));
 
     /// <summary>
     ///     Creates an announcement
@@ -134,7 +130,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <exception cref="InvalidOperationException">Thrown if unable to create the announcement</exception>
     public async Task<AdminAnnouncement> CreateAnnouncementAsync(CreateAnnouncementParams args)
     {
-        RestResponse<AdminAnnouncement> response = await WrappedRequestAuthAsync<AdminAnnouncement>
+        RestResponse<AdminAnnouncement> response = await this.WrappedRequestAuthAsync<AdminAnnouncement>
         (
             "/api/admin/announcements/create",
             JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore })
@@ -154,7 +150,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public async Task<bool> ModifyAnnouncementAsync(ModifyAnnouncementParams args)
     {
-        RestResponse response = await WrappedRequestAuthAsync("/api/admin/announcements/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse response = await this.WrappedRequestAuthAsync("/api/admin/announcements/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
@@ -758,7 +754,7 @@ internal class MisskeyRestApiClient : IDisposable
     ///     Fetches the current account's relation to another user
     /// </summary>
     /// <remarks>
-    ///     api-doc#tag/users/operation/users__relation
+    ///     api-doc#tag/users/operation/users___relation
     ///
     ///     Requires auth and scope read:account
     /// </remarks>
@@ -768,56 +764,184 @@ internal class MisskeyRestApiClient : IDisposable
         => await RequestAuthAsync<UserRelation>("/api/users/relation",
             JsonConvert.SerializeObject(new { userId = userId }));
     
-    public async Task ReportUserAsync(string id, string comment)
-        => await SendRequestAsync("/api/users/report-abuse", JsonConvert.SerializeObject(new { userId = id, comment = comment}));
-    
-    public async Task AcceptFollowRequestFromUserAsync(string id)
-        => await SendRequestAsync("/api/following/requests/accept", JsonConvert.SerializeObject(new { userId = id }));
-
-    public async Task RejectFollowRequestFromUserAsync(string id)
-        => await SendRequestAsync("/api/following/requests/reject", JsonConvert.SerializeObject(new { userId = id }));
-
-    public async Task CancelFollowRequestFromUserAsync(string id)
-        => await SendRequestAsync("/api/following/requests/cancel", JsonConvert.SerializeObject(new { userId = id }));
-    
-    public async Task SilenceUserAsync(string id)
-        => await SendRequestAsync("/api/admin/silence-user", JsonConvert.SerializeObject(new { userId = id}));
-
-    public async Task DeleteAllFilesOfUserAsync(string id)
-        => await SendRequestAsync("/api/admin/admin/delete-all-files-of-a-user", JsonConvert.SerializeObject(new { userId = id}));
-
-    public async Task UnsetUserAvatarAsync(string id)
-        => await SendRequestAsync("/api/admin/unset-user-avatar", JsonConvert.SerializeObject(new {userId = id}));
-
-    public async Task UnsetUserBannerAsync(string id)
-        => await SendRequestAsync("/api/admin/unset-user-banner", JsonConvert.SerializeObject(new {userId = id}));
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
     public async Task<Note[]?> GetNotesAsync(GetUserNotesParams args)
         => await SendRequestAsync<Note[]>("/api/users/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
+    /// <summary>
+    ///     Reports a user
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/users/operation/users___report-abuse
+    ///
+    ///     Requires auth and scope write:report-abuse
+    /// </remarks>
+    /// <param name="id">The id corresponding to the user to report</param>
+    /// <param name="comment">The report comment</param>
+    public async Task ReportUserAsync(string id, string comment)
+        => await RequestAuthAsync("/api/users/report-abuse", JsonConvert.SerializeObject(new { userId = id, comment = comment}));
+    
+    #region Following
+    
+    /*
+     * Need to implement the following endpoints:
+     * TODO: api-doc#tag/following/operation/following___create
+     * TODO: api-doc#tag/following/operation/following___delete
+     * TODO: api-doc#tag/following/operation/following___update
+     * TODO: api-doc#tag/following/operation/following___update-all
+     * TODO: api-doc#tag/following/operation/following___invalidate
+     * TODO: api-doc#tag/following/operation/following___requests___list
+     */
+    
+    /// <summary>
+    ///     Accepts an incoming follow request
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/following/operation/following___requests___accept
+    ///
+    ///     Requires auth and scope write:following
+    /// </remarks>
+    /// <param name="id">The id corresponding to the user who sent the request</param>
+    public async Task AcceptFollowRequestAsync(string id)
+        => await RequestAuthAsync("/api/following/requests/accept", JsonConvert.SerializeObject(new { userId = id }));
+    
+    /// <summary>
+    ///     Rejects an incoming follow request
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/following/operation/following___requests___reject
+    ///
+    ///     Requires auth and scope write:following
+    /// </remarks>
+    /// <param name="id"></param>
+    public async Task RejectFollowRequestAsync(string id)
+        => await RequestAuthAsync("/api/following/requests/reject", JsonConvert.SerializeObject(new { userId = id }));
+
+    /// <summary>
+    ///     Cancels an outgoing follow request
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/following/operation/following___requests___cancel
+    ///
+    ///     Requires auth and scope write:following
+    /// </remarks>
+    /// <param name="id"></param>
+    public async Task CancelFollowRequestAsync(string id)
+        => await RequestAuthAsync("/api/following/requests/cancel", JsonConvert.SerializeObject(new { userId = id }));
+    
+    #endregion
+    
+    #region Moderation
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    public async Task SilenceUserAsync(string id)
+        => await this.RequestAuthAsync("/api/admin/silence-user", JsonConvert.SerializeObject(new { userId = id}));
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    public async Task DeleteAllFilesOfUserAsync(string id)
+        => await this.RequestAuthAsync("/api/admin/admin/delete-all-files-of-a-user", JsonConvert.SerializeObject(new { userId = id}));
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// </remarks>
+    /// <param name="id"></param>
+    public async Task UnsetUserAvatarAsync(string id)
+        => await this.RequestAuthAsync("/api/admin/unset-user-avatar", JsonConvert.SerializeObject(new {userId = id}));
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// </remarks>
+    /// <param name="id"></param>
+    public async Task UnsetUserBannerAsync(string id)
+        => await this.RequestAuthAsync("/api/admin/unset-user-banner", JsonConvert.SerializeObject(new {userId = id}));
+
+    #endregion
+    
     #endregion
 
+    /// <summary>
+    ///     Sends a post request with Authorization headers given an endpoint, a body
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <returns>an instance of type T</returns>
     internal async Task<T?> RequestAuthAsync<T>(string endpoint, string body = "{}")
         => await RequestAsync<T>(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
     
+    /// <summary>
+    ///     Sends a post request with Authorization headers given an endpoint, a body
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <returns></returns>
     internal async Task RequestAuthAsync(string endpoint, string body = "{}")
         => await RequestAsync(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
     
+    /// <summary>
+    ///     Sends a post request given an endpoint, a body, and optional headers
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <param name="headers">An optional List of KeyValuePairs</param>
+    /// <typeparam name="T">A type to deserialize the json response into</typeparam>
+    /// <returns>an instance of type T</returns>
     internal async Task<T?> RequestAsync<T>(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
     {
         RestResponse<T> response = await WrappedRequestAsync<T>(endpoint, body, headers);
         return response.Data;
     }
     
+    /// <summary>
+    ///     Sends a post request given an endpoint, a body, and optional headers
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <param name="headers">An optional List of KeyValuePairs</param>
+    /// <returns></returns>
     internal async Task RequestAsync(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
         => await WrappedRequestAsync(endpoint, body, headers);
     
+    /// <summary>
+    ///     Sends a post request with Authorization headers given an endpoint, a body
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <typeparam name="T">A type to deserialize the json response into</typeparam>
+    /// <returns>an instance of RestResponse with the result deserialized into type T</returns>
     internal async Task<RestResponse<T>> WrappedRequestAuthAsync<T>(string endpoint, string body = "{}")
         => await WrappedRequestAsync<T>(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
     
+    /// <summary>
+    ///     Sends a post request with Authorization headers given an endpoint, a body
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <returns>an instance of RestResponse containing the result of the POST request</returns>
     internal async Task<RestResponse> WrappedRequestAuthAsync(string endpoint, string body = "{}")
         => await WrappedRequestAsync(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
     
+    /// <summary>
+    ///     Sends a post request given an endpoint, a body, and optional headers
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <param name="headers">An optional List of KeyValuePairs</param>
+    /// <typeparam name="T">A type to deserialize the json response into</typeparam>
+    /// <returns>an instance of RestResponse with the result deserialized into type T</returns>
     internal async Task<RestResponse<T>> WrappedRequestAsync<T>(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
     {
         RestRequest request = new RestRequest{ Resource = endpoint }.AddJsonBody(body);
@@ -827,6 +951,13 @@ internal class MisskeyRestApiClient : IDisposable
         return await RestClient.ExecutePostAsync<T>(request);
     }
 
+    /// <summary>
+    ///     Sends a post request given an endpoint, a body, and optional headers
+    /// </summary>
+    /// <param name="endpoint">A string containing the api endpoint to invoke this request on</param>
+    /// <param name="body">The request body</param>
+    /// <param name="headers">An optional List of KeyValuePairs</param>
+    /// <returns>an instance of RestResponse containing the result of the POST request</returns>
     internal async Task<RestResponse> WrappedRequestAsync(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
     {
         RestRequest request = new RestRequest{ Resource = endpoint }.AddJsonBody(body);
@@ -840,14 +971,14 @@ internal class MisskeyRestApiClient : IDisposable
     
     internal virtual void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        if (_isDisposed) return;
+        
+        if (disposing)
         {
-            if (disposing)
-            {
-                RestClient?.Dispose();
-                _stateLock?.Dispose();
-            }
-            _isDisposed = true;
+            this.RestClient?.Dispose();
+            this._stateLock?.Dispose();
         }
+        
+        this._isDisposed = true;
     }
 }
