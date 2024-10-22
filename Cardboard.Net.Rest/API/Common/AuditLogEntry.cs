@@ -1,3 +1,4 @@
+using Cardboard.AuditLogs;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API.AuditLog;
@@ -10,9 +11,8 @@ internal class AuditLogEntry
     [JsonProperty("createdAt")]
     public required DateTime CreatedAt { get; set; }
     
-    // I have a logtype somewhere, I think it's on my other pc using string for now
     [JsonProperty("type")]
-    public required string Type { get; set; } 
+    public required AuditLogType Type { get; set; } 
     
     // TODO: fix this.
     //[JsonProperty("info")]

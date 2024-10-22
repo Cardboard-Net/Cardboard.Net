@@ -382,6 +382,9 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     Task UnfollowAsync()
         => throw new NotImplementedException();
 
+    public async Task<IReadOnlyCollection<RestNote>> GetNotesAsync(int? limit, string? sinceId, string? untilId)
+        => throw new NotImplementedException();
+    
     public Task DeleteAsync()
     {
         throw new NotImplementedException();

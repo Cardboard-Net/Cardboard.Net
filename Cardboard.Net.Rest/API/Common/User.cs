@@ -209,10 +209,10 @@ internal class UserDecoration
     public Uri Url { get; set; }
     
     [JsonProperty("offsetX")]
-    public int XOffset { get; set; }
+    public float XOffset { get; set; }
     
     [JsonProperty("offsetY")]
-    public int YOffset { get; set; }
+    public float YOffset { get; set; }
 }
 
 internal class UserInstance
