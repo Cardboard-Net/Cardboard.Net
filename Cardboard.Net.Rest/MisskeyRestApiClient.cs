@@ -168,7 +168,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public async Task DeleteAnnouncementAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/announcements/delete", JsonConvert.SerializeObject(new { id = id }));
+        RestResponse response = await WrappedRequestAuthAsync("/api/announcements/delete", JsonConvert.SerializeObject(new { id = id }));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete announcement");
@@ -180,17 +180,17 @@ internal class MisskeyRestApiClient : IDisposable
     #region Antennas
 
     public async Task<Antenna?> GetAntennaAsync(string id)
-        => await SendRequestAsync<Antenna>("/api/antennas/show", JsonConvert.SerializeObject(new { antennaId = id }));
+        => await RequestAuthAsync<Antenna>("/api/antennas/show", JsonConvert.SerializeObject(new { antennaId = id }));
     
     public async Task<Note[]?> GetAntennaNotesAsync(GetAntennaNotesParams args)
     {
-        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/antennas/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Note[]> response = await WrappedRequestAuthAsync<Note[]>("/api/antennas/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return response.Data;
     }
     
     public async Task<Antenna?> CreateAntennaAsync(CreateAntennaParams args)
     {
-        RestResponse<Antenna> response = await SendWrappedRequestAsync<Antenna>("/api/antennas/create",
+        RestResponse<Antenna> response = await WrappedRequestAuthAsync<Antenna>("/api/antennas/create",
             JsonConvert.SerializeObject(args,
                 new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
         if (response.StatusCode != HttpStatusCode.OK)
@@ -202,7 +202,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<Antenna?> ModifyAntennaAsync(ModifyAntennaParams args)
     {
-        RestResponse<Antenna> response = await SendWrappedRequestAsync<Antenna>("/api/antennas/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Antenna> response = await WrappedRequestAuthAsync<Antenna>("/api/antennas/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("error modifying the antenna");
@@ -213,7 +213,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteAntennaAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/antennas/delete", JsonConvert.SerializeObject(new { antennaId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/antennas/delete", JsonConvert.SerializeObject(new { antennaId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete antenna");
@@ -225,7 +225,7 @@ internal class MisskeyRestApiClient : IDisposable
     #region Clips
 
     public async Task<Clip?> GetClipAsync(string id)
-        => await SendRequestAsync<Clip>("/api/clips/show", JsonConvert.SerializeObject(new { clipId = id }));
+        => await RequestAuthAsync<Clip>("/api/clips/show", JsonConvert.SerializeObject(new { clipId = id }));
 
     public async Task<Clip> CreateClipAsync(CreateClipParams args)
     {
@@ -244,7 +244,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task FavoriteClipAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/clips/favorite", JsonConvert.SerializeObject(new { clipId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/clips/favorite", JsonConvert.SerializeObject(new { clipId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to favorite clip");
@@ -253,7 +253,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task UnfavoriteClipAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/clips/unfavorite", JsonConvert.SerializeObject(new { clipId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/clips/unfavorite", JsonConvert.SerializeObject(new { clipId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to unfavorite clip");
@@ -261,11 +261,11 @@ internal class MisskeyRestApiClient : IDisposable
     }
 
     public async Task<Note[]?> GetClipNotesAsync(GetClipNotesParams args)
-        => await SendRequestAsync<Note[]>("/api/clips/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        => await RequestAuthAsync<Note[]>("/api/clips/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
 
     public async Task<Clip?> ModifyClipAsync(ModifyClipParams args)
     {
-        RestResponse<Clip> response = await SendWrappedRequestAsync<Clip>("/api/clips/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Clip> response = await WrappedRequestAuthAsync<Clip>("/api/clips/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("error modifying the clip");
@@ -276,7 +276,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteClipAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/clips/delete", JsonConvert.SerializeObject(new { clipId = id }));
+        RestResponse response = await WrappedRequestAuthAsync("/api/clips/delete", JsonConvert.SerializeObject(new { clipId = id }));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete clip");
@@ -302,7 +302,7 @@ internal class MisskeyRestApiClient : IDisposable
 
     public async Task<Channel> ModifyChannelAsync(ModifyChannelParams args)
     {
-        RestResponse<Channel> response = await SendWrappedRequestAsync<Channel>("/api/channels/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Channel> response = await WrappedRequestAuthAsync<Channel>("/api/channels/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("Something went wrong while updating the channel.");
@@ -314,7 +314,7 @@ internal class MisskeyRestApiClient : IDisposable
     public async Task ArchiveChannelAsync(
         string ChannelId
     ) {
-        await SendRequestAsync("/api/channels/update", JsonConvert.SerializeObject(new {channelId = ChannelId, isArchived = true}));
+        await RequestAuthAsync("/api/channels/update", JsonConvert.SerializeObject(new {channelId = ChannelId, isArchived = true}));
     }
 
     #endregion
@@ -323,31 +323,31 @@ internal class MisskeyRestApiClient : IDisposable
 
     public async Task<ActiveUserChart> GetActiveUserChartAsync(GetChartParams args)
     {
-        ActiveUserChart? chart = await SendRequestAsync<ActiveUserChart>("/api/charts/active-users", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        ActiveUserChart? chart = await RequestAuthAsync<ActiveUserChart>("/api/charts/active-users", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     
     public async Task<ApRequestChart> GetApRequestChartAsync(GetChartParams args)
     {
-        ApRequestChart? chart = await SendRequestAsync<ApRequestChart>("/api/charts/ap-request", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        ApRequestChart? chart = await RequestAuthAsync<ApRequestChart>("/api/charts/ap-request", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     
     public async Task<DriveChart> GetDriveChartAsync(GetChartParams args)
     {
-        DriveChart? chart = await SendRequestAsync<DriveChart>("/api/charts/drive", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        DriveChart? chart = await RequestAuthAsync<DriveChart>("/api/charts/drive", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     
     public async Task<FederationChart> GetFederationChartAsyncc(GetChartParams args)
     {
-        FederationChart? chart = await SendRequestAsync<FederationChart>("/api/charts/federation", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        FederationChart? chart = await RequestAuthAsync<FederationChart>("/api/charts/federation", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     
     public async Task<InstanceUserChart> GetUsersChartAsync(GetChartParams args)
     {
-        InstanceUserChart? chart = await SendRequestAsync<InstanceUserChart>("/api/charts/users", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        InstanceUserChart? chart = await RequestAuthAsync<InstanceUserChart>("/api/charts/users", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return chart!;
     }
     
@@ -356,30 +356,30 @@ internal class MisskeyRestApiClient : IDisposable
     #region Notes
 
     public async Task<Note?> GetNoteAsync(string id)
-        => await SendRequestAsync<Note>("/api/notes/show", JsonConvert.SerializeObject(new { noteId = id }));
+        => await RequestAuthAsync<Note>("/api/notes/show", JsonConvert.SerializeObject(new { noteId = id }));
 
     public async Task<Note[]?> GetRenotesAsync(GetRenotesParam args)
     {
-        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/notes/renotes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Note[]> response = await WrappedRequestAuthAsync<Note[]>("/api/notes/renotes", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return response.Data;
     }
     
     public async Task<Note[]?> GetRepliesAsync(GetRepliesParam args)
     {
-        RestResponse<Note[]> response = await SendWrappedRequestAsync<Note[]>("/api/notes/replies", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<Note[]> response = await WrappedRequestAuthAsync<Note[]>("/api/notes/replies", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         return response.Data;
     }
 
     public async Task<Clip[]?> GetClipsAsync()
     {
-        RestResponse<Clip[]> response = await SendWrappedRequestAsync<Clip[]>("/api//clips/list");
+        RestResponse<Clip[]> response = await WrappedRequestAuthAsync<Clip[]>("/api//clips/list");
         return response.Data;
     }
     
     public async Task<Clip[]?> GetClipsAsync(string id)
     {
         RestResponse<Clip[]> response =
-            await SendWrappedRequestAsync<Clip[]>("/api/notes/clips", JsonConvert.SerializeObject(new { noteId = id }));
+            await WrappedRequestAuthAsync<Clip[]>("/api/notes/clips", JsonConvert.SerializeObject(new { noteId = id }));
         return response.Data;
     }
 
@@ -400,7 +400,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task MuteNoteAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/notes/thread-muting-create", JsonConvert.SerializeObject(new {noteId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/notes/thread-muting-create", JsonConvert.SerializeObject(new {noteId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to mute note");
@@ -409,7 +409,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task UnmuteNoteAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/notes/thread-muting-delete", JsonConvert.SerializeObject(new {noteId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/notes/thread-muting-delete", JsonConvert.SerializeObject(new {noteId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to unmute note");
@@ -418,7 +418,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task FavoriteNoteAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/notes/favorites/create", JsonConvert.SerializeObject(new {noteId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/notes/favorites/create", JsonConvert.SerializeObject(new {noteId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to favorite note");
@@ -427,7 +427,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task UnfavoriteNoteAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/notes/favorites/delete", JsonConvert.SerializeObject(new {noteId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/notes/favorites/delete", JsonConvert.SerializeObject(new {noteId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to unfavorite note");
@@ -436,7 +436,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<Note?> ModifyNoteAsync(ModifyNoteParams args)
     {
-        RestResponse<CreatedNote> response = await SendWrappedRequestAsync<CreatedNote>("/api/notes/edit", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<CreatedNote> response = await WrappedRequestAuthAsync<CreatedNote>("/api/notes/edit", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("error modifying the note");
@@ -447,7 +447,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteNoteAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/notes/delete", JsonConvert.SerializeObject(new {noteId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/notes/delete", JsonConvert.SerializeObject(new {noteId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete note");
@@ -459,13 +459,13 @@ internal class MisskeyRestApiClient : IDisposable
     #region Drive
 
     public async Task<DriveFile> GetFileAsync(string id)
-        => await SendRequestAsync<DriveFile>("/api/drive/files/show", JsonConvert.SerializeObject(new {fileId = id}));
+        => await RequestAuthAsync<DriveFile>("/api/drive/files/show", JsonConvert.SerializeObject(new {fileId = id}));
     
     public async Task<DriveFile> GetFileAsync(Uri url)
-        => await SendRequestAsync<DriveFile>("/api/drive/files/show", JsonConvert.SerializeObject(new {url = url.ToString()}));
+        => await RequestAuthAsync<DriveFile>("/api/drive/files/show", JsonConvert.SerializeObject(new {url = url.ToString()}));
 
     public async Task<DriveFolder> GetFolderAsync(string id)
-        => await SendRequestAsync<DriveFolder>("/api/drive/folders/show", JsonConvert.SerializeObject(new {folderId = id}));
+        => await RequestAuthAsync<DriveFolder>("/api/drive/folders/show", JsonConvert.SerializeObject(new {folderId = id}));
     
     public async Task UploadFileUriAsync(Uri url, string? folderId = null, string? comment = null, string? marker = null,
         bool? isSensitive = false, bool force = false)
@@ -502,7 +502,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<DriveFile> ModifyDriveFileAsync(string fileId, ModifyFileParams args)
     {
-        RestResponse<DriveFile> response = await SendWrappedRequestAsync<DriveFile>("/api/drive/files/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<DriveFile> response = await WrappedRequestAuthAsync<DriveFile>("/api/drive/files/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
@@ -514,7 +514,7 @@ internal class MisskeyRestApiClient : IDisposable
 
     public async Task<DriveFolder> ModifyDriveFolderAsync(string folderId, ModifyFolderParams args)
     {
-        RestResponse<DriveFolder> response = await SendWrappedRequestAsync<DriveFolder>("/api/drive/folder/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse<DriveFolder> response = await WrappedRequestAuthAsync<DriveFolder>("/api/drive/folder/update", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
@@ -526,7 +526,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteFileAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/drive/files/delete", JsonConvert.SerializeObject(new {fileId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/drive/files/delete", JsonConvert.SerializeObject(new {fileId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete file");
@@ -535,7 +535,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteFolderAsync(string id)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/drive/folders/delete", JsonConvert.SerializeObject(new {folderId = id}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/drive/folders/delete", JsonConvert.SerializeObject(new {folderId = id}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to delete folder");
@@ -560,38 +560,37 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<AdminMeta?> GetAdminMetaAsync()
     {
-        RestResponse<AdminMeta> response = await SendWrappedRequestAsync<AdminMeta>("/api/admin/meta");
+        RestResponse<AdminMeta> response = await WrappedRequestAuthAsync<AdminMeta>("/api/admin/meta");
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("you do not have permission to get admin meta");
         }
-
-        response.Content
+        
         return response.Data;
     }
     
     public async Task<FederatedInstance?> GetFederatedInstanceAsync(string host)
-        => await SendRequestAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
+        => await RequestAuthAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
 
     public async Task<FederatedInstance[]?> GetFederatedInstancesAsync(GetFederatedInstancesParams args)
-        => await SendRequestAsync<FederatedInstance[]>("/api/federation/instances", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        => await RequestAuthAsync<FederatedInstance[]>("/api/federation/instances", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
     public async Task<FederatedInstanceRelation[]?> GetFederatedInstanceFollowingAsync(
         GetFederatedInstanceRelationParams args)
-        => await SendRequestAsync<FederatedInstanceRelation[]>("/api/federation/following", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        => await RequestAuthAsync<FederatedInstanceRelation[]>("/api/federation/following", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
     public async Task<FederatedInstanceRelation[]?> GetFederatedInstanceFollowersAsync(
         GetFederatedInstanceRelationParams args)
-        => await SendRequestAsync<FederatedInstanceRelation[]>("/api/federation/followers", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        => await RequestAuthAsync<FederatedInstanceRelation[]>("/api/federation/followers", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
 
     public async Task<User[]?> GetFederatedInstanceUsersAsync(GetFederatedInstanceUsersParams args)
-        => await SendRequestAsync<User[]>("/api/federation/users",
+        => await RequestAuthAsync<User[]>("/api/federation/users",
             JsonConvert.SerializeObject(args,
                 new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
     public async Task RefreshFederatedInstanceAsync(string host)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/refresh-remote-instance-metadata", JsonConvert.SerializeObject(new {host = host}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/federation/refresh-remote-instance-metadata", JsonConvert.SerializeObject(new {host = host}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("you do not have permission to refresh instance metadata");
@@ -600,7 +599,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task DeleteFederatedInstanceFilesAsync(string host)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/delete-all-files", JsonConvert.SerializeObject(new {host = host}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/federation/delete-all-files", JsonConvert.SerializeObject(new {host = host}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("you do not have permission to delete all remote instance's files cached locally");
@@ -609,7 +608,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task RemoveFederatedInstanceFollowingAsync(string host)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/remove-all-following", JsonConvert.SerializeObject(new {host = host}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/federation/remove-all-following", JsonConvert.SerializeObject(new {host = host}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("you do not have permission to destroy remote instance's relation");
@@ -618,7 +617,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<bool> ModifyFederatedInstanceAsync(ModifyFederatedInstanceParams args)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/federation/update-instance", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/federation/update-instance", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to update instance");
@@ -629,7 +628,7 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<bool> ModifyMetaAsync(ModifyMetaParams args)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/update-meta", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/update-meta", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.NoContent)
         {
             throw new InvalidOperationException("unable to update instance meta");
@@ -639,17 +638,17 @@ internal class MisskeyRestApiClient : IDisposable
     }
 
     public async Task<Ping?> PingAsync()
-        => await SendRequestAsync<Ping>("/api/ping");
+        => await RequestAsync<Ping>("/api/ping");
     
     public async Task<OnlineUsersCount?> GetOnlineUsersAsync()
-        => await SendRequestAsync<OnlineUsersCount>("/api/get-online-users-count");
+        => await RequestAsync<OnlineUsersCount>("/api/get-online-users-count");
     
     #endregion
     
     #region Lists
 
     public async Task<Cardboard.Net.Rest.API.List?> GetListAsync(string id, bool forPublic = false)
-        => await SendRequestAsync<Cardboard.Net.Rest.API.List>("/api/antennas/show", JsonConvert.SerializeObject(new { listId = id, forPublic = forPublic }));
+        => await RequestAuthAsync<Cardboard.Net.Rest.API.List>("/api/antennas/show", JsonConvert.SerializeObject(new { listId = id, forPublic = forPublic }));
     
     #endregion
     
@@ -657,45 +656,58 @@ internal class MisskeyRestApiClient : IDisposable
     
     public async Task<Relay[]?> GetRelaysAsync()
     {
-        RestResponse<Relay[]> response = await SendWrappedRequestAsync<Relay[]>("/api/admin/relays/list");
+        RestResponse<Relay[]> response = await WrappedRequestAuthAsync<Relay[]>("/api/admin/relays/list");
         
         if (response.StatusCode == HttpStatusCode.Forbidden)
-        {
             throw new InvalidOperationException("you do not have permission to view relays");
-        }
         
         return response.Data;
     }
 
     public async Task<Relay> CreateRelayAsync(Uri inbox)
     {
-        RestResponse<Relay> response = await SendWrappedRequestAsync<Relay>("/api/admin/relays/add", JsonConvert.SerializeObject(new { inbox = inbox }));
+        RestResponse<Relay> response = await WrappedRequestAuthAsync<Relay>("/api/admin/relays/add", JsonConvert.SerializeObject(new { inbox = inbox }));
         
         if (response.StatusCode != HttpStatusCode.OK)
-        {
             throw new InvalidOperationException("unable to add relay");
-        }
 
         return response.Data!;
     }
     
+    /// <summary>
+    ///     Deletes a relay given a Uri encoded string
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/admin/operation/admin___relays___remove
+    ///
+    ///     Requires auth and scope write:admin:relays
+    /// </remarks>
+    /// <param name="inbox">The inbox uri of the relay to delete</param>
+    /// <exception cref="InvalidOperationException">An exception is thrown when the relay is unable to be deleted</exception>
     public async Task DeleteRelayAsync(Uri inbox)
     {
-        RestResponse response = await SendWrappedRequestAsync("/api/admin/relays/delete", JsonConvert.SerializeObject(new { inbox = inbox }));
+        RestResponse response = await WrappedRequestAuthAsync("/api/admin/relays/remove", JsonConvert.SerializeObject(new { inbox = inbox }));
+        
         if (response.StatusCode != HttpStatusCode.NoContent)
-        {
             throw new InvalidOperationException("unable to delete relay");
-        }
     }
     
     #endregion
     
     #region Roles
 
+    /// <summary>
+    ///     Fetches a role given the role id
+    /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/role/operation/roles___show
+    ///
+    ///     Does not require auth
+    /// </remarks>
+    /// <param name="id">The id of the role to fetch</param>
+    /// <returns>An instance of Role</returns>
     public async Task<Role?> GetRoleAsync(string id)
-    {
-        return await SendRequestAsync<Role>($"/api/roles/show", JsonConvert.SerializeObject(new { roleId = id}));
-    }
+        => await RequestAsync<Role>("/api/roles/show", JsonConvert.SerializeObject(new { roleId = id}));
     
     #endregion
 
@@ -768,12 +780,17 @@ internal class MisskeyRestApiClient : IDisposable
             JsonConvert.SerializeObject(new { userId = userId }));
     
     /// <summary>
-    /// 
+    ///     Gets an array of Note objects
     /// </summary>
+    /// <remarks>
+    ///     api-doc#tag/users/operation/users___notes
+    ///
+    ///     Does not require auth
+    /// </remarks>
     /// <param name="args"></param>
     /// <returns></returns>
     public async Task<Note[]?> GetNotesAsync(GetUserNotesParams args)
-        => await SendRequestAsync<Note[]>("/api/users/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        => await RequestAsync<Note[]>("/api/users/notes", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
     
     /// <summary>
     ///     Reports a user
