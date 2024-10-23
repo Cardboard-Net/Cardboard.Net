@@ -1,3 +1,4 @@
+using Cardboard.Errors;
 using Newtonsoft.Json;
 
 namespace Cardboard.Net.Rest.API;
@@ -20,5 +21,5 @@ internal class ErrorBody
     public required string Id { get; set; }
     
     [JsonProperty("kind")]
-    public required string Kind { get; set; }
+    public required ErrorKindType Kind { get; set; }
 }

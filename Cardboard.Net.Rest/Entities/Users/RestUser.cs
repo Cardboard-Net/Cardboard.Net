@@ -11,16 +11,6 @@ using Poll = Cardboard.Notes.Poll;
 
 namespace Cardboard.Rest;
 
-/*
- * I fucking HATE this right now, I want to make some of this stuff subclasses
- * I am thinking, we replace the user relation stuff from DTO with a new
- * instance of IUserRelation. This allows people to get the user relation
- * by doing User.Relation.HasOutgoingFollowRequest and so forth. It makes
- * things so much nicer than this monstrosity, I am just rushing my
- * transformations so I have a "working" library again. We will clean up this
- * later.
- */
-
 [Flags]
 internal enum UserFlags : int
 {
@@ -55,18 +45,23 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
         internal set => _userFlags = value ? _userFlags | UserFlags.Moderator : _userFlags & ~UserFlags.Moderator;
     }
 
+    /// <inheritdoc/>
     public bool IsSilenced
         => _userFlags.HasFlag(UserFlags.Silenced);
 
+    /// <inheritdoc/>
     public bool NoIndex
         => _userFlags.HasFlag(UserFlags.NoIndex);
 
+    /// <inheritdoc/>
     public bool IsBot
         => _userFlags.HasFlag(UserFlags.Bot);
 
+    /// <inheritdoc/>
     public bool IsCat
         => _userFlags.HasFlag(UserFlags.Cat);
 
+    /// <inheritdoc/>
     public bool SpeakAsCat
         => _userFlags.HasFlag(UserFlags.SpeakAsCat);
     
@@ -81,18 +76,28 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public bool PublicReactions 
         => _userFlags.HasFlag(UserFlags.PublicReactions);
     
+    /// <inheritdoc/>
     public string? Name { get; internal set; }
+    /// <inheritdoc/>
     public string Username { get; internal set; }
+    /// <inheritdoc/>
     public string? Host { get; internal set; }
+    /// <inheritdoc/>
     public Uri? AvatarUrl { get; internal set; }
+    /// <inheritdoc/>
     public string? AvatarBlurhash { get; private set; }
     public IReadOnlyList<IUserDecoration> AvatarDecorations { get; private set; }
     
     public IUserInstance Instance { get; private set; }
+    
     public StatusType OnlineStatus { get; private set; }
-
+    
     public IReadOnlyCollection<BadgeRole> BadgeRoles => _badgeRoles;
+    
+    /// <inheritdoc/>
     public Uri? Url { get; private set; }
+    
+    /// <inheritdoc/>
     public Uri? Uri { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
@@ -112,10 +117,20 @@ public class RestUser : RestEntity<string>, IUser, IUpdateable
     public int NotesCount { get; private set; }
     public FollowVisibilityType FollowingVisibility { get; private set; }
     public FollowVisibilityType FollowersVisibility { get; private set; }
+    
+    /// <inheritdoc/>
     public bool TwoFactorEnabled { get; private set; }
+    
+    /// <inheritdoc/>
     public bool UsePasswordlessLogin { get; private set; }
+    
+    /// <inheritdoc/>
     public bool SecurityKeys { get; private set; }
+    
+    /// <inheritdoc/>
     public string? Memo { get; private set; }
+    
+    /// <inheritdoc/>
     public string ModerationNote { get; private set; }
     public RestUserRelation? Relation { get; private set; }
     public NotifyType Notify { get; private set; }

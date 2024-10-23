@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Cardboard.Errors;
 using Cardboard.Net.Rest.API;
 using Cardboard.Net.Rest.Interceptors;
 using Microsoft.Extensions.Logging;
@@ -564,6 +566,7 @@ internal class MisskeyRestApiClient : IDisposable
             throw new InvalidOperationException("you do not have permission to get admin meta");
         }
 
+        response.Content
         return response.Data;
     }
     
@@ -838,14 +841,19 @@ internal class MisskeyRestApiClient : IDisposable
     #region Moderation
     
     /// <summary>
-    /// 
+    ///     Silences a user
     /// </summary>
-    /// <param name="id"></param>
+    /// <remarks>
+    ///     api-doc#tag/admin/operation/admin___silence-user
+    ///
+    ///     Requires auth and scope write:admin:silence-user
+    /// </remarks>
+    /// <param name="id">The id of the user to silence</param>
     public async Task SilenceUserAsync(string id)
         => await this.RequestAuthAsync("/api/admin/silence-user", JsonConvert.SerializeObject(new { userId = id}));
-
+    
     /// <summary>
-    /// 
+    ///     
     /// </summary>
     /// <param name="id"></param>
     public async Task DeleteAllFilesOfUserAsync(string id)
@@ -965,6 +973,42 @@ internal class MisskeyRestApiClient : IDisposable
         if (headers != null) request.AddHeaders(headers);
         
         return await RestClient.ExecutePostAsync(request);
+    }
+
+    [Experimental("ExpRequestAsync")]
+    internal async Task<(T?, IMisskeyError?)> ExpRequestAsync<T>(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
+    {
+        RestRequest request = new RestRequest{ Resource = endpoint }.AddJsonBody(body);
+        
+        if (headers != null) request.AddHeaders(headers);
+
+        RestResponse response = await RestClient.PostAsync(request);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.GatewayTimeout:
+            case HttpStatusCode.BadGateway:
+            case HttpStatusCode.NoContent:
+                return (default, null);
+            case HttpStatusCode.OK:
+                return (JsonConvert.DeserializeObject<T>(response.Content!, _serializerSettings), null);
+            default:
+                break;
+        }
+        
+        Error? err = JsonConvert.DeserializeObject<Error>(response.Content!, _serializerSettings);
+                
+        /*
+         * Ideally, we would replace this with reflection. I'd like to include
+         * attributes in the mix. This is a terrible way of doing this.
+         */
+        IMisskeyError? t = err switch
+        {
+            not null when err.Body.Id == "c3d38592-54c0-429d-be96-5636b0431a61" => new NotAdministratorError(),
+            _ => null
+        };
+
+        return (default, t);
     }
     
     public void Dispose() => Dispose(true);
