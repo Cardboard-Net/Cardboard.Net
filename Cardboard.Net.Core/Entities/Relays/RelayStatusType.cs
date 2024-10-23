@@ -4,7 +4,6 @@ using Newtonsoft.Json.Converters;
 
 namespace Cardboard.Relays;
 
-
 /// <summary>
 /// The status for a relay
 /// </summary>
