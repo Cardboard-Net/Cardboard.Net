@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Cardboard.Instances;
+using Cardboard.Rest.Notes;
 using Cardboard.Users;
 
 using ModelMeta = Cardboard.Net.Rest.API.Meta;
@@ -274,7 +275,7 @@ public class RestSelfInstance : RestEntity<string>, ISelfInstance, IUpdateable
         var ping = await Misskey.ApiClient.PingAsync();
         return ping!.Pong;
     }
-
+    
     IUser ISelfInstance.InstanceActor => InstanceActor;
     IMeta ISelfInstance.Meta => Meta;
 }

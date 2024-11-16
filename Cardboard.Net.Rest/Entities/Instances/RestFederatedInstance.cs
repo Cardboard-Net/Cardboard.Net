@@ -1,5 +1,6 @@
 using Cardboard.Instances;
 using Cardboard.Net.Rest.API;
+using Cardboard.Rest.Notes;
 
 namespace Cardboard.Rest.Instances;
 
@@ -173,6 +174,7 @@ public class RestFederatedInstance : RestEntity<string>, IFederatedInstance, IUp
         int? limit = null
     )
         => await InstanceHelper.GetUsersAsync(Misskey, this.Host.Host, sinceId, untilId, limit);
+    
     
     /// <inheritdoc/>
     public async Task SilenceAsync()

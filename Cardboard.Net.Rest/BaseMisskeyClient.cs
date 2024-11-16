@@ -12,7 +12,7 @@ public abstract class BaseMisskeyClient : IMisskeyClient
 
     public ILogger Logger { get; internal init; }
     
-    public ISelfUser CurrentUser { get; protected set; }
+    public ISelfUser? CurrentUser { get; protected set; }
     public ISelfInstance CurrentInstance { get; protected set; }
     
     internal BaseMisskeyClient(MisskeyConfig config)
@@ -30,12 +30,22 @@ public abstract class BaseMisskeyClient : IMisskeyClient
         finally { _stateLock.Release(); }
     }
     
-    internal virtual async Task LoginInternalAsync(string token, Uri baseUrl)
+    public async Task LoginAsync(Uri baseUrl)
     {
-        await ApiClient.LoginAsync(token, baseUrl).ConfigureAwait(false);
-        await OnLoginAsync(token, baseUrl).ConfigureAwait(false);
+        await _stateLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await LoginInternalAsync(baseUrl).ConfigureAwait(false);
+        }
+        finally { _stateLock.Release(); }
     }
-    
+
+    internal virtual Task LoginInternalAsync(string token, Uri baseUrl)
+        => Task.Delay(0);
+
+    internal virtual Task LoginInternalAsync(Uri baseUrl)
+        => Task.Delay(0);
+
     internal virtual Task OnLoginAsync(string token, Uri baseUrl)
         => Task.Delay(0);
     

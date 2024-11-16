@@ -20,6 +20,9 @@ public class NotAdministratorError() : IMisskeyError
     ///<inheritdoc/>
     public ErrorKindType Kind => ErrorKindType.Permission;
 
+    ///<inheritdoc/>
+    public bool Critical => true;
+    
     public void Throw()
         => throw new NotAdministratorException(this);
 }

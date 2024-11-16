@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Reflection;
+using Cardboard.Attributes;
 using Cardboard.Errors;
+using Cardboard.Exceptions;
 using Cardboard.Net.Rest.API;
 using Cardboard.Net.Rest.Interceptors;
 using Microsoft.Extensions.Logging;
@@ -20,10 +23,12 @@ internal class MisskeyRestApiClient : IDisposable
     protected bool _isDisposed;
     
     private ILogger Logger { get; }
-    internal string AuthToken { get; private set; }
+    internal string? AuthToken { get; private set; }
+    internal bool AnonymousAccess { get; private set; }
     internal RestClient RestClient { get; private set; }
     internal RequestInterceptor RequestInterceptor { get; private set; }
-    internal SelfUser FirstLoginUser { get; private set; }
+    
+    private Dictionary<string, IMisskeyError> Errors { get; set; }
     
     public string UserAgent { get; }
 
@@ -38,6 +43,19 @@ internal class MisskeyRestApiClient : IDisposable
         this.RequestInterceptor = requestInterceptor;
         this._serializerSettings = options.Value.SerializerSettings;
         this._stateLock = new SemaphoreSlim(1, 1);
+
+        Errors = new Dictionary<string, IMisskeyError>();
+        
+        List<IMisskeyError> tmp = new List<IMisskeyError>();
+        tmp.Add(new NotAdministratorError());
+        tmp.Add(new NotModeratorError());
+        tmp.Add(new AccountMigratedError());
+        tmp.Add(new NoSuchUserError());
+
+        foreach (IMisskeyError err in tmp)
+        {
+            Errors.Add(err.Id, err);
+        }
     }
 
     internal void SetBaseUrl(Uri baseUrl)
@@ -51,8 +69,9 @@ internal class MisskeyRestApiClient : IDisposable
         this.RestClient = new RestClient(clientOptions, configureSerialization: s => s.UseNewtonsoftJson(this._serializerSettings));
     }
     
-    public async Task LoginAsync(string token, Uri baseUrl)
+    public async Task<SelfUser> LoginAsync(string token, Uri baseUrl)
     {
+        SelfUser? user = null;
         await this._stateLock.WaitAsync().ConfigureAwait(false);
         try
         {
@@ -64,7 +83,7 @@ internal class MisskeyRestApiClient : IDisposable
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    this.FirstLoginUser = response.Data!;
+                    user = response.Data!;
                     this.Logger.LogInformation("Authentication Success!");
                     break;
                 case HttpStatusCode.Forbidden:
@@ -72,8 +91,39 @@ internal class MisskeyRestApiClient : IDisposable
                 default:
                     throw new InvalidOperationException("Server responded with an unknown error");
             }
+            
+            this.AnonymousAccess = false;
         }
         finally { this._stateLock.Release(); }
+
+        return user;
+    }
+
+    public async Task<Meta> LoginAsync(Uri baseUrl)
+    {
+        Meta? meta = null;
+        await this._stateLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            this.AuthToken = null;
+            this.AnonymousAccess = true;
+            SetBaseUrl(baseUrl);
+            
+            RestResponse<Meta> response = await WrappedRequestAsync<Meta>("/api/meta");
+            
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    meta = response.Data!;
+                    this.Logger.LogInformation("Success!");
+                    break;
+                default:
+                    throw new InvalidOperationException("Server responded with an unknown error");
+            }
+        }
+        finally { this._stateLock.Release(); }
+
+        return meta;
     }
     
     #region Announcements
@@ -385,12 +435,7 @@ internal class MisskeyRestApiClient : IDisposable
 
     public async Task<Note?> CreateNoteAsync(CreateNoteParams args)
     {
-        RestRequest request = new RestRequest
-        {
-            Resource = "/api/notes/create"
-        };
-        request.AddJsonBody(JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
-        RestResponse<CreatedNote> response = await RestClient.ExecutePostAsync<CreatedNote>(request);
+        RestResponse<CreatedNote> response = await WrappedRequestAuthAsync<CreatedNote>("/api/notes/create", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}));
         if (response.StatusCode != HttpStatusCode.OK)
         {
             throw new InvalidOperationException("error creating note");
@@ -559,15 +604,9 @@ internal class MisskeyRestApiClient : IDisposable
         => await RequestAsync<Meta>("/api/meta");
     
     public async Task<AdminMeta?> GetAdminMetaAsync()
-    {
-        RestResponse<AdminMeta> response = await WrappedRequestAuthAsync<AdminMeta>("/api/admin/meta");
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-            throw new InvalidOperationException("you do not have permission to get admin meta");
-        }
-        
-        return response.Data;
-    }
+#pragma warning disable ExpRequestAsync
+        => await ExpRequestAsync<AdminMeta>("/api/admin/meta", headers: [new ("Authorization", $"Bearer {this.AuthToken}")]);
+#pragma warning restore ExpRequestAsync
     
     public async Task<FederatedInstance?> GetFederatedInstanceAsync(string host)
         => await RequestAuthAsync<FederatedInstance>("/api/federation/show-instance", JsonConvert.SerializeObject(new { host = host }));
@@ -736,8 +775,12 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="id">The id of the user to fetch</param>
     /// <returns>an instance of User</returns>
     public async Task<User?> GetUserAsync(string id)
-        => await RequestAsync<User>("/api/users/show", JsonConvert.SerializeObject(new { userId = id}));
-
+#pragma warning disable ExpRequestAuthAsync
+        => await ExpRequestAuthAsync<User>("/api/users/show", JsonConvert.SerializeObject(new {userId = id}));
+#pragma warning restore ExpRequestAuthAsync
+    
+    
+    
     /// <summary>
     ///     Fetches a user given a username and optional hostname
     /// </summary>
@@ -905,8 +948,13 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="body">The request body</param>
     /// <returns>an instance of type T</returns>
     internal async Task<T?> RequestAuthAsync<T>(string endpoint, string body = "{}")
-        => await RequestAsync<T>(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
-    
+    {
+        if (this.AnonymousAccess)
+            throw new AnonymousModeException();
+        
+        return await RequestAsync<T>(endpoint, body, [new("Authorization", $"Bearer {this.AuthToken}")]);
+    }
+
     /// <summary>
     ///     Sends a post request with Authorization headers given an endpoint, a body
     /// </summary>
@@ -914,8 +962,13 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="body">The request body</param>
     /// <returns></returns>
     internal async Task RequestAuthAsync(string endpoint, string body = "{}")
-        => await RequestAsync(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
-    
+    {
+        if (this.AnonymousAccess)
+            throw new AnonymousModeException();
+        
+        await RequestAsync(endpoint, body, [new("Authorization", $"Bearer {this.AuthToken}")]);
+    }
+
     /// <summary>
     ///     Sends a post request given an endpoint, a body, and optional headers
     /// </summary>
@@ -939,7 +992,7 @@ internal class MisskeyRestApiClient : IDisposable
     /// <returns></returns>
     internal async Task RequestAsync(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
         => await WrappedRequestAsync(endpoint, body, headers);
-    
+
     /// <summary>
     ///     Sends a post request with Authorization headers given an endpoint, a body
     /// </summary>
@@ -948,8 +1001,13 @@ internal class MisskeyRestApiClient : IDisposable
     /// <typeparam name="T">A type to deserialize the json response into</typeparam>
     /// <returns>an instance of RestResponse with the result deserialized into type T</returns>
     internal async Task<RestResponse<T>> WrappedRequestAuthAsync<T>(string endpoint, string body = "{}")
-        => await WrappedRequestAsync<T>(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
-    
+    {
+        if (this.AnonymousAccess)
+            throw new AnonymousModeException();
+        
+        return await WrappedRequestAsync<T>(endpoint, body, [new("Authorization", $"Bearer {this.AuthToken}")]);
+    }
+
     /// <summary>
     ///     Sends a post request with Authorization headers given an endpoint, a body
     /// </summary>
@@ -957,7 +1015,12 @@ internal class MisskeyRestApiClient : IDisposable
     /// <param name="body">The request body</param>
     /// <returns>an instance of RestResponse containing the result of the POST request</returns>
     internal async Task<RestResponse> WrappedRequestAuthAsync(string endpoint, string body = "{}")
-        => await WrappedRequestAsync(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);
+    {
+        if (this.AnonymousAccess)
+            throw new AnonymousModeException();
+        
+        return await WrappedRequestAsync(endpoint, body, [new ("Authorization", $"Bearer {this.AuthToken}")]);   
+    }
     
     /// <summary>
     ///     Sends a post request given an endpoint, a body, and optional headers
@@ -992,40 +1055,56 @@ internal class MisskeyRestApiClient : IDisposable
         return await RestClient.ExecutePostAsync(request);
     }
 
+    [Experimental("ExpRequestAuthAsync")]
+    internal async Task<T?> ExpRequestAuthAsync<T>(string endpoint, string body = "{}")
+    {
+        if (this.AnonymousAccess)
+            throw new AnonymousModeException();
+
+        return await ExpRequestAsync<T>(endpoint, body, [new("Authorization", $"Bearer {this.AuthToken}")]);
+    }
+
     [Experimental("ExpRequestAsync")]
-    internal async Task<(T?, IMisskeyError?)> ExpRequestAsync<T>(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
+    internal async Task<T?> ExpRequestAsync<T>(string endpoint, string body = "{}", List<KeyValuePair<string, string>>? headers = null)
     {
         RestRequest request = new RestRequest{ Resource = endpoint }.AddJsonBody(body);
         
         if (headers != null) request.AddHeaders(headers);
 
-        RestResponse response = await RestClient.PostAsync(request);
+        RestResponse response = await RestClient.ExecutePostAsync(request);
 
         switch (response.StatusCode)
         {
             case HttpStatusCode.GatewayTimeout:
+            case HttpStatusCode.ServiceUnavailable:
             case HttpStatusCode.BadGateway:
+                throw new InstanceUnreachableException();
             case HttpStatusCode.NoContent:
-                return (default, null);
+                return default;
             case HttpStatusCode.OK:
-                return (JsonConvert.DeserializeObject<T>(response.Content!, _serializerSettings), null);
-            default:
-                break;
+                return (JsonConvert.DeserializeObject<T>(response.Content!, _serializerSettings));
         }
         
         Error? err = JsonConvert.DeserializeObject<Error>(response.Content!, _serializerSettings);
-                
-        /*
-         * Ideally, we would replace this with reflection. I'd like to include
-         * attributes in the mix. This is a terrible way of doing this.
-         */
-        IMisskeyError? t = err switch
+        if (err is null)
+            throw new EmptyErrorBodyException();
+        
+        if (Errors.TryGetValue(err.Body.Id, out var e))
         {
-            not null when err.Body.Id == "c3d38592-54c0-429d-be96-5636b0431a61" => new NotAdministratorError(),
-            _ => null
-        };
+            if (e.Critical)
+            {
+                Logger.LogError(e.Message);
+                e.Throw();
+            } else
+                Logger.LogWarning(e.Message);
+        }
+        else
+        {
+            Logger.LogCritical($"Error {err.Body.Code} is not recognized. Things may break catastrophically!");
+            Logger.LogCritical($"Error ID: {err.Body.Id}; Error Body: {err.Body.Message}; Error Kind: {err.Body.Kind}");
+        }
 
-        return (default, t);
+        return default;
     }
     
     public void Dispose() => Dispose(true);
