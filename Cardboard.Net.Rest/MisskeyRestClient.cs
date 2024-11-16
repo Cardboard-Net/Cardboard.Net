@@ -1,6 +1,7 @@
 using Cardboard.Antennas;
 using Cardboard.Charts;
 using Cardboard.Logging;
+using Cardboard.Net.Rest.API;
 using Cardboard.Net.Rest.Interceptors;
 using Cardboard.Notes;
 using Cardboard.Rest;
@@ -12,13 +13,17 @@ using Cardboard.Rest.Notes;
 using Cardboard.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ActiveUserChart = Cardboard.Charts.ActiveUserChart;
+using ApRequestChart = Cardboard.Charts.ApRequestChart;
+using DriveChart = Cardboard.Charts.DriveChart;
+using Poll = Cardboard.Notes.Poll;
 
 namespace Cardboard.Net.Rest;
 
 public class MisskeyRestClient : BaseMisskeyClient
 {
-    public new RestSelfUser CurrentUser { get => base.CurrentUser as RestSelfUser; internal set => base.CurrentUser = value; }
-    public new RestSelfInstance CurrentInstance{ get => base.CurrentInstance as RestSelfInstance; internal set => base.CurrentInstance = value; }
+    public new RestSelfUser? CurrentUser { get => base.CurrentUser as RestSelfUser; internal set => base.CurrentUser = value; }
+    public new RestSelfInstance CurrentInstance { get => base.CurrentInstance as RestSelfInstance; internal set => base.CurrentInstance = value; }
     public IServiceProvider ServiceProvider { get; internal set; }
     
     public MisskeyRestClient() : this(new MisskeyConfig()) { }
@@ -44,17 +49,36 @@ public class MisskeyRestClient : BaseMisskeyClient
         this.Logger = ServiceProvider.GetRequiredService<ILogger<MisskeyRestClient>>();
         this.ApiClient = ServiceProvider.GetRequiredService<MisskeyRestApiClient>();
     }
-
+    
     internal override async Task OnLoginAsync(string token, Uri baseUrl)
     {
-        CurrentUser = RestSelfUser.Create(this, ApiClient.FirstLoginUser);
-        
         Logger.LogInformation($"Logged in as @{CurrentUser.Username} ({CurrentUser.Id})");
         
         var meta = await ApiClient.GetMetaAsync();
         var model = await ApiClient.GetUserAsync("instance.actor", null);
 
         if (model == null || meta == null)
+            return;
+        
+        CurrentInstance = RestSelfInstance.Create(this, meta, RestInstanceActor.Create(this, model));
+        
+        Logger.LogInformation($"Current instance is {CurrentInstance.Meta.Url}");
+        Logger.LogInformation($"Found @{CurrentInstance.InstanceActor.Username} ({CurrentInstance.Id})");
+    }
+    
+    internal override async Task LoginInternalAsync(string token, Uri baseUrl)
+    {
+        SelfUser self = await ApiClient.LoginAsync(token, baseUrl);
+        CurrentUser = RestSelfUser.Create(this, self);
+        await OnLoginAsync(token, baseUrl).ConfigureAwait(false);
+    }
+
+    internal override async Task LoginInternalAsync(Uri baseUrl)
+    {
+        Meta meta = await ApiClient.LoginAsync(baseUrl);
+        var model = await ApiClient.GetUserAsync("instance.actor", null);
+
+        if (model == null)
             return;
         
         CurrentInstance = RestSelfInstance.Create(this, meta, RestInstanceActor.Create(this, model));

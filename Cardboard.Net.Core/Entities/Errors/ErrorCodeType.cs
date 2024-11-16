@@ -21,5 +21,12 @@ public enum ErrorCodeType
     /// a role permission to do.
     /// </summary>
     [EnumMember(Value = "ROLE_PERMISSION_DENIED")]
-    PermissionDenied
+    PermissionDenied,
+    
+    /// <summary>
+    ///     Represents the error given when you try to fetch a user that does not
+    /// exist.
+    /// </summary>
+    [EnumMember(Value = "NO_SUCH_USER")]
+    NoSuchUser
 }

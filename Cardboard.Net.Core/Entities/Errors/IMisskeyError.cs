@@ -26,6 +26,11 @@ public interface IMisskeyError
     ErrorKindType Kind { get; }
 
     /// <summary>
+    ///     Whether this error is critical and should be thrown.
+    /// </summary>
+    bool Critical { get; }
+    
+    /// <summary>
     ///     Throws the corresponding exception to this error
     /// </summary>
     void Throw();
