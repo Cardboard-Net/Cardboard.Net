@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Cardboard.Net.Websocket;
 
-internal class WebSocketClient : IWebSocketClient, IDisposable
+internal class WebSocketClient : BaseSocketClient, IWebSocketClient, IDisposable
 {
     public const int ReceiveChunkSize = 16384; 
     public const int SendChunkSize = 16384;
@@ -20,14 +20,38 @@ internal class WebSocketClient : IWebSocketClient, IDisposable
     private CancellationTokenSource _disconnectTokenSource, _cancelTokenSource;
     private CancellationToken _cancelToken, _parentToken;
     private bool _isDisposed, _isDisconnecting;
+    private ConnectionState _state;
+    private ConnectionManager _connection;
+    internal new MisskeyRestApiClient ApiClient => base.ApiClient;
 
-    public WebSocketClient()
+    // public WebSocketClient()
+    // {
+    //     _lock = new SemaphoreSlim(1, 1);
+    //     _disconnectTokenSource = new CancellationTokenSource();
+    //     _cancelToken = CancellationToken.None;
+    //     _parentToken = CancellationToken.None;
+    //     _headers = new Dictionary<string, string>();
+    // }
+
+    public WebSocketClient() : this(new MisskeyConfig())
+    {
+    }
+
+    public WebSocketClient(MisskeyConfig config) : this(config, CreateApiClient(config))
+    {
+    }
+
+    private WebSocketClient(MisskeyConfig config, MisskeyRestApiClient restApiClient) : base(config, restApiClient)
     {
         _lock = new SemaphoreSlim(1, 1);
         _disconnectTokenSource = new CancellationTokenSource();
         _cancelToken = CancellationToken.None;
         _parentToken = CancellationToken.None;
         _headers = new Dictionary<string, string>();
+        _connection = new ConnectionManager(_lock, config.ConnectionTimeout, OnConnectingAsync, OnDisconnectingAsync,
+            x => { /* TODO: Pass this to the API client!!! */ });
+        
+        // TODO: API Client Tasks
     }
     private void Dispose(bool disposing)
     {
@@ -43,10 +67,23 @@ internal class WebSocketClient : IWebSocketClient, IDisposable
             _isDisposed = true;
         }
     }
+
+    private static MisskeyRestApiClient CreateApiClient(MisskeyConfig config) =>
+        new MisskeyRestApiClient(MisskeyConfig.UserAgent);
+    
     public void Dispose()
     {
         Dispose(true);
     }
+
+
+    /// <inheritdoc />
+    public override Task StartAsync()
+        => _connection.StartAsync();
+
+    /// <inheritdoc />
+    public override Task StopAsync()
+        => _connection.StopAsync();
 
     public async Task ConnectAsync(string host)
     {
@@ -260,4 +297,56 @@ internal class WebSocketClient : IWebSocketClient, IDisposable
             var _ = OnClosed(ex);
         }
     }
+
+    private async Task OnConnectingAsync()
+    {
+        // TODO: Reimplement this however it's meant to be done with misskey!
+        bool locked = false;
+        try
+        {
+            // await _gatewayLogger.DebugAsync("Connecting ApiClient").ConfigureAwait(false);
+            // await ApiClient.ConnectAsync().ConfigureAwait(false);
+            
+            // if (_sessionId != null)
+            // {
+            //     await _gatewayLogger.DebugAsync("Resuming").ConfigureAwait(false);
+            //     await ApiClient.SendResumeAsync(_sessionId, _lastSeq).ConfigureAwait(false);
+            // }
+            // else
+            // {
+            //     await _gatewayLogger.DebugAsync("Identifying").ConfigureAwait(false);
+            //     await ApiClient.SendIdentifyAsync(shardID: ShardId, totalShards: TotalShards, gatewayIntents: _gatewayIntents, presence: BuildCurrentStatus()).ConfigureAwait(false);
+            // }
+        }
+        finally
+        {
+            // if (locked)
+            //     _shardedClient.ReleaseIdentifyLock();
+        }
+
+        //Wait for READY
+        await _connection.WaitAsync().ConfigureAwait(false);
+
+        // Log warnings on ready event
+    }
+    private async Task OnDisconnectingAsync(Exception ex)
+    {
+        // TODO: Reimplement this however it's meant to be done with misskey!
+        // await _gatewayLogger.DebugAsync("Disconnecting ApiClient").ConfigureAwait(false);
+       
+        // await ApiClient.DisconnectAsync(ex).ConfigureAwait(false);
+
+        //Wait for tasks to complete
+        // await _gatewayLogger.DebugAsync("Waiting for heartbeater").ConfigureAwait(false);
+        // var heartbeatTask = _heartbeatTask;
+        // if (heartbeatTask != null)
+        //     await heartbeatTask.ConfigureAwait(false);
+        // _heartbeatTask = null;
+
+        // while (_heartbeatTimes.TryDequeue(out _))
+        // { }
+        // _lastMessageTime = 0;
+    }
+    
+    public override MisskeySocketRestClient Rest { get; }
 }
